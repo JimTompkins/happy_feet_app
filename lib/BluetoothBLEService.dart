@@ -8,6 +8,8 @@ import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 
 class BluetoothBLEService {
+
+  // Sak's constants
   static const String DATA_SERVICE_UUID =
       "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
   static const String DATA_WRITE_CHARACTERISTIC_UUID =
@@ -16,7 +18,27 @@ class BluetoothBLEService {
       "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
   static const String PROTOCOL_READ_CHARACTERISTIC_UUID =
       "6e400004-b5a3-f393-e0a9-e50e24dcca9e";
-  static const TARGET_DEVICE_NAMES = ["checkUP Device", "checkMARC"];
+//  static const TARGET_DEVICE_NAMES = ["checkUP Device", "checkMARC"];
+
+  static const String HF_SERVICE_UUID =
+      "0000fff0-0000-1000-8000-00805f9b34fb";
+
+  // 6 characteristics: 1, 2, 5 and 6 are readable,
+  // 3 and 6 are writable, and 4 notifies
+  static const String CHAR1_CHARACTERISTIC_UUID =
+      "0000fff1-0000-1000-8000-00805f9b34fb";
+  static const String CHAR2_CHARACTERISTIC_UUID =
+      "0000fff2-0000-1000-8000-00805f9b34fb";
+  static const String CHAR3_CHARACTERISTIC_UUID =
+      "0000fff3-0000-1000-8000-00805f9b34fb";
+  static const String CHAR4_CHARACTERISTIC_UUID =
+      "0000fff4-0000-1000-8000-00805f9b34fb";
+  static const String CHAR5_CHARACTERISTIC_UUID =
+      "0000fff5-0000-1000-8000-00805f9b34fb";
+  static const String CHAR6_CHARACTERISTIC_UUID =
+      "0000fff6-0000-1000-8000-00805f9b34fb";
+
+  static const TARGET_DEVICE_NAMES = ["HappyFeet"];
 
   FlutterBlue? flutterBlue = FlutterBlue.instance;
   StreamSubscription<ScanResult>? scanSubScription;
@@ -78,7 +100,7 @@ class BluetoothBLEService {
       try {
         stopScan();
         scanSubScription = flutterBlue!
-            .scan(scanMode: ScanMode.lowPower, timeout: Duration(seconds: 4))
+            .scan(scanMode: ScanMode.lowPower, timeout: Duration(seconds: 7))
             .listen(
                 (scanResult) {
                   try {
@@ -89,7 +111,7 @@ class BluetoothBLEService {
                     String foundDevice = TARGET_DEVICE_NAMES
                         .firstWhere((e) => e == scanResult.device.name);
                     if (foundDevice.isNotEmpty) {
-                      print('DEVICE found');
+                      print('HF: HappyFeet found');
                       stopScan();
 
                       _connectionStateSubject.add(BluetoothConnectionStateDTO(
@@ -105,6 +127,7 @@ class BluetoothBLEService {
                 },
                 onDone: () => _onDoneScan(),
                 onError: (err) {
+                  print('HF: connection failed');
                   _connectionStateSubject.add(BluetoothConnectionStateDTO(
                       bluetoothConnectionState: BluetoothConnectionState.FAILED,
                       error: err));
@@ -142,11 +165,11 @@ class BluetoothBLEService {
 
     try {
       await targetDevice!.connect();
-      print('DEVICE CONNECTED');
+      print('HF: DEVICE CONNECTED');
       _connectionStateSubject.add(BluetoothConnectionStateDTO(
           bluetoothConnectionState: BluetoothConnectionState.DEVICE_CONNECTED));
     } catch (err) {
-      print('DEVICE ALREADY CONNECTED');
+      print('HF: DEVICE ALREADY CONNECTED');
     }
 
     discoverServices();
@@ -155,7 +178,7 @@ class BluetoothBLEService {
   disconnectFromDevice() async {
     await _dataReadCharacteristicSubscription?.cancel();
     _dataReadCharacteristicSubscription = null;
-    print("_dataReadCharacteristicSubscription is cancelled");
+    print("HF: _dataReadCharacteristicSubscription is cancelled");
 
     if (_dataReadCharacteristic != null) {
       _dataReadCharacteristic = null;
@@ -181,7 +204,7 @@ class BluetoothBLEService {
         if (service.uuid.toString() == DATA_SERVICE_UUID) {
           // for Android, set MTU to send data at the maximum as possible.
           final mtu = await targetDevice!.mtu.first;
-          print("mtu: ");
+          print("HF: mtu: ");
           print(mtu);
           await targetDevice!.requestMtu(509);
 
@@ -219,7 +242,7 @@ class BluetoothBLEService {
     if (_dataWriteCharacteristic!.properties.write) {
       try {
         await _dataWriteCharacteristic!.write(bytes);
-        print("sent data to device");
+        print("HF: sent data to device");
       } catch (err) {
         print(err);
       }
@@ -229,7 +252,7 @@ class BluetoothBLEService {
   readData(int round) async {
     if (_dataReadCharacteristic == null) return;
 
-    print("readData");
+    print("HF: readData");
 
     try {
       if (_dataReadCharacteristic!.properties.notify) {
@@ -264,6 +287,6 @@ class BluetoothBLEService {
     _connectionStateSubject.close();
     _protocalValueSubject.close();
     _dataReceivedSubject.close();
-    print("BluetoothBLE is disposed.");
+    print("HF: BluetoothBLE is disposed.");
   }
 }

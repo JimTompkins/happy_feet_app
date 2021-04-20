@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int midiNote2 = 0;
   int sequenceCount = 0;
   Mode playMode = Mode.singleNote;
-  String playModeString = 'Single Note';
+  String? playModeString = 'Single Note';
   int _playState = 0;
   static BluetoothBLEService? _bluetoothBLEService;
   late StreamSubscription<List<int>> _dataReadCharacteristicSubscription;
@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //_startTimer();
     }
     if (_bluetoothBLEService != null) {
-      print('connectionState: got bluetooth!');
+      print('HF: connectionState: got bluetooth!');
       // _bluetoothBLEConnectionStateSubject.add(connectionState);
     }
   }
@@ -110,29 +110,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.blue,
                   splashColor: Colors.purple,
                   onPressed: () {
-                    // Start scanning
+                    // Start scanning and make connection
                     _bluetoothBLEService!.startConnection();
                   }),
             ),
-            Text('Scan',
-                style: TextStyle(color: Colors.blue, height: 1, fontSize: 15))
-          ]),
-          Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(5),
-              alignment: Alignment.center,
-              child: IconButton(
-                icon: Icon(
-                  Icons.bluetooth_connected,
-                ),
-                iconSize: 50,
-                color: Colors.grey,
-                splashColor: Colors.purple,
-                onPressed: () {},
-              ),
-            ),
             Text('Connect',
-                style: TextStyle(color: Colors.grey, height: 1, fontSize: 15))
+                style: TextStyle(color: Colors.blue, height: 1, fontSize: 15))
           ]),
           Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
             Container(
@@ -145,7 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 iconSize: 50,
                 color: Colors.grey,
                 splashColor: Colors.purple,
-                onPressed: () {},
+                onPressed: () {
+                  // stop the BLE connection
+                  _bluetoothBLEService!.dispose();
+                },
               ),
             ),
             Text('Disconnect',
@@ -186,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onChanged: (String? newValue) {
                   setState(() {
+                    playModeString = newValue;
                     switch (newValue) {
                       case 'Single Note':
                         {
