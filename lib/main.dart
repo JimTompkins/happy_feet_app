@@ -130,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 splashColor: Colors.purple,
                 onPressed: () {
                   // stop the BLE connection
-                  _bluetoothBLEService!.dispose();
+                  _bluetoothBLEService!.disconnectFromDevice();
                 },
               ),
             ),

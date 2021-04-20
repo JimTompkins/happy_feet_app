@@ -47,7 +47,15 @@ class BluetoothBLEService {
   BluetoothCharacteristic? _dataReadCharacteristic;
   BluetoothCharacteristic? _dataWriteCharacteristic;
 
+  BluetoothCharacteristic? _char1;
+  BluetoothCharacteristic? _char2;
+  BluetoothCharacteristic? _char3;
+  BluetoothCharacteristic? _char4;
+  BluetoothCharacteristic? _char5;
+  BluetoothCharacteristic? _char6;
+
   StreamSubscription<List<int>>? _dataReadCharacteristicSubscription;
+  StreamSubscription<List<int>>? _char4Subscription;
 
   String? connectionText = "";
   List<BluetoothDevice>? _devicesList;
@@ -73,6 +81,9 @@ class BluetoothBLEService {
 
   final _dataReceivedSubject = BehaviorSubject<List<int>>();
   Stream<List<int>> get dataReceivedStream => _dataReceivedSubject.stream;
+
+  final _char4Subject = BehaviorSubject<List<int>>();
+  Stream<List<int>> get char4Stream => _char4Subject.stream;
 
   isDeviceBluetoothOn() async {
     try {
@@ -201,19 +212,35 @@ class BluetoothBLEService {
       List<BluetoothService> services = await targetDevice!.discoverServices();
       services.forEach((service) async {
         // do something with service
-        if (service.uuid.toString() == DATA_SERVICE_UUID) {
-          // for Android, set MTU to send data at the maximum as possible.
+        //if (service.uuid.toString() == DATA_SERVICE_UUID) {
+        if (service.uuid.toString() == HF_SERVICE_UUID) {
+          // for HappyFeet, set the MTU as small as possible
           final mtu = await targetDevice!.mtu.first;
           print("HF: mtu: ");
           print(mtu);
-          await targetDevice!.requestMtu(509);
+          await targetDevice!.requestMtu(23);
 
           await Future.delayed(Duration(milliseconds: 1000));
 
           service.characteristics.forEach((characteristic) async {
             if (characteristic.uuid.toString() ==
-                DATA_READ_CHARACTERISTIC_UUID) {
-              _dataReadCharacteristic = characteristic;
+                CHAR1_CHARACTERISTIC_UUID) {
+              _char1 = characteristic;
+            } else if (characteristic.uuid.toString() ==
+                CHAR2_CHARACTERISTIC_UUID) {
+              _char2 = characteristic;
+            } else if (characteristic.uuid.toString() ==
+                CHAR3_CHARACTERISTIC_UUID) {
+              _char3 = characteristic;
+            } else if (characteristic.uuid.toString() ==
+                CHAR4_CHARACTERISTIC_UUID) {
+              _char4 = characteristic;
+            } else if (characteristic.uuid.toString() ==
+                CHAR5_CHARACTERISTIC_UUID) {
+              _char5 = characteristic;
+            } else if (characteristic.uuid.toString() ==
+                CHAR6_CHARACTERISTIC_UUID) {
+              _char6 = characteristic;
             } else if (characteristic.uuid.toString() ==
                 DATA_WRITE_CHARACTERISTIC_UUID) {
               _dataWriteCharacteristic = characteristic;
@@ -236,16 +263,68 @@ class BluetoothBLEService {
     }
   }
 
-  writeData(List<int> bytes) async {
-    if (_dataWriteCharacteristic == null) return;
+  // enable notifications on char4
+  enableBeatNotifications() async {
+    if (_char4 == null) return;   // check for non-null char4
+    try {
+      if (_char4!.properties.notify) {
+        await _char4!.setNotifyValue(true);
 
-    if (_dataWriteCharacteristic!.properties.write) {
-      try {
-        await _dataWriteCharacteristic!.write(bytes);
-        print("HF: sent data to device");
-      } catch (err) {
-        print(err);
+        _char4Subscription?.cancel();
+        _char4Subscription =
+            _char4!.value.listen((data) {
+              print("HF: _char4 data: ");
+              print(data);
+              print("last value:");
+              print(_char4!.lastValue);
+              if (data.length > 0) {
+                // this is to fix the bluetooth still remembers the last values from previous connection.
+                if (_char4!.lastValue != data) {
+                  _char4Subject.add(data);
+                }
+              }
+            });
       }
+    } catch (err) {
+      print("HF:  error enabling notifications on char4 ");
+      print(err);
+    }
+  }
+
+  // write a characteristic on HappyFeet.  Char 3 and 6 are
+  // writable and single byte
+  writeChar(List<int> bytes, int charNum) async {
+    switch(charNum) {
+      case 3: {
+        if (_char3 == null) return;
+        if (_char3!.properties.write) {
+          try {
+            await _char3!.write(bytes);
+            print("HF: wrote char 3");
+          } catch (err) {
+            print(err);
+          }
+        }
+      }
+      break;
+
+      case 6: {
+        if (_char6 == null) return;
+        if (_char6!.properties.write) {
+          try {
+            await _char6!.write(bytes);
+            print("HF: wrote char 6");
+          } catch (err) {
+            print(err);
+          }
+        }
+      }
+      break;
+
+      default: {
+        // shouldn't get here...
+      }
+      break;
     }
   }
 
