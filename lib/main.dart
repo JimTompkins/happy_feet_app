@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'colourPalette.dart';
 import 'BluetoothBLEService.dart';
 import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
@@ -43,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int sequenceCount = 0;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
-  int _playState = 0;
+  bool _playState = false;
   static BluetoothBLEService? _bluetoothBLEService;
   late StreamSubscription<List<int>> _dataReadCharacteristicSubscription;
 
@@ -68,14 +69,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handleBluetoothConnection(BluetoothConnectionStateDTO connectionState) {
-    print('connectionState: $connectionState');
+    print('HF: connectionState: $connectionState');
     if (connectionState.bluetoothConnectionState ==
         BluetoothConnectionState.DEVICE_CONNECTED) {
-      //_startTimer();
     }
+
     if (_bluetoothBLEService != null) {
       print('HF: connectionState: got bluetooth!');
-      // _bluetoothBLEConnectionStateSubject.add(connectionState);
     }
   }
 
@@ -368,16 +368,18 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
-              child: IconButton(
-                icon: Icon(
-                  Icons.play_circle_fill,
-                ),
-                iconSize: 50,
-                color: Colors.blue,
-                splashColor: Colors.purple,
-                enableFeedback: false, // turn off sound
-                onPressed: () {
-                  if (playMode == Mode.singleNote) {
+              child: FloatingActionButton(
+                onPressed: (){
+                  setState((){ _playState = !_playState;});
+                   if (_playState) {
+                     // disable beats
+                     _bluetoothBLEService?.disableBeat();
+                   } else {
+                     // enable beats
+                     _bluetoothBLEService?.enableBeat();
+                   }
+
+                   if (playMode == Mode.singleNote) {
                     midi.play(midiNote1);
                   } else if (playMode == Mode.alternatingNotes) {
                     if (sequenceCount.isEven) {
@@ -389,9 +391,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     }
                     sequenceCount++;
                   }
-                }, //onPressed
+                },   //onPressed
+                tooltip: 'Enable beats',
+                child: _playState?new Icon(Icons.pause):new Icon(Icons.play_circle_fill),
+                ),
               ),
-            ),
           ],
         ),
       ]),

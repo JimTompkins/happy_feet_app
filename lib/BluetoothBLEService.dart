@@ -138,12 +138,13 @@ class BluetoothBLEService {
                 },
                 onDone: () => _onDoneScan(),
                 onError: (err) {
-                  print('HF: connection failed');
+                  print('HF: connection failed 1');
                   _connectionStateSubject.add(BluetoothConnectionStateDTO(
                       bluetoothConnectionState: BluetoothConnectionState.FAILED,
                       error: err));
                 });
       } catch (err) {
+        print('HF: connection failed 2');
         _connectionStateSubject.add(BluetoothConnectionStateDTO(
             bluetoothConnectionState: BluetoothConnectionState.FAILED,
             error: err));
@@ -169,21 +170,26 @@ class BluetoothBLEService {
   }
 
   connectToDevice() async {
-    if (targetDevice == null) return;
-
-    _connectionStateSubject.add(BluetoothConnectionStateDTO(
-        bluetoothConnectionState: BluetoothConnectionState.DEVICE_CONNECTING));
-
-    try {
-      await targetDevice!.connect();
-      print('HF: DEVICE CONNECTED');
-      _connectionStateSubject.add(BluetoothConnectionStateDTO(
-          bluetoothConnectionState: BluetoothConnectionState.DEVICE_CONNECTED));
-    } catch (err) {
-      print('HF: DEVICE ALREADY CONNECTED');
+    if (targetDevice == null) {
+      print("HF: connectToDevice: targetDevice is null");
+      return;
+    } else {
+      print("HF: connectToDevice");
     }
 
-    discoverServices();
+      _connectionStateSubject.add(BluetoothConnectionStateDTO(
+          bluetoothConnectionState: BluetoothConnectionState.DEVICE_CONNECTING));
+
+      try {
+        await targetDevice!.connect();
+        print('HF: device connected');
+        _connectionStateSubject.add(BluetoothConnectionStateDTO(
+            bluetoothConnectionState: BluetoothConnectionState.DEVICE_CONNECTED));
+      } catch (err) {
+        print('HF: device already connected');
+      }
+
+      discoverServices();
   }
 
   disconnectFromDevice() async {
@@ -191,10 +197,21 @@ class BluetoothBLEService {
     _dataReadCharacteristicSubscription = null;
     print("HF: _dataReadCharacteristicSubscription is cancelled");
 
+    await _beatSubscription?.cancel();
+    _beatSubscription = null;
+    print("HF: _beatSubscription is cancelled");
+
     if (_dataReadCharacteristic != null) {
       _dataReadCharacteristic = null;
     }
     if (_dataWriteCharacteristic != null) _dataWriteCharacteristic = null;
+
+    if (_char1 != null) _char1 = null;
+    if (_char2 != null) _char2 = null;
+    if (_char3 != null) _char3 = null;
+    if (_char4 != null) _char4 = null;
+    if (_char5 != null) _char5 = null;
+    if (_char6 != null) _char6 = null;
 
     if (targetDevice == null) return;
 
@@ -206,61 +223,67 @@ class BluetoothBLEService {
   }
 
   discoverServices() async {
-    if (targetDevice == null) return;
-
-    try {
-      List<BluetoothService> services = await targetDevice!.discoverServices();
-      services.forEach((service) async {
-        // do something with service
-        //if (service.uuid.toString() == DATA_SERVICE_UUID) {
-        if (service.uuid.toString() == HF_SERVICE_UUID) {
-          // for HappyFeet, set the MTU as small as possible
-          final mtu = await targetDevice!.mtu.first;
-          print("HF: mtu: ");
-          print(mtu);
-          await targetDevice!.requestMtu(23);
-
-          await Future.delayed(Duration(milliseconds: 1000));
-
-          service.characteristics.forEach((characteristic) async {
-            if (characteristic.uuid.toString() ==
-                CHAR1_CHARACTERISTIC_UUID) {
-              _char1 = characteristic;
-            } else if (characteristic.uuid.toString() ==
-                CHAR2_CHARACTERISTIC_UUID) {
-              _char2 = characteristic;
-            } else if (characteristic.uuid.toString() ==
-                CHAR3_CHARACTERISTIC_UUID) {
-              _char3 = characteristic;
-            } else if (characteristic.uuid.toString() ==
-                CHAR4_CHARACTERISTIC_UUID) {
-              _char4 = characteristic;
-            } else if (characteristic.uuid.toString() ==
-                CHAR5_CHARACTERISTIC_UUID) {
-              _char5 = characteristic;
-            } else if (characteristic.uuid.toString() ==
-                CHAR6_CHARACTERISTIC_UUID) {
-              _char6 = characteristic;
-            } else if (characteristic.uuid.toString() ==
-                DATA_WRITE_CHARACTERISTIC_UUID) {
-              _dataWriteCharacteristic = characteristic;
-            } else if (characteristic.uuid.toString() ==
-                PROTOCOL_READ_CHARACTERISTIC_UUID) {
-              if (characteristic.properties.read) {
-                final value = await characteristic.read();
-                _protocalValueSubject.add(value);
-              }
-              // characteristic.value.listen((value) {
-              //   _protocalValueSubject.add(value);
-              // });
-              // await characteristic.setNotifyValue(!characteristic.isNotifying);
-            }
-          });
-        }
-      });
-    } catch (e) {
-      print(e.toString());
+    if (targetDevice == null) {
+      print("HF: discoverServices: targetDevice is null");
+      return;
+    } else {
+      print("HF: discoverServices: targetDevice is not null");
     }
+
+      try {
+        List<BluetoothService> services = await targetDevice!.discoverServices();
+        services.forEach((service) async {
+          if (service.uuid.toString() == HF_SERVICE_UUID) {
+            // for HappyFeet, set the MTU as small as possible
+            final mtu = await targetDevice!.mtu.first;
+            print("HF: mtu: ");
+            print(mtu);
+            await targetDevice!.requestMtu(23);
+
+            await Future.delayed(Duration(milliseconds: 1000));
+
+            print("HF: processing characteristics...");
+            service.characteristics.forEach((characteristic) async {
+              if (characteristic.uuid.toString() ==
+                  CHAR1_CHARACTERISTIC_UUID) {
+                _char1 = characteristic;
+              } else if (characteristic.uuid.toString() ==
+                  CHAR2_CHARACTERISTIC_UUID) {
+                _char2 = characteristic;
+              } else if (characteristic.uuid.toString() ==
+                  CHAR3_CHARACTERISTIC_UUID) {
+                _char3 = characteristic;
+              } else if (characteristic.uuid.toString() ==
+                  CHAR4_CHARACTERISTIC_UUID) {
+                _char4 = characteristic;
+              } else if (characteristic.uuid.toString() ==
+                  CHAR5_CHARACTERISTIC_UUID) {
+                _char5 = characteristic;
+              } else if (characteristic.uuid.toString() ==
+                  CHAR6_CHARACTERISTIC_UUID) {
+                _char6 = characteristic;
+              } else if (characteristic.uuid.toString() ==
+                  DATA_WRITE_CHARACTERISTIC_UUID) {
+                _dataWriteCharacteristic = characteristic;
+              } else if (characteristic.uuid.toString() ==
+                  PROTOCOL_READ_CHARACTERISTIC_UUID) {
+                if (characteristic.properties.read) {
+                  final value = await characteristic.read();
+                  _protocalValueSubject.add(value);
+                }
+              }
+            });
+            print("...done.");
+
+            await Future.delayed(Duration(milliseconds: 1000));
+
+            print("HF: enabling notifications on char4...");
+            processBeats();
+          }
+        });
+      } catch (e) {
+        print(e.toString());
+      }
   }
 
   // write a characteristic on HappyFeet.  Char 3 and 6 are
@@ -303,22 +326,28 @@ class BluetoothBLEService {
   // enable the beat notification by writing char6 to 0x01
   enableBeat() async {
     List<int> data = [0x01];
-    if (_char6 == null) return;
-    if (_char6!.properties.write) {
-      try {
-        await _char6!.write(data);
-        print("HF: enabled beat detection");
-      } catch (err) {
-        print("HF: error enable beat");
-        print(err);
+    if (_char6 == null) {
+      print("HF: enableBeat: _char6 is null");
+      return;
+    }
+      if (_char6!.properties.write) {
+        try {
+          await _char6!.write(data);
+          print("HF: enabled beat detection");
+        } catch (err) {
+          print("HF: error enable beat");
+          print(err);
+        }
       }
     }
-  }
 
   // disable the beat notification by writing char6 to 0x00
   disableBeat() async {
     List<int> data = [0x00];
-    if (_char6 == null) return;
+    if (_char6 == null) {
+      print("HF: disableBeat: _char6 is null");
+      return;
+    }
     if (_char6!.properties.write) {
       try {
         await _char6!.write(data);
@@ -351,7 +380,10 @@ class BluetoothBLEService {
 
   // method to process beats received as notifications on char4
   processBeats() async {
-    if (_char4 == null) return;
+    if (_char4 == null) {
+      print("HF: processBeats: _char4 is null");
+      return;
+    }
 
     print("HF: process beats");
 
