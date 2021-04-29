@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'colourPalette.dart';
 import 'BluetoothBLEService.dart';
 import 'BluetoothConnectionStateDTO.dart';
@@ -17,10 +18,10 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Happy Feet',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: myColour,
       ),
       home: MyHomePage(),
     );
@@ -34,8 +35,8 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+//
 class _MyHomePageState extends State<MyHomePage> {
-  final MidiUtils midi = new MidiUtils();
   Mode? _character = Mode.singleNote;
   String note1 = 'Bass Drum';
   int midiNote1 = 60;
@@ -72,10 +73,11 @@ class _MyHomePageState extends State<MyHomePage> {
     print('HF: connectionState: $connectionState');
     if (connectionState.bluetoothConnectionState ==
         BluetoothConnectionState.DEVICE_CONNECTED) {
+      print("HF: Bluetooth device connected.");
     }
 
     if (_bluetoothBLEService != null) {
-      print('HF: connectionState: got bluetooth!');
+      print('HF: connectionState: got bluetooth service!');
     }
   }
 
@@ -107,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.bluetooth_searching,
                   ),
                   iconSize: 50,
-                  color: Colors.blue,
+                  color: myColour,
                   splashColor: Colors.purple,
                   onPressed: () {
                     // Start scanning and make connection
@@ -115,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }),
             ),
             Text('Connect',
-                style: TextStyle(color: Colors.blue, height: 1, fontSize: 15))
+                style: TextStyle(color: myColour, height: 1, fontSize: 15))
           ]),
           Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
             Container(
@@ -158,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 alignment: Alignment.center,
                 child: Text('Play mode',
                     style:
-                        TextStyle(color: Colors.blue, height: 1, fontSize: 15)),
+                        TextStyle(color: myColour, height: 1, fontSize: 15)),
               ),
               DropdownButton<String>(
                 value: playModeString,
@@ -227,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.center,
               child: Text('1st note',
                   style:
-                      TextStyle(color: Colors.blue, height: 1, fontSize: 15)),
+                      TextStyle(color: myColour, height: 1, fontSize: 15)),
             ),
             DropdownButton<String>(
               value: note1,
@@ -297,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.center,
               child: Text('2nd note',
                   style:
-                      TextStyle(color: Colors.blue, height: 1, fontSize: 15)),
+                      TextStyle(color: myColour, height: 1, fontSize: 15)),
             ),
             DropdownButton<String>(
               value: note2,
@@ -435,7 +437,7 @@ class _GroovePageState extends State<GroovePage> {
                 alignment: Alignment.centerLeft,
                 child: Text('DEFINE GROOVE',
                     style: TextStyle(
-                        color: Colors.blue, height: 1, fontSize: 15))),
+                        color: myColour, height: 1, fontSize: 15))),
           ]),
 
           // beats per measure slider
@@ -443,7 +445,7 @@ class _GroovePageState extends State<GroovePage> {
             Row(children: <Widget>[
               Text('Beats per measure',
                   style: TextStyle(
-                      color: Colors.blue, height: 1, fontSize: 15) // TextStyle
+                      color: myColour, height: 1, fontSize: 15) // TextStyle
                   ), // Text
               Slider(
                 value: _beatsPerMeasure.toDouble(),
@@ -461,7 +463,7 @@ class _GroovePageState extends State<GroovePage> {
             Row(children: <Widget>[
               Text('Number of measures',
                   style: TextStyle(
-                      color: Colors.blue, height: 1, fontSize: 15) // TextStyle
+                      color: myColour, height: 1, fontSize: 15) // TextStyle
                   ), // Text
               Slider(
                 value: _numberOfMeasures.toDouble(),

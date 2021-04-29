@@ -34,6 +34,7 @@ dependencies:
   flutter_midi: ^1.0.2
   flutter_blue: 0.8.0
   flutter_launcher_icons: 0.9.0
+  get:
 
 dev_dependencies:
   flutter_test:

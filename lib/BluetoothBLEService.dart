@@ -7,6 +7,8 @@ import 'package:rxdart/rxdart.dart';
 import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 
+import 'midi.dart';
+
 class BluetoothBLEService {
 
   // Sak's constants
@@ -123,6 +125,7 @@ class BluetoothBLEService {
                         .firstWhere((e) => e == scanResult.device.name);
                     if (foundDevice.isNotEmpty) {
                       print('HF: HappyFeet found');
+                      print('HF: RSSI = $scanResult.device.rssi');
                       stopScan();
 
                       _connectionStateSubject.add(BluetoothConnectionStateDTO(
@@ -394,11 +397,13 @@ class BluetoothBLEService {
         _beatSubscription?.cancel();
         _beatSubscription =
             _char4!.value.listen((data) {
-              print("Beat data received: ");
-              print(data);
-              print("last value:");
-              print(_char4!.lastValue);
+              print("HF: Beat data received: $data");
               // play the next note in the groove
+              if ((data[0] & 0xFF) != 0xFF) { // ignore the 0xFF heartbeat notifies
+                // play a bass drum note
+                print("HF: playing a bass drum note");
+                midi.play(60);
+              }
               if (data.length > 0) {
                 // this is to fix the bluetooth still remembers the last values from previous connection.
                 if (_char4!.lastValue != data) {

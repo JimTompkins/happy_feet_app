@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_midi/flutter_midi.dart';
 
+final MidiUtils midi = new MidiUtils();
+
 class MidiUtils {
   //MidiUtils._();
 
