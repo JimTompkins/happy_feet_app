@@ -7,7 +7,8 @@ import 'package:rxdart/rxdart.dart';
 import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 
-import 'midi.dart';
+import 'groove.dart';
+//import 'midi.dart';
 
 class BluetoothBLEService {
 
@@ -381,6 +382,26 @@ class BluetoothBLEService {
     }
   }
 
+  // read char6 to see if beat sending is enabled or not
+  readBeatEnable(bool result) async {
+    if (_char6 == null) return;
+    if (_char6!.properties.read) {
+      try {
+        List<int> value = await _char6!.read();
+        if (value[0] == 0x00) {
+          print("HF: beats currently disabled");
+          return(false);
+        } else {
+          print("HF: beats currently enabled");
+          return(true);
+        }
+      } catch (err) {
+        print("HF: error readBeatEnable");
+        print(err);
+      }
+    }
+  }
+
   // method to process beats received as notifications on char4
   processBeats() async {
     if (_char4 == null) {
@@ -400,9 +421,7 @@ class BluetoothBLEService {
               print("HF: Beat data received: $data");
               // play the next note in the groove
               if ((data[0] & 0xFF) != 0xFF) { // ignore the 0xFF heartbeat notifies
-                // play a bass drum note
-                print("HF: playing a bass drum note");
-                midi.play(60);
+                groove.play();
               }
               if (data.length > 0) {
                 // this is to fix the bluetooth still remembers the last values from previous connection.

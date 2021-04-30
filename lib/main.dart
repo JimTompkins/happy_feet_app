@@ -9,6 +9,7 @@ import 'BluetoothBLEService.dart';
 import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 import 'midi.dart';
+import 'groove.dart';
 
 void main() {
   runApp(MyApp());
@@ -179,16 +180,25 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Single Note':
                         {
                           playMode = Mode.singleNote;
+                          groove.resize(1,1);
+                          groove.notes[0].midi = midiNote1;
+                          groove.notes[0].name = note1;
                         }
                         break;
                       case 'Alternating Notes':
                         {
                           playMode = Mode.alternatingNotes;
+                          groove.resize(2,1);
+                          groove.notes[0].midi = midiNote1;
+                          groove.notes[0].name = note1;
+                          groove.notes[1].midi = midiNote2;
+                          groove.notes[1].name = note2;
                         }
                         break;
                       case 'Groove':
                         {
                           playMode = Mode.groove;
+                          Get.to(() => groovePage);
                         }
                         break;
                       default:
@@ -275,6 +285,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         midiNote1 = 81;
                       }
                   }
+                  groove.notes[0].midi = midiNote1;
+                  groove.notes[0].name = note1;
                 });
               },
               items: <String>[
@@ -345,6 +357,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         midiNote2 = 81;
                       }
                   }
+                  groove.notes[1].midi = midiNote2;
+                  groove.notes[1].name = note2;
                 });
               },
               items: <String>[
@@ -380,19 +394,6 @@ class _MyHomePageState extends State<MyHomePage> {
                      // enable beats
                      _bluetoothBLEService?.enableBeat();
                    }
-
-                   if (playMode == Mode.singleNote) {
-                    midi.play(midiNote1);
-                  } else if (playMode == Mode.alternatingNotes) {
-                    if (sequenceCount.isEven) {
-                      midi.play(midiNote1);
-                    } else {
-                      if (note2 != 'none') {
-                        midi.play(midiNote2);
-                      }
-                    }
-                    sequenceCount++;
-                  }
                 },   //onPressed
                 tooltip: 'Enable beats',
                 child: _playState?new Icon(Icons.pause):new Icon(Icons.play_circle_fill),
@@ -406,6 +407,7 @@ class _MyHomePageState extends State<MyHomePage> {
 } // class
 
 // Groove page
+GroovePage groovePage = new GroovePage();
 
 // Stateful version of groove page
 class GroovePage extends StatefulWidget {
