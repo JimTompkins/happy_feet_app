@@ -416,8 +416,8 @@ class GroovePage extends StatefulWidget {
 }
 
 class _GroovePageState extends State<GroovePage> {
-  int _beatsPerMeasure = 1;
-  int _numberOfMeasures = 1;
+  int _beatsPerMeasure = 4;
+  int _numberOfMeasures = 2;
 
   @override
   initState() {
@@ -430,7 +430,8 @@ class _GroovePageState extends State<GroovePage> {
       appBar: AppBar(
         title: Text("Happy Feet - Grooves"),
       ),
-      body: Column(
+      body: Center(
+         child: ListView(
         children: <Widget>[
           // Define a groove heading
           Wrap(children: <Widget>[
@@ -482,6 +483,30 @@ class _GroovePageState extends State<GroovePage> {
             ]), // Row
           ]), // Column
 
+          // grid of notes in the groove, one measure per line
+
+          // beat gridview
+          GridView.count(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            primary: false,
+            padding: const EdgeInsets.all(1),
+            crossAxisSpacing: 1,
+            mainAxisSpacing: 1,
+            crossAxisCount: _beatsPerMeasure,
+            children: List.generate(_beatsPerMeasure * _numberOfMeasures,(index) {
+              int b = index % _beatsPerMeasure + 1;
+              int m = (index / _beatsPerMeasure).round() + 1;
+              String bm = 'M' + m.toString() + 'B' + b.toString();
+              return Center(
+                 child: Text(
+                    bm,
+                    ),
+              );
+          }
+          )
+          ),
+
           // Save groove heading
           Wrap(children: <Widget>[
             Container(
@@ -500,10 +525,10 @@ class _GroovePageState extends State<GroovePage> {
                 child: Text('LOAD GROOVE',
                     style: TextStyle(
                         color: Colors.blue, height: 1, fontSize: 15))),
-          ]),
-        ],
-      ),
-    );
+          ]),  // Widget, wrap
+        ],  // Widget
+      ), // Listview
+    ));
   }
 } // class
 
