@@ -1,6 +1,6 @@
 // @dart-2.9
 import 'dart:async';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -22,8 +22,27 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Happy Feet',
       theme: ThemeData(
-        primarySwatch: myColour,
-      ),
+        brightness: Brightness.light,
+        primaryColor: Colors.deepOrange[500],
+        accentColor: Colors.blue[400],
+        fontFamily: 'Roboto',
+        textTheme: TextTheme(
+          headline1: TextStyle(
+              color: Theme.of(context).accentColor,
+              fontSize: 15,
+              height: 1,
+              fontWeight: FontWeight.bold),
+          caption: TextStyle(
+              color: Theme.of(context).accentColor,
+              fontSize: 15,
+              height: 1,
+              fontWeight: FontWeight.normal),
+          headline4: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 15,
+              height: 1,
+              fontWeight: FontWeight.normal),
+      ),),
       home: MyHomePage(),
     );
   }
@@ -95,8 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(10),
               alignment: Alignment.centerLeft,
               child: Text('BLUETOOTH',
-                  style:
-                      TextStyle(color: Colors.black, height: 1, fontSize: 15))),
+                  style: Theme.of(context).textTheme.headline1,
+              )),
         ]),
 
         //row of buttons with text below each
@@ -118,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }),
             ),
             Text('Connect',
-                style: TextStyle(color: myColour, height: 1, fontSize: 15))
+              style: Theme.of(context).textTheme.caption,)
           ]),
           Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
             Container(
@@ -138,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Text('Disconnect',
-                style: TextStyle(color: Colors.grey, height: 1, fontSize: 15))
+              style: Theme.of(context).textTheme.caption,)
           ]),
         ]),
 
@@ -148,8 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(10),
               alignment: Alignment.centerLeft,
               child: Text('MODE',
-                  style:
-                      TextStyle(color: Colors.black, height: 1, fontSize: 15))),
+                 style: Theme.of(context).textTheme.headline1,    )),
         ]),
 
         // Mode selection dropdown list
@@ -160,19 +178,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.all(5),
                 alignment: Alignment.center,
                 child: Text('Play mode',
-                    style:
-                        TextStyle(color: myColour, height: 1, fontSize: 15)),
+                  style: Theme.of(context).textTheme.caption,),
               ),
               DropdownButton<String>(
                 value: playModeString,
                 icon: const Icon(Icons.arrow_downward),
                 iconSize: 24,
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                underline: Container(
-                  height: 2,
-                  color: Colors.deepPurpleAccent,
-                ),
+                elevation: 24,
+                style: Theme.of(context).textTheme.headline4,
                 onChanged: (String? newValue) {
                   setState(() {
                     playModeString = newValue;
@@ -226,8 +239,8 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(10),
               alignment: Alignment.centerLeft,
               child: Text('NOTES',
-                  style:
-                      TextStyle(color: Colors.black, height: 1, fontSize: 15))),
+                style: Theme.of(context).textTheme.headline1,
+              )),
         ]),
 
         // instrument dropdowns
@@ -238,19 +251,14 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
               child: Text('1st note',
-                  style:
-                      TextStyle(color: myColour, height: 1, fontSize: 15)),
+                style: Theme.of(context).textTheme.caption,),
             ),
             DropdownButton<String>(
               value: note1,
               icon: const Icon(Icons.arrow_downward),
               iconSize: 24,
-              elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
-              underline: Container(
-                height: 2,
-                color: Colors.deepPurpleAccent,
-              ),
+              elevation: 24,
+              style: Theme.of(context).textTheme.headline4,
               onChanged: (String? newValue) {
                 setState(() {
                   note1 = newValue!;
@@ -310,23 +318,23 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
               child: Text('2nd note',
-                  style:
-                      TextStyle(color: myColour, height: 1, fontSize: 15)),
+                style: Theme.of(context).textTheme.caption,),
             ),
             DropdownButton<String>(
               value: note2,
               icon: const Icon(Icons.arrow_downward),
               iconSize: 24,
-              elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
-              underline: Container(
-                height: 2,
-                color: Colors.deepPurpleAccent,
-              ),
+              elevation: 24,
+              style: Theme.of(context).textTheme.headline4,
               onChanged: (String? newValue) {
                 setState(() {
                   note2 = newValue!;
                   switch (note2) {
+                    case 'none':
+                      {
+                        midiNote2 = 0;
+                      }
+                      break;
                     case 'Bass Drum':
                       {
                         midiNote2 = 60;
@@ -396,7 +404,9 @@ class _MyHomePageState extends State<MyHomePage> {
                    }
                 },   //onPressed
                 tooltip: 'Enable beats',
-                child: _playState?new Icon(Icons.pause):new Icon(Icons.play_circle_fill),
+                child: _playState?
+                   new Icon(Icons.pause, size: 25, color: Theme.of(context).primaryColor):
+                   new Icon(Icons.play_circle_fill, size: 25, color: Theme.of(context).primaryColor),
                 ),
               ),
           ],
@@ -419,7 +429,7 @@ class _GroovePageState extends State<GroovePage> {
   int _beatsPerMeasure = 4;
   int _numberOfMeasures = 2;
   int _totalBeats = 8;
-  String dropdownValue = '-';
+  List<String> dropdownValue = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', ];
 
   @override
   initState() {
@@ -441,17 +451,15 @@ class _GroovePageState extends State<GroovePage> {
                 padding: EdgeInsets.all(10),
                 alignment: Alignment.centerLeft,
                 child: Text('DEFINE GROOVE',
-                    style: TextStyle(
-                        color: myColour, height: 1, fontSize: 15))),
+                  style: Theme.of(context).textTheme.headline1,
+                )),
           ]),
 
-          // sliders for beat per measure and number of measures
+          // sliders for number of beats per measure and measures
           Column(children: <Widget>[
             Row(children: <Widget>[
               Text('Beats per measure',
-                  style: TextStyle(
-                      color: myColour, height: 1, fontSize: 15) // TextStyle
-                  ), // Text
+                style: Theme.of(context).textTheme.caption,), // Text
               Slider(
                 value: _beatsPerMeasure.toDouble(),
                 min: 1,
@@ -461,6 +469,7 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (double value) {
                   setState(() {
                     _beatsPerMeasure = value.toInt();
+                    groove.resize(_beatsPerMeasure, _numberOfMeasures);
                     _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                   });
                 }, // setState, onChanged
@@ -468,9 +477,7 @@ class _GroovePageState extends State<GroovePage> {
             ]), // Row
             Row(children: <Widget>[
               Text('Number of measures',
-                  style: TextStyle(
-                      color: myColour, height: 1, fontSize: 15) // TextStyle
-                  ), // Text
+                style: Theme.of(context).textTheme.caption,), // Text
               Slider(
                 value: _numberOfMeasures.toDouble(),
                 min: 1,
@@ -480,6 +487,7 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (double value) {
                   setState(() {
                     _numberOfMeasures = value.toInt();
+                    groove.resize(_beatsPerMeasure, _numberOfMeasures);
                     _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                   });
                 }, // setState, onChanged
@@ -487,7 +495,8 @@ class _GroovePageState extends State<GroovePage> {
             ]), // Row
           ]), // Column
 
-          // beat gridview
+          // beat grid
+
           GridView.count(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
@@ -497,17 +506,13 @@ class _GroovePageState extends State<GroovePage> {
             mainAxisSpacing: 1,
             crossAxisCount: _beatsPerMeasure,
             children: List.generate(_totalBeats,(index) {
-//               int b = index % _beatsPerMeasure + 1;
-//               int m = (index / _beatsPerMeasure).round() + 1;
-//               String bm = 'M' + m.toString() + 'B' + b.toString();
                 return Center(
                    child: DropdownButton<String>(
-                   value: dropdownValue,
+                   value: dropdownValue[index],
                    onChanged: (String? newValue) {
                       setState(() {
-                         groove.notes[index].name = newValue;
-                         groove.notes[index].midi = 0;
-                         dropdownValue = newValue!;
+                         groove.addInitialNote(index, newValue!);
+                         dropdownValue[index] = newValue;
                       });
                    },
                    items: <String>['-','B', 'K', 'S', 'H', 'C']
@@ -528,8 +533,8 @@ class _GroovePageState extends State<GroovePage> {
                 padding: EdgeInsets.all(10),
                 alignment: Alignment.centerLeft,
                 child: Text('SAVE GROOVE',
-                    style: TextStyle(
-                        color: myColour, height: 1, fontSize: 15))),
+                  style: Theme.of(context).textTheme.headline1,
+                )),
           ]),
 
           // load groove heading
@@ -538,8 +543,8 @@ class _GroovePageState extends State<GroovePage> {
                 padding: EdgeInsets.all(10),
                 alignment: Alignment.centerLeft,
                 child: Text('LOAD GROOVE',
-                    style: TextStyle(
-                        color: myColour, height: 1, fontSize: 15))),
+                  style: Theme.of(context).textTheme.headline1,
+                )),
           ]),  // Widget, wrap
         ],  // Widget
       ), // Listview

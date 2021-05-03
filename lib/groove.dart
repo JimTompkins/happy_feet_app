@@ -7,10 +7,12 @@ Groove groove = new Groove(1,1,notes);
 class Note {
   int? midi;
   String? name;
+  String? initial;
 
   Note(int midi, String name) {
     this.midi = midi;
     this.name = name;
+    this.initial = name.substring(0,1);
   }
 
   Note.empty() {
@@ -45,7 +47,44 @@ class Groove {
     this.notes[(beat-1)+(measure-1)*this.bpm] = note;
   }
 
+  // add a note to the groove using its initial only
+  void addInitialNote(int index, String initial) {
+    switch (initial) {
+      case '-': {
+        this.notes[index].midi = 0;
+        this.notes[index].name = '-';
+      }
+      break;
+      case 'B': {
+        this.notes[index].midi = 60;
+        this.notes[index].name = 'Bass drum';
+      }
+      break;
+      case 'K': {
+        this.notes[index].midi = 59;
+        this.notes[index].name = 'Kick drum';
+      }
+      break;
+      case 'S': {
+        this.notes[index].midi = 40;
+        this.notes[index].name = 'Snare drum';
+      }
+      break;
+      default: {
+        this.notes[index].midi = 0;
+        this.notes[index].name = '-';
+      }
+    }
+  }
+
+  // return the first letter of a notes name
+  String initialNote(int index) {
+    return this.notes[index].substring(0,1);
+  }
+
   // resize the groove
+  // TODO: if increasing the number of beats per measure, duplicate the last beat(s)
+  // TODO: if increasing the number of measures, duplicate the last measure
   void resize(int beat, int measure) {
     this.bpm = beat;
     this.numMeasures = measure;
@@ -62,7 +101,7 @@ class Groove {
       print("HF: resize groove adding $numToAdd notes");
       for (var i = 0; i < numToAdd; i++) {
         // add items to the list
-        this.notes.add(Note(0, ""));
+        this.notes.add(Note(0, "-"));
       }
     }
   }
