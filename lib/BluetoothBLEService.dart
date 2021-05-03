@@ -12,17 +12,6 @@ import 'groove.dart';
 
 class BluetoothBLEService {
 
-  // Sak's constants
-  static const String DATA_SERVICE_UUID =
-      "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-  static const String DATA_WRITE_CHARACTERISTIC_UUID =
-      "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-  static const String DATA_READ_CHARACTERISTIC_UUID =
-      "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-  static const String PROTOCOL_READ_CHARACTERISTIC_UUID =
-      "6e400004-b5a3-f393-e0a9-e50e24dcca9e";
-//  static const TARGET_DEVICE_NAMES = ["checkUP Device", "checkMARC"];
-
   static const String HF_SERVICE_UUID =
       "0000fff0-0000-1000-8000-00805f9b34fb";
 
@@ -266,15 +255,6 @@ class BluetoothBLEService {
               } else if (characteristic.uuid.toString() ==
                   CHAR6_CHARACTERISTIC_UUID) {
                 _char6 = characteristic;
-              } else if (characteristic.uuid.toString() ==
-                  DATA_WRITE_CHARACTERISTIC_UUID) {
-                _dataWriteCharacteristic = characteristic;
-              } else if (characteristic.uuid.toString() ==
-                  PROTOCOL_READ_CHARACTERISTIC_UUID) {
-                if (characteristic.properties.read) {
-                  final value = await characteristic.read();
-                  _protocalValueSubject.add(value);
-                }
               }
             });
             print("...done.");
@@ -433,38 +413,6 @@ class BluetoothBLEService {
       }
     } catch (err) {
       print("HF: error _char4: ");
-      print(err);
-    }
-  }
-
-  readData(int round) async {
-    if (_dataReadCharacteristic == null) return;
-
-    print("HF: readData");
-
-    try {
-      if (_dataReadCharacteristic!.properties.notify) {
-        await _dataReadCharacteristic!.setNotifyValue(true);
-
-        _dataReadCharacteristicSubscription?.cancel();
-        _dataReadCharacteristicSubscription =
-            _dataReadCharacteristic!.value.listen((data) {
-          print("_dataReadCharacteristic.value.listen for round " +
-              round.toString());
-          print("_dataReadCharacteristic.value.listen got data");
-          print(data);
-          print("last value:");
-          print(_dataReadCharacteristic!.lastValue);
-          if (data.length > 0) {
-            // this is to fix the bluetooth still remembers the last values from previous connection.
-            if (_dataReadCharacteristic!.lastValue != data) {
-              _dataReceivedSubject.add(data);
-            }
-          }
-        });
-      }
-    } catch (err) {
-      print("error _dataReadCharacteristic: ");
       print(err);
     }
   }

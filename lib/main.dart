@@ -106,6 +106,27 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Happy Feet'),
+        leading: GestureDetector(
+          onTap: () {
+            Get.to(() => infoPage);
+            },
+          child: Icon(
+            Icons.menu,  // add custom icons also
+          ),
+        ),
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => infoPage);
+                },
+                child: Icon(
+                    Icons.more_vert
+                ),
+              )
+          ),
+        ],
       ),
       body: Column(children: <Widget>[
         // Bluetooth heading
@@ -393,6 +414,8 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
               child: FloatingActionButton(
+                foregroundColor: Theme.of(context).accentColor,
+                elevation: 25,
                 onPressed: (){
                   setState((){ _playState = !_playState;});
                    if (_playState) {
@@ -405,8 +428,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 },   //onPressed
                 tooltip: 'Enable beats',
                 child: _playState?
-                   new Icon(Icons.pause, size: 25, color: Theme.of(context).primaryColor):
-                   new Icon(Icons.play_circle_fill, size: 25, color: Theme.of(context).primaryColor),
+                   new Icon(Icons.pause, size: 50, color: Theme.of(context).primaryColor):
+                   new Icon(Icons.music_note_outlined, size: 50, color: Theme.of(context).primaryColor),
                 ),
               ),
           ],
@@ -550,6 +573,37 @@ class _GroovePageState extends State<GroovePage> {
       ), // Listview
     ));
   }
+} // class
+
+// info page
+InfoPage infoPage = new InfoPage();
+
+// Stateful version of Info page
+class InfoPage extends StatefulWidget {
+  @override
+  _InfoPageState createState() => _InfoPageState();
+}
+
+class _InfoPageState extends State<InfoPage> {
+
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+        title: Text("Happy Feet - Info Menu"),
+    ),
+    body: Center(
+      child: ListView(
+        // insert content
+      ),
+    ),
+    );
+  }  // Widget
 } // class
 
 
