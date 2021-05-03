@@ -418,6 +418,8 @@ class GroovePage extends StatefulWidget {
 class _GroovePageState extends State<GroovePage> {
   int _beatsPerMeasure = 4;
   int _numberOfMeasures = 2;
+  int _totalBeats = 8;
+  String dropdownValue = '-';
 
   @override
   initState() {
@@ -443,7 +445,7 @@ class _GroovePageState extends State<GroovePage> {
                         color: myColour, height: 1, fontSize: 15))),
           ]),
 
-          // beats per measure slider
+          // sliders for beat per measure and number of measures
           Column(children: <Widget>[
             Row(children: <Widget>[
               Text('Beats per measure',
@@ -459,6 +461,7 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (double value) {
                   setState(() {
                     _beatsPerMeasure = value.toInt();
+                    _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                   });
                 }, // setState, onChanged
               ), // Slider
@@ -477,13 +480,12 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (double value) {
                   setState(() {
                     _numberOfMeasures = value.toInt();
+                    _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                   });
                 }, // setState, onChanged
               ), // Slider
             ]), // Row
           ]), // Column
-
-          // grid of notes in the groove, one measure per line
 
           // beat gridview
           GridView.count(
@@ -494,18 +496,31 @@ class _GroovePageState extends State<GroovePage> {
             crossAxisSpacing: 1,
             mainAxisSpacing: 1,
             crossAxisCount: _beatsPerMeasure,
-            children: List.generate(_beatsPerMeasure * _numberOfMeasures,(index) {
-              int b = index % _beatsPerMeasure + 1;
-              int m = (index / _beatsPerMeasure).round() + 1;
-              String bm = 'M' + m.toString() + 'B' + b.toString();
-              return Center(
-                 child: Text(
-                    bm,
-                    ),
-              );
-          }
-          )
-          ),
+            children: List.generate(_totalBeats,(index) {
+//               int b = index % _beatsPerMeasure + 1;
+//               int m = (index / _beatsPerMeasure).round() + 1;
+//               String bm = 'M' + m.toString() + 'B' + b.toString();
+                return Center(
+                   child: DropdownButton<String>(
+                   value: dropdownValue,
+                   onChanged: (String? newValue) {
+                      setState(() {
+                         groove.notes[index].name = newValue;
+                         groove.notes[index].midi = 0;
+                         dropdownValue = newValue!;
+                      });
+                   },
+                   items: <String>['-','B', 'K', 'S', 'H', 'C']
+                     .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                         value: value,
+                         child: Text(value),
+                         );
+                      }).toList(),
+                ) // DropdownButton
+                ); // Center
+             },) // List.generate
+          ),   // GridView
 
           // Save groove heading
           Wrap(children: <Widget>[
@@ -514,7 +529,7 @@ class _GroovePageState extends State<GroovePage> {
                 alignment: Alignment.centerLeft,
                 child: Text('SAVE GROOVE',
                     style: TextStyle(
-                        color: Colors.blue, height: 1, fontSize: 15))),
+                        color: myColour, height: 1, fontSize: 15))),
           ]),
 
           // load groove heading
@@ -524,7 +539,7 @@ class _GroovePageState extends State<GroovePage> {
                 alignment: Alignment.centerLeft,
                 child: Text('LOAD GROOVE',
                     style: TextStyle(
-                        color: Colors.blue, height: 1, fontSize: 15))),
+                        color: myColour, height: 1, fontSize: 15))),
           ]),  // Widget, wrap
         ],  // Widget
       ), // Listview
