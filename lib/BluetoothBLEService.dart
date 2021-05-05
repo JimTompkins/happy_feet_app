@@ -261,7 +261,15 @@ class BluetoothBLEService {
 
             await Future.delayed(Duration(milliseconds: 1000));
 
-            print("HF: enabling notifications on char4...");
+            // disable the sending of notifications on char4 by
+            // writing to char6.  This is in case the value of char6
+            // is remembered from the last connection, or it is
+            // currently enabled.
+            disableBeat();
+
+            print("HF: enable processing notifications on char4...");
+            // they should not actually be sent yet because of the call
+            // to disableBeat above.
             processBeats();
           }
         });
@@ -304,6 +312,24 @@ class BluetoothBLEService {
         // shouldn't get here...
       }
       break;
+    }
+  }
+
+  // write the beat detection threshold to char3
+  writeThreshold(int threshold) async {
+    List<int> data = [threshold];
+    if (_char3 == null) {
+      print("HF: writeThreshold: _char3 is null");
+      return;
+    }
+    if (_char3!.properties.write) {
+      try {
+        await _char3!.write(data);
+        print("HF: write beat detection threshold to $threshold");
+      } catch (err) {
+        print("HF: error writeThreshold");
+        print(err);
+      }
     }
   }
 

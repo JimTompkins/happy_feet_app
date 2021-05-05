@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('Happy Feet'),
         leading: GestureDetector(
           onTap: () {
-            Get.to(() => infoPage);
+            Get.to(() => menuPage);
             },
           child: Icon(
             Icons.menu,  // add custom icons also
@@ -606,4 +606,55 @@ class _InfoPageState extends State<InfoPage> {
   }  // Widget
 } // class
 
+
+// menu page
+MenuPage menuPage = new MenuPage();
+
+// Stateful version of menu page
+class MenuPage extends StatefulWidget {
+  @override
+  _MenuPageState createState() => _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage> {
+  int _detectionThreshold = 128;
+
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Happy Feet - Config Menu"),
+      ),
+      body: Center(
+        child: ListView(
+          children: <Widget>[
+          Column(children: <Widget>[
+            Row(children: <Widget>[
+              Text('Detection threshold',
+                style: Theme.of(context).textTheme.caption,), // Text
+              Slider(
+                value: _detectionThreshold.toDouble(),
+                min: 1,
+                max: 255,
+                divisions: 255,
+                label: _detectionThreshold.round().toString(),
+                onChanged: (double value) {
+                  setState(() {
+                    _detectionThreshold = value.toInt();
+                    //_bluetoothBLEService?.writeThreshold(_detectionThreshold & 0xFF);
+                  });
+                }, // setState, onChanged
+              ), // Slider
+            ]), // Row
+          ]), // Column
+        ]),
+        ),
+      );
+  }  // Widget
+} // class
 

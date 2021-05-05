@@ -70,6 +70,11 @@ class Groove {
         this.notes[index].name = 'Snare drum';
       }
       break;
+      case 'H': {
+        this.notes[index].midi = 70;
+        this.notes[index].name = 'High Hat Cymbal';
+      }
+      break;
       default: {
         this.notes[index].midi = 0;
         this.notes[index].name = '-';
