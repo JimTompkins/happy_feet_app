@@ -267,6 +267,8 @@ class BluetoothBLEService {
             // currently enabled.
             disableBeat();
 
+            await Future.delayed(Duration(milliseconds: 1000));
+
             print("HF: enable processing notifications on char4...");
             // they should not actually be sent yet because of the call
             // to disableBeat above.
@@ -417,30 +419,29 @@ class BluetoothBLEService {
 
     print("HF: process beats");
 
-    try {
-      if (_char4!.properties.notify) {
-        await _char4!.setNotifyValue(true);
-
-        _beatSubscription?.cancel();
-        _beatSubscription =
-            _char4!.value.listen((data) {
-              print("HF: Beat data received: $data");
-              // play the next note in the groove
-              if ((data[0] & 0xFF) != 0xFF) { // ignore the 0xFF heartbeat notifies
-                groove.play();
-              }
-              if (data.length > 0) {
-                // this is to fix the bluetooth still remembers the last values from previous connection.
-                if (_char4!.lastValue != data) {
-                  _beatSubject.add(data);
-                }
-              }
-            });
+    // enable notifies on char4
+      try {
+        await _char4?.setNotifyValue(true);
+      } catch (err) {
+        print("HF: error enabling _char4 notifies");
+        print(err);
       }
-    } catch (err) {
-      print("HF: error _char4: ");
-      print(err);
-    }
+
+    _beatSubscription?.cancel();
+    _beatSubscription =
+        _char4!.value.listen((data) {
+          if (data.isNotEmpty) {
+            print("HF: Beat data received: $data");
+            // play the next note in the groove
+            if ((data[0] & 0xFF) !=
+                0xFF) { // ignore the 0xFF heartbeat notifies
+              //TODO: use the sequence number to detect missing beats
+              //TODO: use the timestamp to calculate BPM
+
+              // play the next note in the groove
+              groove.play();
+            }
+          }});
   }
 
   Future<void> dispose() async {

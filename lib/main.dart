@@ -10,7 +10,6 @@ import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 import 'midi.dart';
 import 'groove.dart';
-// import 'bass.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,22 +24,22 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.deepOrange[500],
-        accentColor: Colors.blue[400],
+        secondary: Colors.blue[400],
         fontFamily: 'Roboto',
         textTheme: TextTheme(
           headline1: TextStyle(
               color: Theme.of(context).accentColor,
-              fontSize: 15,
+              fontSize: 25,
               height: 1,
               fontWeight: FontWeight.bold),
           caption: TextStyle(
               color: Theme.of(context).accentColor,
-              fontSize: 15,
+              fontSize: 20,
               height: 1,
               fontWeight: FontWeight.normal),
           headline4: TextStyle(
               color: Colors.grey[700],
-              fontSize: 15,
+              fontSize: 20,
               height: 1,
               fontWeight: FontWeight.normal),
       ),),
@@ -175,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   // stop the BLE connection
                   _bluetoothBLEService!.disconnectFromDevice();
+                  _playState = false;
                 },
               ),
             ),
@@ -418,7 +418,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 foregroundColor: Theme.of(context).accentColor,
                 elevation: 25,
                 onPressed: (){
-                  setState((){ _playState = !_playState;});
                    if (_playState) {
                      // disable beats
                      _bluetoothBLEService?.disableBeat();
@@ -426,6 +425,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      // enable beats
                      _bluetoothBLEService?.enableBeat();
                    }
+                   setState((){ _playState = !_playState;});
                 },   //onPressed
                 tooltip: 'Enable beats',
                 child: _playState?
