@@ -24,22 +24,22 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.deepOrange[500],
-        secondary: Colors.blue[400],
-        fontFamily: 'Roboto',
+        accentColor: Colors.blue[400],
+//        fontFamily: 'Roboto',
         textTheme: TextTheme(
           headline1: TextStyle(
               color: Theme.of(context).accentColor,
-              fontSize: 25,
+              fontSize: 20,
               height: 1,
               fontWeight: FontWeight.bold),
           caption: TextStyle(
               color: Theme.of(context).accentColor,
-              fontSize: 20,
+              fontSize: 16,
               height: 1,
               fontWeight: FontWeight.normal),
           headline4: TextStyle(
               color: Colors.grey[700],
-              fontSize: 20,
+              fontSize: 16,
               height: 1,
               fontWeight: FontWeight.normal),
       ),),
@@ -450,10 +450,11 @@ class GroovePage extends StatefulWidget {
 }
 
 class _GroovePageState extends State<GroovePage> {
-  int _beatsPerMeasure = 4;
-  int _numberOfMeasures = 2;
-  int _totalBeats = 8;
-  List<String> dropdownValue = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', ];
+  int _beatsPerMeasure = groove.bpm;
+  int _numberOfMeasures = groove.numMeasures;
+  int _totalBeats = groove.bpm * groove.numMeasures;
+//  final dropdownValue = List<String>.filled(64,'-');
+  final dropdownValue = groove.getInitials();
 
   @override
   initState() {
@@ -482,7 +483,7 @@ class _GroovePageState extends State<GroovePage> {
           // sliders for number of beats per measure and measures
           Column(children: <Widget>[
             Row(children: <Widget>[
-              Text('Beats per measure',
+              Text('Beats/measure',
                 style: Theme.of(context).textTheme.caption,), // Text
               Slider(
                 value: _beatsPerMeasure.toDouble(),
@@ -500,7 +501,7 @@ class _GroovePageState extends State<GroovePage> {
               ), // Slider
             ]), // Row
             Row(children: <Widget>[
-              Text('Number of measures',
+              Text('Measures',
                 style: Theme.of(context).textTheme.caption,), // Text
               Slider(
                 value: _numberOfMeasures.toDouble(),

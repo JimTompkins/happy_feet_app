@@ -49,6 +49,7 @@ class Groove {
 
   // add a note to the groove using its initial only
   void addInitialNote(int index, String initial) {
+    this.notes[index].initial = initial;
     switch (initial) {
       case '-': {
         this.notes[index].midi = 0;
@@ -85,6 +86,15 @@ class Groove {
   // return the first letter of a notes name
   String initialNote(int index) {
     return this.notes[index].substring(0,1);
+  }
+
+  // return a list of initials of the current groove notes
+  List<String> getInitials() {
+    var returnValue = new List<String>.filled(64,'-');
+    for(int i=0; i< this.bpm*this.numMeasures; i++) {
+      returnValue[i] = this.notes[i].initial;
+    }
+    return returnValue;
   }
 
   // resize the groove
