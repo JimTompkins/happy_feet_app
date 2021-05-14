@@ -12,6 +12,22 @@ import 'groove.dart';
 
 class BluetoothBLEService {
 
+  static const String DEVINFO_SERVICE_UUID =
+      "0000180a-0000-1000-8000-00805f9b34fb";
+
+  static const String MODEL_NUMBER_CHARACTERISTIC_UUID =
+      "00002a24-0000-1000-8000-00805f9b34fb";
+  static const String SERIAL_NUMBER_CHARACTERISTIC_UUID =
+      "00002a25-0000-1000-8000-00805f9b34fb";
+  static const String FIRMWARE_REV_CHARACTERISTIC_UUID =
+      "00002a26-0000-1000-8000-00805f9b34fb";
+  static const String HARDWARE_REV_CHARACTERISTIC_UUID =
+      "00002a27-0000-1000-8000-00805f9b34fb";
+  static const String SOFTWARE_REV_CHARACTERISTIC_UUID =
+      "00002a28-0000-1000-8000-00805f9b34fb";
+  static const String MANUFACTURER_NAME_CHARACTERISTIC_UUID =
+      "00002a29-0000-1000-8000-00805f9b34fb";
+
   static const String HF_SERVICE_UUID =
       "0000fff0-0000-1000-8000-00805f9b34fb";
 
@@ -36,8 +52,6 @@ class BluetoothBLEService {
   StreamSubscription<ScanResult>? scanSubScription;
 
   BluetoothDevice? targetDevice;
-  BluetoothCharacteristic? _dataReadCharacteristic;
-  BluetoothCharacteristic? _dataWriteCharacteristic;
 
   BluetoothCharacteristic? _char1;
   BluetoothCharacteristic? _char2;
@@ -46,7 +60,13 @@ class BluetoothBLEService {
   BluetoothCharacteristic? _char5;
   BluetoothCharacteristic? _char6;
 
-  StreamSubscription<List<int>>? _dataReadCharacteristicSubscription;
+  BluetoothCharacteristic? _modelNumber;
+  BluetoothCharacteristic? _serialNumber;
+  BluetoothCharacteristic? _firmwareRev;
+  BluetoothCharacteristic? _hardwareRev;
+  BluetoothCharacteristic? _softwareRev;
+  BluetoothCharacteristic? _manufacturerName;
+
   StreamSubscription<List<int>>? _beatSubscription;
 
   String? connectionText = "";
@@ -186,18 +206,10 @@ class BluetoothBLEService {
   }
 
   disconnectFromDevice() async {
-    await _dataReadCharacteristicSubscription?.cancel();
-    _dataReadCharacteristicSubscription = null;
-    print("HF: _dataReadCharacteristicSubscription is cancelled");
 
     await _beatSubscription?.cancel();
     _beatSubscription = null;
     print("HF: _beatSubscription is cancelled");
-
-    if (_dataReadCharacteristic != null) {
-      _dataReadCharacteristic = null;
-    }
-    if (_dataWriteCharacteristic != null) _dataWriteCharacteristic = null;
 
     if (_char1 != null) _char1 = null;
     if (_char2 != null) _char2 = null;
@@ -226,6 +238,16 @@ class BluetoothBLEService {
       try {
         List<BluetoothService> services = await targetDevice!.discoverServices();
         services.forEach((service) async {
+          // get characteristics of the DeviceInfo service
+          if (service.uuid.toString() == DEVINFO_SERVICE_UUID) {
+            service.characteristics.forEach((characteristic) async {
+              if (characteristic.uuid.toString() ==
+                  MODEL_NUMBER_CHARACTERISTIC_UUID) {
+                _modelNumber = characteristic;
+              }
+            });
+          }
+          // get characteristics of the HappyFeet service
           if (service.uuid.toString() == HF_SERVICE_UUID) {
             // for HappyFeet, set the MTU as small as possible
             final mtu = await targetDevice!.mtu.first;
@@ -385,6 +407,26 @@ class BluetoothBLEService {
         }
       } catch (err) {
         print("HF: error readWhoAmI");
+        print(err);
+      }
+    }
+  }
+
+  // read the model number
+  Future<String?> readModelNumber() async {
+    String result = "ERROR";
+    if (_modelNumber == null) return result;
+    if (_modelNumber!.properties.read) {
+      try {
+        List<int> value = await _modelNumber!.read();
+        // convert list of character codes to string
+        result = String.fromCharCodes(value);
+        if (result == null) {
+          result = "ERROR";
+        }
+        return result;
+      } catch (err) {
+        print("HF: error readModelNumber");
         print(err);
       }
     }

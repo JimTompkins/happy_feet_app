@@ -1,6 +1,7 @@
 import 'midi.dart';
+import 'bass.dart';
 
-Note note = new Note(60, "Bass drum");
+Note note = new Note(0, "-");
 List<Note> notes = [note];
 Groove groove = new Groove(1,1,notes);
 
@@ -43,6 +44,15 @@ class Groove {
     });
   }
 
+  initialize() {
+    this.bpm = 1;
+    this.numMeasures = 1;
+    this.index = 0;
+    this.notes[0].name = '-';
+    this.notes[0].midi = 0;
+    this.notes[0].initial = '-';
+  }
+
   void addNote(int beat, int measure, Note note) {
     this.notes[(beat-1)+(measure-1)*this.bpm] = note;
   }
@@ -76,10 +86,51 @@ class Groove {
         this.notes[index].name = 'High Hat Cymbal';
       }
       break;
+      case 'C': {
+        this.notes[index].midi = 80;
+        this.notes[index].name = 'Cowbell';
+      }
+      break;
+      case 'T': {
+        this.notes[index].midi = 78;
+        this.notes[index].name = 'Tambourine';
+      }
+      break;
       default: {
         this.notes[index].midi = 0;
         this.notes[index].name = '-';
       }
+    }
+  }
+
+  // add a bass note to the groove using the roman numeral and which key
+  // we're in currently e.g. key of C, III would be E.
+  addBassNote(index, roman, keyName) {
+    // if no note is to be played, as indicated by -,
+    // then set midi to 0 and name and initial to -
+    if (roman == '-') {
+      this.notes[index].name = '-';
+      this.notes[index].initial = '-';
+      this.notes[index].midi = 0;
+    }
+    // create a name by concatenating the key name, a - and the
+    // roman numeral,  e.g. C-IV
+    else {
+      this.notes[index].name = keyName + '-' + roman;
+      this.notes[index].initial = keyName + '-' + roman;
+
+      // get the index of the keyName
+      int keyIndex = keys.indexWhere((element) =>
+      element == keyName);
+
+      // get the index of the roman numeral
+      int romanIndex = scaleTonesRoman.indexWhere((element) =>
+      element == roman);
+
+      int offset = scaleTonesIndex[romanIndex];
+
+      // 24 is the MIDI code for C3
+      this.notes[index].midi = 24 + keyIndex + offset;
     }
   }
 

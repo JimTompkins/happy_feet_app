@@ -10,6 +10,7 @@ import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 import 'midi.dart';
 import 'groove.dart';
+import 'bass.dart';
 
 void main() {
   runApp(MyApp());
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-enum Mode { singleNote, alternatingNotes, groove, unknown }
+enum Mode { singleNote, alternatingNotes, groove, bass, unknown }
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -233,7 +234,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Groove':
                         {
                           playMode = Mode.groove;
+                          groove.initialize();
                           Get.to(() => groovePage);
+                        }
+                        break;
+                      case 'Bass':
+                        {
+                          playMode = Mode.bass;
+                          groove.initialize();
+                          Get.to(() => bassPage);
                         }
                         break;
                       default:
@@ -243,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     }
                   });
                 },
-                items: <String>['Single Note', 'Alternating Notes', 'Groove']
+                items: <String>['Single Note', 'Alternating Notes', 'Groove', 'Bass']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -310,6 +319,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         midiNote1 = 80;
                       }
                       break;
+                    case 'Tambourine':
+                      {
+                        midiNote1 = 78;
+                      }
+                      break;
                     default:
                       {
                         midiNote1 = 81;
@@ -324,7 +338,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Kick Drum',
                 'Snare Drum',
                 'High Hat Cymbal',
-                'Cowbell'
+                'Cowbell',
+                'Tambourine'
               ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -382,6 +397,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         midiNote2 = 80;
                       }
                       break;
+                    case 'Tambourine':
+                      {
+                        midiNote2 = 78;
+                      }
+                      break;
                     default:
                       {
                         midiNote2 = 81;
@@ -397,7 +417,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Kick Drum',
                 'Snare Drum',
                 'High Hat Cymbal',
-                'Cowbell'
+                'Cowbell',
+                'Tambourine',
               ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -453,7 +474,6 @@ class _GroovePageState extends State<GroovePage> {
   int _beatsPerMeasure = groove.bpm;
   int _numberOfMeasures = groove.numMeasures;
   int _totalBeats = groove.bpm * groove.numMeasures;
-//  final dropdownValue = List<String>.filled(64,'-');
   final dropdownValue = groove.getInitials();
 
   @override
@@ -506,8 +526,8 @@ class _GroovePageState extends State<GroovePage> {
               Slider(
                 value: _numberOfMeasures.toDouble(),
                 min: 1,
-                max: 8,
-                divisions: 8,
+                max: 12,   // for 12 bar blues!
+                divisions: 12,
                 label: _numberOfMeasures.round().toString(),
                 onChanged: (double value) {
                   setState(() {
@@ -521,6 +541,8 @@ class _GroovePageState extends State<GroovePage> {
           ]), // Column
 
           // beat grid
+          Text(' Choose "-" for no note, B for bass drum, K for kick drum, S for snare drum, H for hi-hat cymbal, T for tambourine, C for cowbell ',
+            style: Theme.of(context).textTheme.caption,), // Text
 
           GridView.count(
             scrollDirection: Axis.vertical,
@@ -534,13 +556,14 @@ class _GroovePageState extends State<GroovePage> {
                 return Center(
                    child: DropdownButton<String>(
                    value: dropdownValue[index],
+                   elevation: 24,
                    onChanged: (String? newValue) {
                       setState(() {
                          groove.addInitialNote(index, newValue!);
                          dropdownValue[index] = newValue;
                       });
                    },
-                   items: <String>['-','B', 'K', 'S', 'H', 'C']
+                   items: <String>['-','B', 'K', 'S', 'H', 'T', 'C']
                      .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                          value: value,
@@ -577,6 +600,169 @@ class _GroovePageState extends State<GroovePage> {
   }
 } // class
 
+ // Bass page
+ BassPage bassPage = new BassPage();
+
+ // Stateful version of bass page
+ class BassPage extends StatefulWidget {
+   @override
+   _BassPageState createState() => _BassPageState();
+ }
+
+ class _BassPageState extends State<BassPage> {
+   int _beatsPerMeasure = groove.bpm;
+   int _numberOfMeasures = groove.numMeasures;
+   int _totalBeats = groove.bpm * groove.numMeasures;
+   String? key = 'C';
+   final dropdownValue = groove.getInitials();
+
+   @override
+   initState() {
+     super.initState();
+   }
+
+   @override
+   Widget build(BuildContext context) {
+     return Scaffold(
+         appBar: AppBar(
+           title: Text("Happy Feet - Bass"),
+         ),
+         body: Center(
+           child: ListView(
+             children: <Widget>[
+               // Define a groove heading
+               Wrap(children: <Widget>[
+                 Container(
+                     padding: EdgeInsets.all(10),
+                     alignment: Alignment.centerLeft,
+                     child: Text('DEFINE BASS GROOVE',
+                       style: Theme.of(context).textTheme.headline1,
+                     )),
+               ]),
+
+               // sliders for number of beats per measure and measures
+               Column(children: <Widget>[
+                 Row(children: <Widget>[
+                   Text(' Beats/measure',
+                     style: Theme.of(context).textTheme.caption,), // Text
+                   Slider(
+                     value: _beatsPerMeasure.toDouble(),
+                     min: 1,
+                     max: 8,
+                     divisions: 8,
+                     label: _beatsPerMeasure.round().toString(),
+                     onChanged: (double value) {
+                       setState(() {
+                         _beatsPerMeasure = value.toInt();
+                         groove.resize(_beatsPerMeasure, _numberOfMeasures);
+                         _totalBeats = _beatsPerMeasure * _numberOfMeasures;
+                       });
+                     }, // setState, onChanged
+                   ), // Slider
+                 ]), // Row
+                 Row(children: <Widget>[
+                   Text(' Measures',
+                     style: Theme.of(context).textTheme.caption,), // Text
+                   Slider(
+                     value: _numberOfMeasures.toDouble(),
+                     min: 1,
+                     max: 12,   // for 12 bar blues!
+                     divisions: 12,
+                     label: _numberOfMeasures.round().toString(),
+                     onChanged: (double value) {
+                       setState(() {
+                         _numberOfMeasures = value.toInt();
+                         groove.resize(_beatsPerMeasure, _numberOfMeasures);
+                         _totalBeats = _beatsPerMeasure * _numberOfMeasures;
+                       });
+                     }, // setState, onChanged
+                   ), // Slider
+                 ]), // Row
+               // key dropdown
+               Row(children: <Widget>[
+                 Text(' Key of ',
+                   style: Theme.of(context).textTheme.caption,), // Text
+                 DropdownButton<String>(
+                   value: key,
+                   icon: const Icon(Icons.arrow_downward),
+                   iconSize: 24,
+                   elevation: 24,
+                   style: Theme.of(context).textTheme.headline4,
+                   onChanged: (String? newValue) {
+                     setState(() {
+                       key = newValue;
+                     });
+                   },
+                   items: <String>['C', 'C#', 'D', 'D#', 'E', 'F',
+                     'F#', 'G', 'G#', 'A', 'A#', 'B'].map<DropdownMenuItem<String>>((String value) {
+                     return DropdownMenuItem<String>(
+                       value: value,
+                       child: Text(value),
+                     );
+                   }).toList(),
+                 ),
+               ]),
+               ]), // Column
+
+               // beat grid
+               Text(' Choose "-" for no note, or Roman numerals I through VII for scale tones ',
+                 style: Theme.of(context).textTheme.caption,), // Text
+
+               GridView.count(
+                   scrollDirection: Axis.vertical,
+                   shrinkWrap: true,
+                   primary: false,
+                   padding: const EdgeInsets.all(1),
+                   crossAxisSpacing: 1,
+                   mainAxisSpacing: 1,
+                   crossAxisCount: _beatsPerMeasure,
+                   children: List.generate(_totalBeats,(index) {
+                     return Center(
+                         child: DropdownButton<String>(
+                           value: dropdownValue[index],
+                           elevation: 24,
+                           onChanged: (String? newValue) {
+                             setState(() {
+                               groove.addBassNote(index, newValue!, key);
+                               dropdownValue[index] = newValue;
+                             });
+                           },
+                           items: <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].map<DropdownMenuItem<String>>((String value) {
+                             return DropdownMenuItem<String>(
+                               value: value,
+                               child: Text(value),
+                             );
+                           }).toList(),
+                         ) // DropdownButton
+                     ); // Center
+                   },) // List.generate
+               ),   // GridView
+
+               // Save groove heading
+               Wrap(children: <Widget>[
+                 Container(
+                     padding: EdgeInsets.all(10),
+                     alignment: Alignment.centerLeft,
+                     child: Text('SAVE GROOVE',
+                       style: Theme.of(context).textTheme.headline1,
+                     )),
+               ]),
+
+               // load groove heading
+               Wrap(children: <Widget>[
+                 Container(
+                     padding: EdgeInsets.all(10),
+                     alignment: Alignment.centerLeft,
+                     child: Text('LOAD GROOVE',
+                       style: Theme.of(context).textTheme.headline1,
+                     )),
+               ]),  // Widget, wrap
+             ],  // Widget
+           ), // Listview
+         ));
+   }
+ } // class
+
 // info page
 InfoPage infoPage = new InfoPage();
 
@@ -587,6 +773,7 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage> {
+ String modelNumber = '';
 
   @override
   initState() {
@@ -601,8 +788,22 @@ class _InfoPageState extends State<InfoPage> {
     ),
     body: Center(
       child: ListView(
-        // insert content
-      ),
+        children: <Widget>[
+        Column(
+          children: <Widget>[
+            Row(children: <Widget>[
+              TextButton(
+                child: Text('Read model number'),
+                onPressed: () {
+                  //modelNumber = _bluetoothBLEService?.readModelNumber();
+                  modelNumber = 'model number';
+                }
+              ),
+              Text(modelNumber),
+            ]),
+          ],
+        ),
+      ]),
     ),
     );
   }  // Widget
