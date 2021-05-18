@@ -568,6 +568,10 @@ class _GroovePageState extends State<GroovePage> {
             crossAxisCount: _beatsPerMeasure,
             children: List.generate(_totalBeats,(index) {
                 return Center(
+                  child: Container(
+                    decoration: new BoxDecoration(
+                      border: Border.all(width: 1.0)
+                    ),
                    child: DropdownButton<String>(
                    value: dropdownValue[index],
                    elevation: 24,
@@ -584,7 +588,8 @@ class _GroovePageState extends State<GroovePage> {
                          child: Text(value),
                          );
                       }).toList(),
-                ) // DropdownButton
+                ),
+                  ),
                 ); // Center
              },) // List.generate
           ),   // GridView
@@ -627,7 +632,7 @@ class _GroovePageState extends State<GroovePage> {
    int _beatsPerMeasure = groove.bpm;
    int _numberOfMeasures = groove.numMeasures;
    int _totalBeats = groove.bpm * groove.numMeasures;
-   String? key = 'C';
+   String? key = 'E';
    final dropdownValue = groove.getInitials();
 
    @override
@@ -707,8 +712,8 @@ class _GroovePageState extends State<GroovePage> {
                        key = newValue;
                      });
                    },
-                   items: <String>['C', 'C#', 'D', 'D#', 'E', 'F',
-                     'F#', 'G', 'G#', 'A', 'A#', 'B'].map<DropdownMenuItem<String>>((String value) {
+                   items: <String>['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
+                     'C', 'C#', 'D', 'D#'].map<DropdownMenuItem<String>>((String value) {
                      return DropdownMenuItem<String>(
                        value: value,
                        child: Text(value),
@@ -732,6 +737,10 @@ class _GroovePageState extends State<GroovePage> {
                    crossAxisCount: _beatsPerMeasure,
                    children: List.generate(_totalBeats,(index) {
                      return Center(
+                         child: Container(
+                            decoration: new BoxDecoration(
+                               border: Border.all(width: 1.0)
+                               ),
                          child: DropdownButton<String>(
                            value: dropdownValue[index],
                            elevation: 24,
@@ -748,8 +757,9 @@ class _GroovePageState extends State<GroovePage> {
                              );
                            }).toList(),
                          ) // DropdownButton
-                     ); // Center
-                   },) // List.generate
+                       ),
+                     );// Center
+                  },) // List.generate
                ),   // GridView
 
                // Save groove heading
