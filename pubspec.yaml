@@ -91,4 +91,5 @@ flutter:
 
   assets:
     - assets/sounds/acoust_kits_1-4.sf2
+    - assets/sounds/bass.sf2
     - assets/images/icon.png

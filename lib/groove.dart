@@ -48,9 +48,20 @@ class Groove {
     this.bpm = 1;
     this.numMeasures = 1;
     this.index = 0;
+    this.notes.clear();
     this.notes[0].name = '-';
     this.notes[0].midi = 0;
     this.notes[0].initial = '-';
+  }
+
+  // retain the bpm and numMeasures but set all notes to -
+  // used when changing between groove and bass mode
+  void clearNotes() {
+     for(int i = 0; i<this.bpm*this.numMeasures; i++) {
+       this.notes[i].name = '-';
+       this.notes[i].midi = 0;
+       this.notes[i].initial = '-';
+     }
   }
 
   void addNote(int beat, int measure, Note note) {
@@ -129,8 +140,11 @@ class Groove {
 
       int offset = scaleTonesIndex[romanIndex];
 
-      // 24 is the MIDI code for C3
-      this.notes[index].midi = 24 + keyIndex + offset;
+      // create the MIDI code by adding the following:
+      //   the MIDI code for E1
+      //   the key (starting from E)
+      //   the roman numeral offset from the tonic
+      this.notes[index].midi = E1midi + keyIndex + offset;
     }
   }
 

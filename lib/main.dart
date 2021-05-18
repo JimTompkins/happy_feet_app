@@ -212,6 +212,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 onChanged: (String? newValue) {
                   setState(() {
                     playModeString = newValue;
+                    // if changing back from bass mode to another other mode...
+                    if (newValue != 'Bass' && playMode == Mode.bass) {
+                      // ...reload the drumkit sf2 file
+                      rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf2) {
+                        midi.prepare(sf2, "acoust_kits_1-4.sf2");
+                      });
+                    }
                     switch (newValue) {
                       case 'Single Note':
                         {
@@ -233,15 +240,22 @@ class _MyHomePageState extends State<MyHomePage> {
                         break;
                       case 'Groove':
                         {
+                          if (playMode != Mode.groove) {
+                            groove.clearNotes();
+                          }
                           playMode = Mode.groove;
-                          groove.initialize();
                           Get.to(() => groovePage);
                         }
                         break;
                       case 'Bass':
                         {
+                          if (playMode != Mode.bass) {
+                            rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
+                              midi.prepare(sf2, "bass.sf2");
+                            });
+                            groove.clearNotes();
+                          }
                           playMode = Mode.bass;
-                          groove.initialize();
                           Get.to(() => bassPage);
                         }
                         break;
