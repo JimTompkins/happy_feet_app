@@ -68,15 +68,15 @@ class _MyHomePageState extends State<MyHomePage> {
   String? playModeString = 'Single Note';
   bool _playState = false;
   static BluetoothBLEService? _bluetoothBLEService;
-  late StreamSubscription<List<int>> _dataReadCharacteristicSubscription;
 
   @override
   initState() {
     // initialize MIDI
     midi.unmute();
-    rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf2) {
-      midi.prepare(sf2, "acoust_kits_1-4.sf2");
-    });
+    rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf3) {
+       midi.prepare(sf3, "acoust_kits_1-4.sf2"); });
+    rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
+      midi.prepare(sf2, "bass.sf2"); });
     // initialize BLE
     if (_bluetoothBLEService == null) {
       _bluetoothBLEService = new BluetoothBLEService();
@@ -215,9 +215,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     // if changing back from bass mode to another other mode...
                     if (newValue != 'Bass' && playMode == Mode.bass) {
                       // ...reload the drumkit sf2 file
-                      rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf2) {
-                        midi.prepare(sf2, "acoust_kits_1-4.sf2");
-                      });
+                      //rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf2) {
+                     //   midi.prepare(sf2, "acoust_kits_1-4.sf2");
+                     // });
                     }
                     switch (newValue) {
                       case 'Single Note':
@@ -250,9 +250,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Bass':
                         {
                           if (playMode != Mode.bass) {
-                            rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
-                              midi.prepare(sf2, "bass.sf2");
-                            });
+                            //rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
+                            //  midi.prepare(sf2, "bass.sf2");
+                            //});
                             groove.clearNotes();
                           }
                           playMode = Mode.bass;
@@ -710,6 +710,7 @@ class _GroovePageState extends State<GroovePage> {
                    onChanged: (String? newValue) {
                      setState(() {
                        key = newValue;
+                       groove.changeKey(key);
                      });
                    },
                    items: <String>['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
@@ -797,7 +798,7 @@ class InfoPage extends StatefulWidget {
 }
 
 class _InfoPageState extends State<InfoPage> {
- String modelNumber = '';
+ Future<String?>? modelNumber;
 
   @override
   initState() {
@@ -819,11 +820,11 @@ class _InfoPageState extends State<InfoPage> {
               TextButton(
                 child: Text('Read model number'),
                 onPressed: () {
-                  //modelNumber = _bluetoothBLEService?.readModelNumber();
-                  modelNumber = 'model number';
+//                  modelNumber = _bluetoothBLEService?.readModelNumber();
                 }
               ),
-              Text(modelNumber),
+//              Text(modelNumber),
+               Text('HF1000'),
             ]),
           ],
         ),

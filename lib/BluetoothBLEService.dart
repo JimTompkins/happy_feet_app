@@ -8,7 +8,6 @@ import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 
 import 'groove.dart';
-//import 'midi.dart';
 
 class BluetoothBLEService {
 
@@ -422,7 +421,7 @@ class BluetoothBLEService {
         // convert list of character codes to string
         result = String.fromCharCodes(value);
         if (result == null) {
-          result = "ERROR";
+          result = "ERROR: null result";
         }
         return result;
       } catch (err) {

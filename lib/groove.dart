@@ -1,7 +1,7 @@
 import 'midi.dart';
 import 'bass.dart';
 
-Note note = new Note(0, "-");
+Note note = new Note(60, "Bass drum");
 List<Note> notes = [note];
 Groove groove = new Groove(1,1,notes);
 
@@ -114,6 +114,20 @@ class Groove {
     }
   }
 
+  // change the key of a bass groove
+  changeKey(String? keyName) {
+    String roman;
+    int romanIndex;
+    // loop over all of the notes in the groove
+    for(int i=0; i<this.bpm*this.numMeasures; i++) {
+      if (this.notes[i].name != '-') {  // ignore empty notes
+        romanIndex = this.notes[i].name.indexOf('-') + 1;
+        roman = this.notes[i].name.substring(romanIndex); //
+        this.addBassNote(i, roman, keyName);
+      }
+    }
+  }
+
   // add a bass note to the groove using the roman numeral and which key
   // we're in currently e.g. key of C, III would be E.
   addBassNote(index, roman, keyName) {
@@ -124,7 +138,7 @@ class Groove {
       this.notes[index].initial = '-';
       this.notes[index].midi = 0;
     }
-    // create a name by concatenating the key name, a - and the
+    // create a name by concatenating the key name, a "-" and the
     // roman numeral,  e.g. C-IV
     else {
       this.notes[index].name = keyName + '-' + roman;
