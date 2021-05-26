@@ -78,32 +78,32 @@ class Groove {
       }
       break;
       case 'B': {
-        this.notes[index].midi = 60;
+        this.notes[index].midi = 70;
         this.notes[index].name = 'Bass drum';
       }
       break;
       case 'K': {
-        this.notes[index].midi = 59;
+        this.notes[index].midi = 65;
         this.notes[index].name = 'Kick drum';
       }
       break;
       case 'S': {
-        this.notes[index].midi = 40;
+        this.notes[index].midi = 69;
         this.notes[index].name = 'Snare drum';
       }
       break;
       case 'H': {
-        this.notes[index].midi = 70;
+        this.notes[index].midi = 99;
         this.notes[index].name = 'High Hat Cymbal';
       }
       break;
       case 'C': {
-        this.notes[index].midi = 80;
+        this.notes[index].midi = 118;
         this.notes[index].name = 'Cowbell';
       }
       break;
       case 'T': {
-        this.notes[index].midi = 78;
+        this.notes[index].midi = 116;
         this.notes[index].name = 'Tambourine';
       }
       break;

@@ -16,4 +16,7 @@ class MidiUtils {
 
   void prepare(ByteData sf2, String name) =>
       instance.prepare(sf2: sf2, name: "Piano.sf2");
+
+  void change(ByteData sf2, String name) =>
+      instance.changeSound(sf2: sf2, name: "Piano.sf2");
 }

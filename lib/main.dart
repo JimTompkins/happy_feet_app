@@ -60,7 +60,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Mode? _character = Mode.singleNote;
   String note1 = 'Bass Drum';
-  int midiNote1 = 60;
+  int midiNote1 = 70;
   String note2 = 'none';
   int midiNote2 = 0;
   int sequenceCount = 0;
@@ -73,10 +73,12 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     // initialize MIDI
     midi.unmute();
-    rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf3) {
-       midi.prepare(sf3, "acoust_kits_1-4.sf2"); });
-    rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
-      midi.prepare(sf2, "bass.sf2"); });
+//    rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
+//      midi.prepare(sf2, "bass.sf2"); });
+//    rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf3) {
+//      midi.prepare(sf3, "acoust_kits_1-4.sf2"); });
+//    rootBundle.load("assets/sounds/happyfeet.sf2").then((sf4) {
+//      midi.prepare(sf4, "happyfeet.sf2"); });
     // initialize BLE
     if (_bluetoothBLEService == null) {
       _bluetoothBLEService = new BluetoothBLEService();
@@ -310,37 +312,37 @@ class _MyHomePageState extends State<MyHomePage> {
                   switch (note1) {
                     case 'Bass Drum':
                       {
-                        midiNote1 = 60;
+                        midiNote1 = 70;
                       }
                       break;
                     case 'Kick Drum':
                       {
-                        midiNote1 = 59;
+                        midiNote1 = 65;
                       }
                       break;
                     case 'Snare Drum':
                       {
-                        midiNote1 = 40;
+                        midiNote1 = 69;
                       }
                       break;
                     case 'High Hat Cymbal':
                       {
-                        midiNote1 = 70;
+                        midiNote1 = 99;
                       }
                       break;
                     case 'Cowbell':
                       {
-                        midiNote1 = 80;
+                        midiNote1 = 118;
                       }
                       break;
                     case 'Tambourine':
                       {
-                        midiNote1 = 78;
+                        midiNote1 = 116;
                       }
                       break;
                     default:
                       {
-                        midiNote1 = 81;
+                        midiNote1 = 0;
                       }
                   }
                   groove.notes[0].midi = midiNote1;
@@ -388,37 +390,37 @@ class _MyHomePageState extends State<MyHomePage> {
                       break;
                     case 'Bass Drum':
                       {
-                        midiNote2 = 60;
+                        midiNote2 = 70;
                       }
                       break;
                     case 'Kick Drum':
                       {
-                        midiNote2 = 59;
+                        midiNote2 = 65;
                       }
                       break;
                     case 'Snare Drum':
                       {
-                        midiNote2 = 40;
+                        midiNote2 = 69;
                       }
                       break;
                     case 'High Hat Cymbal':
                       {
-                        midiNote2 = 70;
+                        midiNote2 = 99;
                       }
                       break;
                     case 'Cowbell':
                       {
-                        midiNote2 = 80;
+                        midiNote2 = 118;
                       }
                       break;
                     case 'Tambourine':
                       {
-                        midiNote2 = 78;
+                        midiNote2 = 116;
                       }
                       break;
                     default:
                       {
-                        midiNote2 = 81;
+                        midiNote2 = 0;
                       }
                   }
                   groove.notes[1].midi = midiNote2;
