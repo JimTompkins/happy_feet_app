@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.happy_feet_app"
+    package="com.happyfeetmusic.happy_feet_app"
     android:versionCode="0"
     android:versionName="0.0">
    <application
