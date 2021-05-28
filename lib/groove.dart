@@ -1,7 +1,7 @@
 import 'midi.dart';
 import 'bass.dart';
 
-Note note = new Note(60, "Bass drum");
+Note note = new Note(70, "Bass drum");
 List<Note> notes = [note];
 Groove groove = new Groove(1,1,notes);
 

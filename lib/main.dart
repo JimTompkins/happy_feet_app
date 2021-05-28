@@ -77,8 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
 //      midi.prepare(sf2, "bass.sf2"); });
 //    rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf3) {
 //      midi.prepare(sf3, "acoust_kits_1-4.sf2"); });
-//    rootBundle.load("assets/sounds/happyfeet.sf2").then((sf4) {
-//      midi.prepare(sf4, "happyfeet.sf2"); });
+    rootBundle.load("assets/sounds/happyfeet.sf2").then((sf4) {
+      midi.prepare(sf4, "happyfeet.sf2"); });
     // initialize BLE
     if (_bluetoothBLEService == null) {
       _bluetoothBLEService = new BluetoothBLEService();
