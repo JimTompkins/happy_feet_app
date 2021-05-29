@@ -87,12 +87,6 @@ class BluetoothBLEService {
   Stream<BluetoothConnectionStateDTO> get connectionStateStream =>
       _connectionStateSubject.stream;
 
-  final _protocalValueSubject = BehaviorSubject<List<int>>();
-  Stream<List<int>> get protocalValueStream => _protocalValueSubject.stream;
-
-  final _dataReceivedSubject = BehaviorSubject<List<int>>();
-  Stream<List<int>> get dataReceivedStream => _dataReceivedSubject.stream;
-
   final _beatSubject = BehaviorSubject<List<int>>();
   Stream<List<int>> get beatStream => _beatSubject.stream;
 
@@ -489,8 +483,6 @@ class BluetoothBLEService {
     await disconnectFromDevice();
     _deviceBluetoothStateSubject.close();
     _connectionStateSubject.close();
-    _protocalValueSubject.close();
-    _dataReceivedSubject.close();
     print("HF: BluetoothBLE is disposed.");
   }
 }

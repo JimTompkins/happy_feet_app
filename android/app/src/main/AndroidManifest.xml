@@ -2,6 +2,9 @@
     package="com.happyfeetmusic.happy_feet_app">
     <!-- android:versionCode="2"
     android:versionName="0.2" -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
    <application
         android:label="HappyFeet"
         android:icon="@mipmap/launcher_icon">

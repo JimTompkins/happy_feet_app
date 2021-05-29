@@ -93,14 +93,41 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handleBluetoothConnection(BluetoothConnectionStateDTO connectionState) {
-    print('HF: connectionState: $connectionState');
-    if (connectionState.bluetoothConnectionState ==
-        BluetoothConnectionState.DEVICE_CONNECTED) {
-      print("HF: Bluetooth device connected.");
-    }
-
+//    print('HF: connectionState: $connectionState');
     if (_bluetoothBLEService != null) {
-      print('HF: connectionState: got bluetooth service!');
+      //print('HF: connectionState: got bluetooth service!');
+      switch (connectionState.bluetoothConnectionState) {
+        case BluetoothConnectionState.OFF:
+          print("HF: Bluetooth connection state = off");
+          break;
+        case BluetoothConnectionState.SCANNING:
+          print("HF: Bluetooth connection state = scanning");
+          break;
+        case BluetoothConnectionState.STOP_SCANNING:
+          print("HF: Bluetooth connection state = stop scanning");
+          break;
+        case BluetoothConnectionState.DEVICE_FOUND:
+          print("HF: Bluetooth connection state = device found");
+          break;
+        case BluetoothConnectionState.DEVICE_CONNECTING:
+          print("HF: Bluetooth connection state = device connecting");
+          break;
+        case BluetoothConnectionState.DEVICE_CONNECTED:
+          print("HF: Bluetooth connection state = device connected");
+          break;
+        case BluetoothConnectionState.DEVICE_DISCONNECTED:
+          print("HF: Bluetooth connection state = device disconnected");
+          break;
+        case BluetoothConnectionState.FAILED:
+          print("HF: Bluetooth connection state = failed");
+          break;
+        case BluetoothConnectionState.ERROR:
+          print("HF: Bluetooth connection state = error");
+          break;
+        default:
+          print("HF: Bluetooth connection state = unknown");
+          break;
+      }
     }
   }
 
