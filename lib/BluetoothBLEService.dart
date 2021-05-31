@@ -466,17 +466,14 @@ class BluetoothBLEService {
     _beatSubscription =
         _char4!.value.listen((data) {
           if (data.isNotEmpty) {
-            print("HF: Beat data received: $data");
-            // play the next note in the groove
-            if ((data[0] & 0xFF) !=
-                0xFF) { // ignore the 0xFF heartbeat notifies
-              //TODO: use the sequence number to detect missing beats
-              //TODO: use the timestamp to calculate BPM
-
-              // play the next note in the groove
-              groove.play();
+            if ((data[0] & 0xFF) == 0xFF) {
+              print("HF: heatbeat notify received");
+            } else {
+                // play the next note in the groove
+                groove.play(data[0]);
+              }
             }
-          }});
+          });
   }
 
   Future<void> dispose() async {

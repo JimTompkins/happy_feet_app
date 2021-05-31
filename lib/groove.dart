@@ -1,5 +1,7 @@
 import 'midi.dart';
 import 'bass.dart';
+import 'package:circular_buffer/circular_buffer.dart';
+import 'package:sprintf/sprintf.dart';
 
 Note note = new Note(70, "Bass drum");
 List<Note> notes = [note];
@@ -24,6 +26,10 @@ class Groove {
   int bpm = 1;  // number of beat per measure
   int numMeasures = 1; // number of measures
   int index = 0; // pointer to next note to play
+  int lastSequenceBit = 0;  // sequence bit of last notify received
+  final timeBuffer = CircularBuffer<int>(8);  // circular buffer of beat delta timestamps
+  double BeatsPerMinute = 0.0;
+  double sum = 0;
   List notes = <Note>[]; // list of notes
 
   // constructor with list of notes
@@ -31,6 +37,7 @@ class Groove {
     this.bpm = beats;
     this.numMeasures = measures;
     this.index = 0;
+    this.lastSequenceBit = 0;
     this.notes = notes;
   }
 
@@ -39,6 +46,7 @@ class Groove {
     this.bpm = beats;
     this.numMeasures = measures;
     this.index = 0;
+    this.lastSequenceBit = 0;
     this.notes = List<Note>.generate(beats * measures,(i){
       return Note(0, "");
     });
@@ -48,6 +56,7 @@ class Groove {
     this.bpm = 1;
     this.numMeasures = 1;
     this.index = 0;
+    this.lastSequenceBit = 0;
     this.notes.clear();
     this.notes[0].name = '-';
     this.notes[0].midi = 0;
@@ -201,7 +210,9 @@ class Groove {
   }
 
   // play the next note in the groove
-  void play() {
+  void play(int data) {
+    int sequenceBit;
+    double mean;
     print('HF:   Note: ${this.notes[this.index].midi}, index: ${this.index}');
 
     // play the note if non-zero
@@ -209,6 +220,22 @@ class Groove {
       // play the note
       midi.play(this.notes[this.index].midi);
     }
+
+    // check for a sequence error
+    sequenceBit = (data >> 6) & 0x01;
+    if (sequenceBit == lastSequenceBit) {
+      print('HF: sequence error');
+    }
+    lastSequenceBit = sequenceBit;
+
+    // calculate Beats Per Minute
+    final first = timeBuffer.isFilled ? timeBuffer.first : 0;
+    timeBuffer.add(data & 0x3F); // add the latest beat delta to the circular buffer
+    sum += timeBuffer.last - first;  // update the running sum
+    mean = sum.toDouble() / timeBuffer.length; // calculate the mean delta time
+    BeatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
+    print(sprintf("%s %.1f",["HF: beats per minute = ", BeatsPerMinute]));
+    //print('HF:  beats per minute = $BeatsPerMinute');
 
     // increment pointer to the next note
     this.index = (this.index + 1) % (this.bpm * this.numMeasures);

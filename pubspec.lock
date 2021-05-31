@@ -50,6 +50,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  circular_buffer:
+    dependency: "direct main"
+    description:
+      name: circular_buffer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.1"
   clock:
     dependency: transitive
     description:
@@ -287,6 +294,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.1"
+  sprintf:
+    dependency: "direct main"
+    description:
+      name: sprintf
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.0"
   stack_trace:
     dependency: transitive
     description:
