@@ -98,31 +98,40 @@ class _MyHomePageState extends State<MyHomePage> {
       //print('HF: connectionState: got bluetooth service!');
       switch (connectionState.bluetoothConnectionState) {
         case BluetoothConnectionState.OFF:
-          print("HF: Bluetooth connection state = off");
+          Get.snackbar('Bluetooth status:','off', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: off');
           break;
         case BluetoothConnectionState.SCANNING:
-          print("HF: Bluetooth connection state = scanning");
+          Get.snackbar('Bluetooth status:', 'scanning', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: scanning');
           break;
         case BluetoothConnectionState.STOP_SCANNING:
-          print("HF: Bluetooth connection state = stop scanning");
+          Get.snackbar('Bluetooth status:','stop scanning', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: stop scanning');
           break;
         case BluetoothConnectionState.DEVICE_FOUND:
-          print("HF: Bluetooth connection state = device found");
+          Get.snackbar('Bluetooth status:', 'device found', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: device found');
           break;
         case BluetoothConnectionState.DEVICE_CONNECTING:
-          print("HF: Bluetooth connection state = device connecting");
+          Get.snackbar('Bluetooth status:', 'device connecting', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: device connecting');
           break;
         case BluetoothConnectionState.DEVICE_CONNECTED:
-          print("HF: Bluetooth connection state = device connected");
+          Get.snackbar('Bluetooth status:', 'device connected', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: device connected');
           break;
         case BluetoothConnectionState.DEVICE_DISCONNECTED:
-          print("HF: Bluetooth connection state = device disconnected");
+          Get.snackbar('Bluetooth status:', 'device disconnected', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: device disconnected');
           break;
         case BluetoothConnectionState.FAILED:
-          print("HF: Bluetooth connection state = failed");
+          Get.snackbar('Bluetooth status:', 'failed', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: failed');
           break;
         case BluetoothConnectionState.ERROR:
-          print("HF: Bluetooth connection state = error");
+          Get.snackbar('Bluetooth status:', 'error', snackPosition: SnackPosition.BOTTOM);
+          print('Bluetooth connection state: error');
           break;
         default:
           print("HF: Bluetooth connection state = unknown");
