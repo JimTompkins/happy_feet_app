@@ -467,7 +467,7 @@ class BluetoothBLEService {
         _char4!.value.listen((data) {
           if (data.isNotEmpty) {
             if ((data[0] & 0xFF) == 0xFF) {
-              print("HF: heatbeat notify received");
+              print("HF: heartbeat notify received");
             } else {
                 // play the next note in the groove
                 groove.play(data[0]);

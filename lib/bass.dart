@@ -22,7 +22,6 @@ List chordNotes = <List>[MajorNotes, MinorNotes, DiminishedNotes, AugmentedNotes
 
 // MIDI code of the note E1 (the lowest note on an electric bass)
 // The range of MIDI notes in bass mode is from E1 to the VII of D2 = 39
-// TODO: E1midi should actually by 16 but need to update sf2 file to make this change
 const int E1midi = 40;
 // MIDI code of the note E2 (the lowest note on an acoustic guitar)
 // The range of MIDI notes in guitar mode is from E2 to the VII of D3 = 51

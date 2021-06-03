@@ -234,8 +234,7 @@ class Groove {
     sum += timeBuffer.last - first;  // update the running sum
     mean = sum.toDouble() / timeBuffer.length; // calculate the mean delta time
     BeatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
-    print(sprintf("%s %.1f",["HF: beats per minute = ", BeatsPerMinute]));
-    //print('HF:  beats per minute = $BeatsPerMinute');
+    print(sprintf("%s %d %.1f %.1f",["HF: beats per minute = ", data & 0x3F, mean, BeatsPerMinute]));
 
     // increment pointer to the next note
     this.index = (this.index + 1) % (this.bpm * this.numMeasures);
