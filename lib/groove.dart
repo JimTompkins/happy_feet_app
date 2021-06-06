@@ -215,18 +215,23 @@ class Groove {
     double mean;
     print('HF:   Note: ${this.notes[this.index].midi}, index: ${this.index}');
 
+    // check for a sequence error
+    sequenceBit = (data >> 6) & 0x01;
+    if (sequenceBit == lastSequenceBit) {
+      Get.snackbar('Sequence error:','A beat was missed, possibly due to a lost Bluetooth notify message',
+          snackPosition: SnackPosition.BOTTOM);
+      print('HF: sequence error');
+
+      // increment pointer to skip one note
+      this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+    }
+    lastSequenceBit = sequenceBit;
+
     // play the note if non-zero
     if (this.notes[this.index].midi != 0) {
       // play the note
       midi.play(this.notes[this.index].midi);
     }
-
-    // check for a sequence error
-    sequenceBit = (data >> 6) & 0x01;
-    if (sequenceBit == lastSequenceBit) {
-      print('HF: sequence error');
-    }
-    lastSequenceBit = sequenceBit;
 
     // calculate Beats Per Minute
     final first = timeBuffer.isFilled ? timeBuffer.first : 0;
