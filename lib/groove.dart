@@ -2,6 +2,7 @@ import 'midi.dart';
 import 'bass.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:sprintf/sprintf.dart';
+import 'package:get/get.dart';
 
 Note note = new Note(70, "Bass drum");
 List<Note> notes = [note];
