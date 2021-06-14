@@ -38,6 +38,9 @@ dependencies:
   sprintf: "^5.0.0"
   package_info_plus: ^1.0.1
   get:
+  csv: ^5.0.0
+  file_picker: ^3.0.2+2
+  url_launcher: ^6.0.6
 
 dev_dependencies:
   flutter_test:

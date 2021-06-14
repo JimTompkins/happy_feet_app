@@ -27,7 +27,8 @@ class Groove {
   int bpm = 1;  // number of beat per measure
   int numMeasures = 1; // number of measures
   int index = 0; // pointer to next note to play
-  int lastSequenceBit = 0;  // sequence bit of last notify received
+  int lastSequenceBit = -1;  // sequence bit of last notify received
+                             // note that -1 is used to indicate that a first beat has not yet been received
   final timeBuffer = CircularBuffer<int>(8);  // circular buffer of beat delta timestamps
   double BeatsPerMinute = 0.0;
   double sum = 0;
@@ -38,7 +39,7 @@ class Groove {
     this.bpm = beats;
     this.numMeasures = measures;
     this.index = 0;
-    this.lastSequenceBit = 0;
+    this.lastSequenceBit = -1;
     this.notes = notes;
   }
 
@@ -47,7 +48,7 @@ class Groove {
     this.bpm = beats;
     this.numMeasures = measures;
     this.index = 0;
-    this.lastSequenceBit = 0;
+    this.lastSequenceBit = -1;
     this.notes = List<Note>.generate(beats * measures,(i){
       return Note(0, "");
     });
@@ -57,7 +58,7 @@ class Groove {
     this.bpm = 1;
     this.numMeasures = 1;
     this.index = 0;
-    this.lastSequenceBit = 0;
+    this.lastSequenceBit = -1;
     this.notes.clear();
     this.notes[0].name = '-';
     this.notes[0].midi = 0;
@@ -179,11 +180,18 @@ class Groove {
 
   // return a list of initials of the current groove notes
   List<String> getInitials() {
-    var returnValue = new List<String>.filled(64,'-');
+    var returnValue = new List<String>.filled(96,'-');
     for(int i=0; i< this.bpm*this.numMeasures; i++) {
       returnValue[i] = this.notes[i].initial;
     }
     return returnValue;
+  }
+
+  // return the key of a bass groove by taking the leading part of a note name
+  String getBassKey() {
+    int dashIndex = this.notes[0].name.indexOf('-') ;
+    String result = this.notes[0].name.substring(0,dashIndex);
+    return result;
   }
 
   // resize the groove
@@ -218,13 +226,16 @@ class Groove {
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
-    if (sequenceBit == lastSequenceBit) {
-      Get.snackbar('Sequence error:','A beat was missed, possibly due to a lost Bluetooth notify message',
-          snackPosition: SnackPosition.BOTTOM);
-      print('HF: sequence error');
+    if (lastSequenceBit != -1) {  // ignore the sequence bit on the first notify received is indicated by -1
+      if (sequenceBit == lastSequenceBit) {
+        Get.snackbar('Sequence error:',
+            'A beat was missed, possibly due to a lost Bluetooth notify message',
+            snackPosition: SnackPosition.BOTTOM);
+        print('HF: sequence error');
 
-      // increment pointer to skip one note
-      this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        // increment pointer to skip one note
+        this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+      }
     }
     lastSequenceBit = sequenceBit;
 
@@ -249,6 +260,48 @@ class Groove {
   // restart by setting index to 0
   void restart() {
     this.index = 0;
+  }
+
+  // convert groove to  a csv string for writing to a file
+  String toCSV() {
+    String result = '';
+    int beats = this.bpm * this.numMeasures;
+    result = this.bpm.toString() + ',' + this.numMeasures.toString() + ',';
+
+    print('HF: toCSV: $result');
+
+    // for each note
+    for(int i=0; i<beats; i++) {
+       String note = this.notes[i].midi.toString() + ',' + this.notes[i].name + ',' + this.notes[i].initial + ',';
+       print('HF: toCSV: $note');
+       result = result + note;
+    }
+
+    return result;
+  }
+
+  // convert a CSV string to a groove for reading from a file
+  void fromCSV(String txt) {
+    // split the string on ,
+    List<String> fields = txt.split(',');
+    int numFields = fields.length;
+
+    print('HF groove.fromCSV : number of fields = $numFields');
+
+    groove.resize(int.parse(fields[0]), int.parse(fields[1]));
+    int beats = int.parse(fields[0]) * int.parse(fields[1]);
+    print('HF groove.fromCSV : number of beats = $beats');
+
+    // for each note
+    for(int i=0; i<beats; i++) {
+      this.notes[i].midi = int.parse(fields[i*3+2]);
+      this.notes[i].name = fields[i*3+3];
+      this.notes[i].initial = fields[i*3+4];
+      String note = this.notes[i].midi.toString() + ',' + this.notes[i].name + ',' + this.notes[i].initial + ',';
+      print('HF: groove.fromCSV: $note');
+    }
+
+    return;
   }
 
 }

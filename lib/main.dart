@@ -5,6 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'colourPalette.dart';
 import 'BluetoothBLEService.dart';
 import 'BluetoothConnectionStateDTO.dart';
@@ -12,11 +13,20 @@ import 'bluetoothConnectionState.dart';
 import 'midi.dart';
 import 'groove.dart';
 import 'bass.dart';
+import 'saveAndLoad.dart';
 
 void main() {
   runApp(MyApp());
 }
 
+ _launchURL() async {
+   const url = 'https://happyfeet-music.com';
+   if (await canLaunch(url)) {
+     await launch(url);
+   } else {
+     throw 'Could not launch $url';
+   }
+ }
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
@@ -57,7 +67,6 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-//
 class _MyHomePageState extends State<MyHomePage> {
   Mode? _character = Mode.singleNote;
   String note1 = 'Bass Drum';
@@ -69,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String? playModeString = 'Single Note';
   bool _playState = false;
   static BluetoothBLEService? _bluetoothBLEService;
+  bool isBLEConnected = false;
 
   @override
   initState() {
@@ -100,38 +110,47 @@ class _MyHomePageState extends State<MyHomePage> {
       switch (connectionState.bluetoothConnectionState) {
         case BluetoothConnectionState.OFF:
           Get.snackbar('Bluetooth status:','off', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: off');
           break;
         case BluetoothConnectionState.SCANNING:
           Get.snackbar('Bluetooth status:', 'scanning', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: scanning');
           break;
         case BluetoothConnectionState.STOP_SCANNING:
           Get.snackbar('Bluetooth status:','stop scanning', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: stop scanning');
           break;
         case BluetoothConnectionState.DEVICE_FOUND:
           Get.snackbar('Bluetooth status:', 'device found', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: device found');
           break;
         case BluetoothConnectionState.DEVICE_CONNECTING:
           Get.snackbar('Bluetooth status:', 'device connecting', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: device connecting');
           break;
         case BluetoothConnectionState.DEVICE_CONNECTED:
           Get.snackbar('Bluetooth status:', 'device connected', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = true;
           print('Bluetooth connection state: device connected');
           break;
         case BluetoothConnectionState.DEVICE_DISCONNECTED:
           Get.snackbar('Bluetooth status:', 'device disconnected', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: device disconnected');
           break;
         case BluetoothConnectionState.FAILED:
           Get.snackbar('Bluetooth status:', 'failed', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: failed');
           break;
         case BluetoothConnectionState.ERROR:
           Get.snackbar('Bluetooth status:', 'error', snackPosition: SnackPosition.BOTTOM);
+          isBLEConnected = false;
           print('Bluetooth connection state: error');
           break;
         default:
@@ -496,10 +515,18 @@ class _MyHomePageState extends State<MyHomePage> {
                      // disable beats
                      _bluetoothBLEService?.disableBeat();
                    } else {
-                     // enable beats
-                     _bluetoothBLEService?.enableBeat();
+                     if (isBLEConnected) {
+                       // enable beats
+                       _bluetoothBLEService?.enableBeat();
+                     } else {
+                       Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
+                     }
                    }
-                   setState((){ _playState = !_playState;});
+                   setState((){
+                     if (isBLEConnected) {
+                       _playState = !_playState;
+                     }
+                   });
                 },   //onPressed
                 tooltip: 'Enable beats',
                 child: _playState?
@@ -633,24 +660,28 @@ class _GroovePageState extends State<GroovePage> {
              },) // List.generate
           ),   // GridView
 
-          // Save groove heading
+          // Save groove
           Wrap(children: <Widget>[
-            Container(
-                padding: EdgeInsets.all(10),
-                alignment: Alignment.centerLeft,
-                child: Text('SAVE GROOVE',
-                  style: Theme.of(context).textTheme.headline1,
-                )),
+            Row(children: <Widget>[
+              TextButton(
+                  child: Text('Save groove'),
+                  onPressed: () {
+                    Get.to(() => saveGroovePage);
+                  }
+              ),
+            ]),
           ]),
 
-          // load groove heading
+          // load groove
           Wrap(children: <Widget>[
-            Container(
-                padding: EdgeInsets.all(10),
-                alignment: Alignment.centerLeft,
-                child: Text('LOAD GROOVE',
-                  style: Theme.of(context).textTheme.headline1,
-                )),
+            Row(children: <Widget>[
+              TextButton(
+                  child: Text('Load groove'),
+                  onPressed: () {
+                    Get.to(() => loadGroovePage);
+                  }
+              ),
+            ]),
           ]),  // Widget, wrap
         ],  // Widget
       ), // Listview
@@ -672,11 +703,16 @@ class _GroovePageState extends State<GroovePage> {
    int _numberOfMeasures = groove.numMeasures;
    int _totalBeats = groove.bpm * groove.numMeasures;
    String? key = 'E';
-   final dropdownValue = groove.getInitials();
+   List<String> dropdownValue = groove.getInitials();
 
    @override
    initState() {
      super.initState();
+     _beatsPerMeasure = groove.bpm;
+     _numberOfMeasures = groove.numMeasures;
+     _totalBeats = groove.bpm * groove.numMeasures;
+     key = groove.getBassKey();
+     dropdownValue = groove.getInitials();
    }
 
    @override
@@ -760,6 +796,9 @@ class _GroovePageState extends State<GroovePage> {
                      );
                    }).toList(),
                  ),
+                 // print a list of tones in the selected scale
+                 Text('Scale tones: ' + scaleTones(key),
+                   style: Theme.of(context).textTheme.caption,), // Text
                ]),
                ]), // Column
 
@@ -802,24 +841,28 @@ class _GroovePageState extends State<GroovePage> {
                   },) // List.generate
                ),   // GridView
 
-               // Save groove heading
+               // Save groove
                Wrap(children: <Widget>[
-                 Container(
-                     padding: EdgeInsets.all(10),
-                     alignment: Alignment.centerLeft,
-                     child: Text('SAVE GROOVE',
-                       style: Theme.of(context).textTheme.headline1,
-                     )),
+                     Row(children: <Widget>[
+                        TextButton(
+                           child: Text('Save groove'),
+                           onPressed: () {
+                             Get.to(() => saveGroovePage);
+                           }
+                        ),
+                    ]),
                ]),
 
-               // load groove heading
+               // load groove
                Wrap(children: <Widget>[
-                 Container(
-                     padding: EdgeInsets.all(10),
-                     alignment: Alignment.centerLeft,
-                     child: Text('LOAD GROOVE',
-                       style: Theme.of(context).textTheme.headline1,
-                     )),
+                 Row(children: <Widget>[
+                   TextButton(
+                       child: Text('Load groove'),
+                       onPressed: () {
+                         Get.to(() => loadGroovePage);
+                       }
+                   ),
+                 ]),
                ]),  // Widget, wrap
              ],  // Widget
            ), // Listview
@@ -880,7 +923,7 @@ class _InfoPageState extends State<InfoPage> {
               _infoTile('App version', _packageInfo.version),
 //              _infoTile('Build number', _packageInfo.buildNumber),
             Row(children: <Widget>[
-              TextButton(
+              ElevatedButton(
                 child: Text('Read model number'),
                 onPressed: () {
 //                  modelNumber = _bluetoothBLEService?.readModelNumber();
@@ -889,6 +932,12 @@ class _InfoPageState extends State<InfoPage> {
 //              Text(modelNumber),
                Text('???'),
             ]),
+           Row(children: <Widget>[
+             ElevatedButton(
+               onPressed: _launchURL,
+               child: new Text('Show HappyFeet homepage'),
+             ),
+           ],)
           ],
         ),
       ]),
@@ -948,4 +997,120 @@ class _MenuPageState extends State<MenuPage> {
       );
   }  // Widget
 } // class
+
+ // save groove page
+ SaveGroovePage saveGroovePage = new SaveGroovePage();
+
+ // Stateful version of saveGroovePage page
+ class SaveGroovePage extends StatefulWidget {
+   @override
+   _SaveGroovePageState createState() => _SaveGroovePageState();
+ }
+
+ class _SaveGroovePageState extends State<SaveGroovePage> {
+   final TextEditingController _controller = TextEditingController();
+
+   @override
+   initState() {
+     super.initState();
+     _controller.addListener(() {
+       final String text = _controller.text.toLowerCase();
+       _controller.value = _controller.value.copyWith(
+         text: text,
+         selection:
+         TextSelection(baseOffset: text.length, extentOffset: text.length),
+         composing: TextRange.empty,
+       );
+     });
+   }
+
+   @override
+   Widget build(BuildContext context) {
+     return Scaffold(
+       appBar: AppBar(
+         title: Text("Happy Feet - Save Groove"),
+       ),
+       body: Container(
+         alignment: Alignment.center,
+         padding: const EdgeInsets.all(6),
+         child: ListView(
+             children: <Widget>[
+               Column(
+                 crossAxisAlignment : CrossAxisAlignment.start,
+                 children: <Widget>[
+                   Text('Enter groove name: ',
+                       style: Theme.of(context).textTheme.caption,),
+                   TextFormField(
+                       controller: _controller,
+                       textCapitalization: TextCapitalization.none,
+                       inputFormatters: [new FilteringTextInputFormatter(RegExp("[a-z0-9_]"), allow: true)],
+                       validator: (value) {
+                         if (value == null || value.isEmpty) {
+                           Get.snackbar('Missing or invalid file name:',
+                               'Please enter a file name with only letters, numbers and underscores.',
+                               snackPosition: SnackPosition.BOTTOM);
+                           return 'Please enter a file name';
+                         } else {
+                           return null;
+                         }
+                       },
+                       decoration: const InputDecoration(border: OutlineInputBorder()),
+                     ),
+                     ElevatedButton(
+                         child: Text('Save groove'),
+                         onPressed: () {
+                           grooveStorage.writeGroove(_controller.text);
+                           Get.snackbar('Status:','groove saved', snackPosition: SnackPosition.BOTTOM);
+                         }
+                     ),
+                   ]),
+               ]),
+             ),
+       );
+   }  // Widget
+ } // class
+
+ // load groove page
+ LoadGroovePage loadGroovePage = new LoadGroovePage();
+
+ // Stateful version of loadGroovePage page
+ class LoadGroovePage extends StatefulWidget {
+   @override
+   _LoadGroovePageState createState() => _LoadGroovePageState();
+ }
+
+ class _LoadGroovePageState extends State<LoadGroovePage> {
+
+   @override
+   initState() {
+     super.initState();
+   }
+
+   @override
+   Widget build(BuildContext context) {
+     return Scaffold(
+       appBar: AppBar(
+         title: Text("Happy Feet - Load Groove"),
+       ),
+       body: Center(
+         child: ListView(
+             children: <Widget>[
+               Column(
+                 children: <Widget>[
+                   Row(children: <Widget>[
+                     ElevatedButton(
+                         child: Text('Load groove'),
+                         onPressed: () {
+                           grooveStorage.readGroove('xxx');
+                           Get.snackbar('Status:','groove loaded', snackPosition: SnackPosition.BOTTOM);
+                         }
+                     ),
+                   ]),
+                 ],
+               ),
+             ]),
+       ),
+     );
+   }  // Widget
+ } // class
 
