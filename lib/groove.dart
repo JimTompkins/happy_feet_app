@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 
 Note note = new Note(70, "Bass drum");
 List<Note> notes = [note];
-Groove groove = new Groove(1,1,notes);
+Groove groove = new Groove(1,1,notes, GrooveType.percussion);
+
+enum GrooveType { percussion, bass, guitarNotes, guitarChords, pianoNotes, pianoChords }
 
 class Note {
   int? midi;
@@ -33,18 +35,21 @@ class Groove {
   double BeatsPerMinute = 0.0;
   double sum = 0;
   List notes = <Note>[]; // list of notes
+  String? key = 'E';
+  GrooveType type = GrooveType.percussion;
 
   // constructor with list of notes
-  Groove(int beats, int measures, List notes) {
+  Groove(int beats, int measures, List notes, GrooveType type) {
     this.bpm = beats;
     this.numMeasures = measures;
     this.index = 0;
     this.lastSequenceBit = -1;
     this.notes = notes;
+    this.type = type;
   }
 
   // constructor without list of notes
-  Groove.empty(int beats, int measures) {
+  Groove.empty(int beats, int measures, GrooveType type) {
     this.bpm = beats;
     this.numMeasures = measures;
     this.index = 0;
@@ -52,6 +57,7 @@ class Groove {
     this.notes = List<Note>.generate(beats * measures,(i){
       return Note(0, "");
     });
+    this.type = type;
   }
 
   initialize() {
@@ -63,6 +69,8 @@ class Groove {
     this.notes[0].name = '-';
     this.notes[0].midi = 0;
     this.notes[0].initial = '-';
+    this.type = GrooveType.percussion;
+    this.key = 'E';
   }
 
   // retain the bpm and numMeasures but set all notes to -
@@ -153,7 +161,7 @@ class Groove {
     // roman numeral,  e.g. C-IV
     else {
       this.notes[index].name = keyName + '-' + roman;
-      this.notes[index].initial = keyName + '-' + roman;
+      this.notes[index].initial = roman;
 
       // get the index of the keyName
       int keyIndex = keys.indexWhere((element) =>
@@ -178,20 +186,55 @@ class Groove {
     return this.notes[index].substring(0,1);
   }
 
+  // return the type of this groove
+  String getType() {
+    String type;
+    switch(this.type) {
+      case GrooveType.percussion: {
+        type = 'percussion'; }
+      break;
+      case GrooveType.bass: {
+        type = 'bass'; }
+      break;
+      default: {
+        type = 'percussion'; }
+      break;
+    }
+    return(type);
+  }
+
+  // check the type of this groove and change it if necessary.  If changing the
+  // groove type, clear all of the notes
+  void checkType(String type) {
+    print('HF: checkType: type = $type');
+    if ((type == 'percussion') && (this.type != GrooveType.percussion)) {
+      this.type = GrooveType.percussion;
+      print('HF: checkType: changing type to percussion');
+      this.clearNotes();
+    }
+    if ((type == 'bass') && (this.type != GrooveType.bass)) {
+      this.type = GrooveType.bass;
+      print('HF: checkType: changing type to bass');
+      this.clearNotes();
+    }
+  }
+
   // return a list of initials of the current groove notes
   List<String> getInitials() {
     var returnValue = new List<String>.filled(96,'-');
     for(int i=0; i< this.bpm*this.numMeasures; i++) {
-      returnValue[i] = this.notes[i].initial;
+      if (this.type == GrooveType.percussion) {
+        returnValue[i] = this.notes[i].initial;
+      } else if (this.type == GrooveType.bass) {
+        if (this.notes[i].name == '-') {
+          returnValue[i] = '-';
+        } else {
+          int hyphenIndex = this.notes[i].name.indexOf('-') + 1;
+          returnValue[i] = this.notes[i].name.substring(hyphenIndex);
+        }
+      }
     }
     return returnValue;
-  }
-
-  // return the key of a bass groove by taking the leading part of a note name
-  String getBassKey() {
-    int dashIndex = this.notes[0].name.indexOf('-') ;
-    String result = this.notes[0].name.substring(0,dashIndex);
-    return result;
   }
 
   // resize the groove
@@ -266,7 +309,21 @@ class Groove {
   String toCSV() {
     String result = '';
     int beats = this.bpm * this.numMeasures;
-    result = this.bpm.toString() + ',' + this.numMeasures.toString() + ',';
+    String type;
+
+    switch(this.type) {
+      case GrooveType.percussion: {
+        type = 'percussion'; }
+        break;
+      case GrooveType.bass: {
+        type = 'bass'; }
+        break;
+      default: {
+        type = 'percussion'; }
+        break;
+      }
+
+    result = this.bpm.toString() + ',' + this.numMeasures.toString() + ',' + type + ',';
 
     print('HF: toCSV: $result');
 
@@ -285,23 +342,53 @@ class Groove {
     // split the string on ,
     List<String> fields = txt.split(',');
     int numFields = fields.length;
+    String type;
 
     print('HF groove.fromCSV : number of fields = $numFields');
 
     groove.resize(int.parse(fields[0]), int.parse(fields[1]));
     int beats = int.parse(fields[0]) * int.parse(fields[1]);
-    print('HF groove.fromCSV : number of beats = $beats');
+    type = fields[2];
+    print('HF groove.fromCSV : type = $type, number of beats = $beats');
 
     // for each note
     for(int i=0; i<beats; i++) {
-      this.notes[i].midi = int.parse(fields[i*3+2]);
-      this.notes[i].name = fields[i*3+3];
-      this.notes[i].initial = fields[i*3+4];
+      this.notes[i].midi = int.parse(fields[i*3+3]);
+      this.notes[i].name = fields[i*3+4];
+      this.notes[i].initial = fields[i*3+5];
       String note = this.notes[i].midi.toString() + ',' + this.notes[i].name + ',' + this.notes[i].initial + ',';
       print('HF: groove.fromCSV: $note');
     }
 
     return;
+  }
+
+  void printGroove() {
+    int beats = this.bpm * this.numMeasures;
+    int _bpm = this.bpm;
+    int _numMeasures = this.numMeasures;
+    String? _key = this.key;
+    String type;
+
+    switch(this.type) {
+      case GrooveType.percussion: {
+        type = 'percussion'; }
+      break;
+      case GrooveType.bass: {
+        type = 'bass'; }
+      break;
+      default: {
+        type = 'percussion'; }
+      break;
+    }
+
+    print('HF: print groove: $_bpm, $_numMeasures, $_key, $type');
+
+    // for each note
+    for(int i=0; i<beats; i++) {
+      String note = this.notes[i].midi.toString() + ',' + this.notes[i].name + ',' + this.notes[i].initial + ',';
+      print('HF: print groove note [$i]: $note');
+    }
   }
 
 }

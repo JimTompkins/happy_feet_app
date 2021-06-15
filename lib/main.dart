@@ -514,10 +514,12 @@ class _MyHomePageState extends State<MyHomePage> {
                    if (_playState) {
                      // disable beats
                      _bluetoothBLEService?.disableBeat();
+                     Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
                    } else {
                      if (isBLEConnected) {
                        // enable beats
                        _bluetoothBLEService?.enableBeat();
+                       Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
                      } else {
                        Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
                      }
@@ -554,11 +556,17 @@ class _GroovePageState extends State<GroovePage> {
   int _beatsPerMeasure = groove.bpm;
   int _numberOfMeasures = groove.numMeasures;
   int _totalBeats = groove.bpm * groove.numMeasures;
-  final dropdownValue = groove.getInitials();
+  var dropdownValue = groove.getInitials();
 
   @override
   initState() {
     super.initState();
+    _beatsPerMeasure = groove.bpm;
+    _numberOfMeasures = groove.numMeasures;
+    _totalBeats = groove.bpm * groove.numMeasures;
+    groove.checkType('percussion');
+    groove.printGroove();
+    dropdownValue = groove.getInitials();
   }
 
   @override
@@ -702,7 +710,7 @@ class _GroovePageState extends State<GroovePage> {
    int _beatsPerMeasure = groove.bpm;
    int _numberOfMeasures = groove.numMeasures;
    int _totalBeats = groove.bpm * groove.numMeasures;
-   String? key = 'E';
+   String? key = groove.key;
    List<String> dropdownValue = groove.getInitials();
 
    @override
@@ -711,8 +719,11 @@ class _GroovePageState extends State<GroovePage> {
      _beatsPerMeasure = groove.bpm;
      _numberOfMeasures = groove.numMeasures;
      _totalBeats = groove.bpm * groove.numMeasures;
-     key = groove.getBassKey();
+     key = groove.key;
+     groove.checkType('bass');
      dropdownValue = groove.getInitials();
+     print('HF: dropdownValue = $dropdownValue');
+     groove.printGroove();
    }
 
    @override
@@ -785,6 +796,7 @@ class _GroovePageState extends State<GroovePage> {
                    onChanged: (String? newValue) {
                      setState(() {
                        key = newValue;
+                       groove.key = newValue;
                        groove.changeKey(key);
                      });
                    },
@@ -1061,6 +1073,7 @@ class _MenuPageState extends State<MenuPage> {
                          onPressed: () {
                            grooveStorage.writeGroove(_controller.text);
                            Get.snackbar('Status:','groove saved', snackPosition: SnackPosition.BOTTOM);
+                           // go back to previous screen
                          }
                      ),
                    ]),
@@ -1103,6 +1116,21 @@ class _MenuPageState extends State<MenuPage> {
                          onPressed: () {
                            grooveStorage.readGroove('xxx');
                            Get.snackbar('Status:','groove loaded', snackPosition: SnackPosition.BOTTOM);
+                           // go back to previous screen
+                           switch(groove.type) {
+                             case GrooveType.percussion: {
+                               Get.to(() => groovePage);
+                               break;
+                             }
+                             case GrooveType.bass: {
+                               Get.to(() => bassPage);
+                               break;
+                             }
+                             default: {
+                               Get.to(() => groovePage);
+                               break;
+                             }
+                           }
                          }
                      ),
                    ]),
