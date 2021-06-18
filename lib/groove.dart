@@ -1,7 +1,7 @@
 import 'midi.dart';
 import 'bass.dart';
 import 'package:circular_buffer/circular_buffer.dart';
-import 'package:sprintf/sprintf.dart';
+//import 'package:sprintf/sprintf.dart';
 import 'package:get/get.dart';
 
 Note note = new Note(70, "Bass drum");
@@ -37,6 +37,7 @@ class Groove {
   List notes = <Note>[]; // list of notes
   String? key = 'E';
   GrooveType type = GrooveType.percussion;
+  String description = '';
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, GrooveType type) {
@@ -294,7 +295,8 @@ class Groove {
     sum += timeBuffer.last - first;  // update the running sum
     mean = sum.toDouble() / timeBuffer.length; // calculate the mean delta time
     BeatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
-    print(sprintf("%s %d %.1f %.1f",["HF: beats per minute = ", data & 0x3F, mean, BeatsPerMinute]));
+//    print(sprintf("%s %d %.1f %.1f",["HF: beats per minute = ", data & 0x3F, mean, BeatsPerMinute]));
+    print("HF: beats per minute = ${data & 0x3F} ${mean.toStringAsFixed(1)} ${BeatsPerMinute.toStringAsFixed(1)}");
 
     // increment pointer to the next note
     this.index = (this.index + 1) % (this.bpm * this.numMeasures);
@@ -306,7 +308,7 @@ class Groove {
   }
 
   // convert groove to  a csv string for writing to a file
-  String toCSV() {
+  String toCSV(String description) {
     String result = '';
     int beats = this.bpm * this.numMeasures;
     String type;
@@ -323,7 +325,10 @@ class Groove {
         break;
       }
 
-    result = this.bpm.toString() + ',' + this.numMeasures.toString() + ',' + type + ',';
+      if (description == null) {
+        description = '';
+      }
+    result = description + ',' + this.bpm.toString() + ',' + this.numMeasures.toString() + ',' + type + ',';
 
     print('HF: toCSV: $result');
 
@@ -343,19 +348,23 @@ class Groove {
     List<String> fields = txt.split(',');
     int numFields = fields.length;
     String type;
+    String description;
 
     print('HF groove.fromCSV : number of fields = $numFields');
 
-    groove.resize(int.parse(fields[0]), int.parse(fields[1]));
-    int beats = int.parse(fields[0]) * int.parse(fields[1]);
-    type = fields[2];
+    description = fields[0];
+    this.description = description;
+
+    groove.resize(int.parse(fields[1]), int.parse(fields[2]));
+    int beats = int.parse(fields[1]) * int.parse(fields[2]);
+    type = fields[3];
     print('HF groove.fromCSV : type = $type, number of beats = $beats');
 
     // for each note
     for(int i=0; i<beats; i++) {
-      this.notes[i].midi = int.parse(fields[i*3+3]);
-      this.notes[i].name = fields[i*3+4];
-      this.notes[i].initial = fields[i*3+5];
+      this.notes[i].midi = int.parse(fields[i*3+4]);
+      this.notes[i].name = fields[i*3+5];
+      this.notes[i].initial = fields[i*3+6];
       String note = this.notes[i].midi.toString() + ',' + this.notes[i].name + ',' + this.notes[i].initial + ',';
       print('HF: groove.fromCSV: $note');
     }
@@ -383,6 +392,10 @@ class Groove {
     }
 
     print('HF: print groove: $_bpm, $_numMeasures, $_key, $type');
+
+    if (this.description != '') {
+      print('HF: print groove: $this.description');
+    }
 
     // for each note
     for(int i=0; i<beats; i++) {

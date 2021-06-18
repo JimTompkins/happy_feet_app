@@ -380,13 +380,6 @@
             </list>
           </value>
         </entry>
-        <entry key="sprintf">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/sprintf-5.0.0/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="stack_trace">
           <value>
             <list>
@@ -566,7 +559,6 @@
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/protobuf-2.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/rxdart-0.26.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.1/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/sprintf-5.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.10.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.1.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.1.0/lib" />

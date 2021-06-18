@@ -1020,14 +1020,24 @@ class _MenuPageState extends State<MenuPage> {
  }
 
  class _SaveGroovePageState extends State<SaveGroovePage> {
-   final TextEditingController _controller = TextEditingController();
+   final TextEditingController _filenameController = TextEditingController();
+   final TextEditingController _descriptionController = TextEditingController();
 
    @override
    initState() {
      super.initState();
-     _controller.addListener(() {
-       final String text = _controller.text.toLowerCase();
-       _controller.value = _controller.value.copyWith(
+     _filenameController.addListener(() {
+       final String text = _filenameController.text.toLowerCase();
+       _filenameController.value = _filenameController.value.copyWith(
+         text: text,
+         selection:
+         TextSelection(baseOffset: text.length, extentOffset: text.length),
+         composing: TextRange.empty,
+       );
+     });
+     _descriptionController.addListener(() {
+       final String text = _descriptionController.text;
+       _descriptionController.value = _descriptionController.value.copyWith(
          text: text,
          selection:
          TextSelection(baseOffset: text.length, extentOffset: text.length),
@@ -1053,7 +1063,7 @@ class _MenuPageState extends State<MenuPage> {
                    Text('Enter groove name: ',
                        style: Theme.of(context).textTheme.caption,),
                    TextFormField(
-                       controller: _controller,
+                       controller: _filenameController,
                        textCapitalization: TextCapitalization.none,
                        inputFormatters: [new FilteringTextInputFormatter(RegExp("[a-z0-9_]"), allow: true)],
                        validator: (value) {
@@ -1068,12 +1078,34 @@ class _MenuPageState extends State<MenuPage> {
                        },
                        decoration: const InputDecoration(border: OutlineInputBorder()),
                      ),
+                   Text('Enter a description of the groove: ',
+                     style: Theme.of(context).textTheme.caption,),
+                   TextFormField(
+                     controller: _descriptionController,
+                     inputFormatters: [new FilteringTextInputFormatter(RegExp(","), allow: false)],
+                     decoration: const InputDecoration(border: OutlineInputBorder()),
+                   ),
                      ElevatedButton(
                          child: Text('Save groove'),
                          onPressed: () {
-                           grooveStorage.writeGroove(_controller.text);
+                           grooveStorage.writeGroove(_filenameController.text, _descriptionController.text);
                            Get.snackbar('Status:','groove saved', snackPosition: SnackPosition.BOTTOM);
                            // go back to previous screen
+                           // go back to previous screen
+                           switch(groove.type) {
+                             case GrooveType.percussion: {
+                               Get.to(() => groovePage);
+                               break;
+                             }
+                             case GrooveType.bass: {
+                               Get.to(() => bassPage);
+                               break;
+                             }
+                             default: {
+                               Get.to(() => groovePage);
+                               break;
+                             }
+                           }
                          }
                      ),
                    ]),
@@ -1097,6 +1129,7 @@ class _MenuPageState extends State<MenuPage> {
    @override
    initState() {
      super.initState();
+     grooveStorage.listofSavedGrooves();
    }
 
    @override
@@ -1110,12 +1143,16 @@ class _MenuPageState extends State<MenuPage> {
              children: <Widget>[
                Column(
                  children: <Widget>[
+                   Text('Saved grooves: ',
+                     style: Theme.of(context).textTheme.caption,),
+                   Text(grooveStorage.grooveFileNames.toString(),
+                     style: Theme.of(context).textTheme.caption,),
                    Row(children: <Widget>[
                      ElevatedButton(
                          child: Text('Load groove'),
                          onPressed: () {
                            grooveStorage.readGroove('xxx');
-                           Get.snackbar('Status:','groove loaded', snackPosition: SnackPosition.BOTTOM);
+                           Get.snackbar('Loaded groove', groove.description, snackPosition: SnackPosition.BOTTOM);
                            // go back to previous screen
                            switch(groove.type) {
                              case GrooveType.percussion: {
