@@ -86,13 +86,6 @@
             </list>
           </value>
         </entry>
-        <entry key="csv">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/csv-5.0.0/lib" />
-            </list>
-          </value>
-        </entry>
         <entry key="cupertino_icons">
           <value>
             <list>
@@ -118,13 +111,6 @@
           <value>
             <list>
               <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/file-6.1.0/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="file_picker">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/file_picker-3.0.2+2/lib" />
             </list>
           </value>
         </entry>
@@ -160,13 +146,6 @@
           <value>
             <list>
               <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_midi-1.1.0/lib" />
-            </list>
-          </value>
-        </entry>
-        <entry key="flutter_plugin_android_lifecycle">
-          <value>
-            <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.2/lib" />
             </list>
           </value>
         </entry>
@@ -521,17 +500,14 @@
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/convert-3.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/crypto-3.0.1/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/csv-5.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/ffi-1.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/file-6.1.0/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/file_picker-3.0.2+2/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/fixnum-1.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_blue-0.8.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_launcher_icons-0.9.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_midi-1.1.0/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_plugin_android_lifecycle-2.0.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/get-4.1.4/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/http-0.13.3/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0/lib" />

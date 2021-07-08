@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 // import 'package:bluelight_bloc/bloc_lib.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -128,7 +129,7 @@ class BluetoothBLEService {
                         .firstWhere((e) => e == scanResult.device.name);
                     if (foundDevice.isNotEmpty) {
                       print('HF: HappyFeet found');
-                      print('HF: RSSI = $scanResult.device.rssi');
+                      print('HF: RSSI = $scanResult.device.rssi.toString()');
                       stopScan();
 
                       _connectionStateSubject.add(BluetoothConnectionStateDTO(
@@ -244,9 +245,8 @@ class BluetoothBLEService {
           if (service.uuid.toString() == HF_SERVICE_UUID) {
             // for HappyFeet, set the MTU as small as possible
             final mtu = await targetDevice!.mtu.first;
-            print("HF: mtu: ");
-            print(mtu);
-            await targetDevice!.requestMtu(23);
+            print("HF: MTU size: $mtu");
+            //await targetDevice!.requestMtu(23);
 
             await Future.delayed(Duration(milliseconds: 1000));
 
@@ -272,7 +272,7 @@ class BluetoothBLEService {
                 _char6 = characteristic;
               }
             });
-            print("...done.");
+            print("HF: ...done.");
 
             await Future.delayed(Duration(milliseconds: 1000));
 
@@ -350,9 +350,12 @@ class BluetoothBLEService {
     }
   }
 
-  // enable the beat notification by writing char6 to 0x01
+  // enable the beat notification by writing char6 bit 0 to 1.  The local
+  // time is written in bits 7:1.
   enableBeat() async {
-    List<int> data = [0x01];
+    var time = DateTime.now();   // get system time
+    int temp = ((time.millisecond & 0x3F) << 1) | 0x01;
+    List<int> data = [temp];
     if (_char6 == null) {
       print("HF: enableBeat: _char6 is null");
       return;
@@ -368,9 +371,12 @@ class BluetoothBLEService {
       }
     }
 
-  // disable the beat notification by writing char6 to 0x00
+  // disable the beat notification by writing char6 bit 0 to 0.
+  // The local time is also written to char6[7:1];
   disableBeat() async {
-    List<int> data = [0x00];
+    var time = DateTime.now();   // get system time
+    int temp = ((time.millisecond & 0x3F) << 1) & 0xFE;
+    List<int> data = [temp];
     if (_char6 == null) {
       print("HF: disableBeat: _char6 is null");
       return;
@@ -466,15 +472,21 @@ class BluetoothBLEService {
     _beatSubscription =
         _char4!.value.listen((data) {
           if (data.isNotEmpty) {
+            var time = DateTime.now();   // get system time
+            print('HF:   notify received at time: $time');
             if ((data[0] & 0xFF) == 0xFF) {
               print("HF: heartbeat notify received");
+              Timeline.timeSync("HF: heartbeat received", () {});
             } else {
                 // play the next note in the groove
+              //groove.play(data[0]);
+              Timeline.timeSync("HF: play note", () {
                 groove.play(data[0]);
-              }
+              });
             }
-          });
-  }
+          }
+       });
+    }
 
   Future<void> dispose() async {
     await disconnectFromDevice();

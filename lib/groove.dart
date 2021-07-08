@@ -266,7 +266,8 @@ class Groove {
   void play(int data) {
     int sequenceBit;
     double mean;
-    print('HF:   Note: ${this.notes[this.index].midi}, index: ${this.index}');
+    var time = DateTime.now();   // get system time
+    print('HF:   Time: $time, Note: ${this.notes[this.index].midi}, index: ${this.index}');
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;

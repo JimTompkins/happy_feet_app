@@ -1147,6 +1147,14 @@ class _MenuPageState extends State<MenuPage> {
                      style: Theme.of(context).textTheme.caption,),
                    Text(grooveStorage.grooveFileNames.toString(),
                      style: Theme.of(context).textTheme.caption,),
+                   Expanded(
+                     child: ListView.builder(
+                       itemCount: grooveStorage.grooveFileNames.length,
+                       itemBuilder: (BuildContext context, int index) {
+                         return Text(grooveStorage.grooveFileNames[index].toString());
+                       }
+                     )
+                   ),
                    Row(children: <Widget>[
                      ElevatedButton(
                          child: Text('Load groove'),
