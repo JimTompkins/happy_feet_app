@@ -31,7 +31,8 @@ dependencies:
 
   # support for MIDI
   tonic: ^0.2.3
-  flutter_midi: ^1.0.2
+  #flutter_midi: ^1.0.2
+  flutter_ogg_piano: ^1.1.3
   flutter_blue: 0.8.0
   flutter_launcher_icons: 0.9.0
   circular_buffer: ^0.9.1
@@ -94,7 +95,11 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
   assets:
-    - assets/sounds/acoust_kits_1-4.sf2
-    - assets/sounds/bass.sf2
-    - assets/sounds/happyfeet.sf2
+    - assets/sounds/bass_drum.ogg
+    - assets/sounds/kick_drum.ogg
+    - assets/sounds/snare_drum.ogg
+    - assets/sounds/high_hat.ogg
+    - assets/sounds/cowbell.ogg
+    - assets/sounds/tambourine.ogg
+    - assets/sounds/Bass74MapleJazzA1.ogg
     - assets/images/icon.png

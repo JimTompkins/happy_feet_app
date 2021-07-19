@@ -10,7 +10,7 @@ import 'colourPalette.dart';
 import 'BluetoothBLEService.dart';
 import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
-import 'midi.dart';
+import 'oggPiano.dart';
 import 'groove.dart';
 import 'bass.dart';
 import 'saveAndLoad.dart';
@@ -70,9 +70,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Mode? _character = Mode.singleNote;
   String note1 = 'Bass Drum';
-  int midiNote1 = 70;
+  int index1 = 0;
   String note2 = 'none';
-  int midiNote2 = 0;
+  int index2 = -1;
   int sequenceCount = 0;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
@@ -82,14 +82,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   initState() {
-    // initialize MIDI
-    midi.unmute();
+     oggpiano.init();
+
 //    rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
 //      midi.prepare(sf2, "bass.sf2"); });
 //    rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf3) {
 //      midi.prepare(sf3, "acoust_kits_1-4.sf2"); });
-    rootBundle.load("assets/sounds/happyfeet.sf2").then((sf4) {
-      midi.prepare(sf4, "happyfeet.sf2"); });
+//    rootBundle.load("assets/sounds/happyfeet.sf2").then((sf4) {
+//      midi.prepare(sf4, "happyfeet.sf2"); });
     // initialize BLE
     if (_bluetoothBLEService == null) {
       _bluetoothBLEService = new BluetoothBLEService();
@@ -144,9 +144,9 @@ class _MyHomePageState extends State<MyHomePage> {
           print('Bluetooth connection state: device disconnected');
           break;
         case BluetoothConnectionState.FAILED:
-          Get.snackbar('Bluetooth status:', 'failed', snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Bluetooth status:', 'failed.  Please make sure Bluetooth is turned on and try again.', snackPosition: SnackPosition.BOTTOM);
           isBLEConnected = false;
-          print('Bluetooth connection state: failed');
+          print('Bluetooth connection state: failed.  Please make sure Bluetooth is turned on and try again.');
           break;
         case BluetoothConnectionState.ERROR:
           Get.snackbar('Bluetooth status:', 'error', snackPosition: SnackPosition.BOTTOM);
@@ -272,17 +272,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     playModeString = newValue;
                     // if changing back from bass mode to another other mode...
                     if (newValue != 'Bass' && playMode == Mode.bass) {
-                      // ...reload the drumkit sf2 file
-                      //rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf2) {
-                     //   midi.prepare(sf2, "acoust_kits_1-4.sf2");
-                     // });
                     }
                     switch (newValue) {
                       case 'Single Note':
                         {
                           playMode = Mode.singleNote;
                           groove.resize(1,1);
-                          groove.notes[0].midi = midiNote1;
+                          groove.notes[0].oggIndex = index1;
                           groove.notes[0].name = note1;
                         }
                         break;
@@ -290,9 +286,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         {
                           playMode = Mode.alternatingNotes;
                           groove.resize(2,1);
-                          groove.notes[0].midi = midiNote1;
+                          groove.notes[0].oggIndex = index1;
                           groove.notes[0].name = note1;
-                          groove.notes[1].midi = midiNote2;
+                          groove.notes[1].oggIndex = index2;
                           groove.notes[1].name = note2;
                         }
                         break;
@@ -308,9 +304,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Bass':
                         {
                           if (playMode != Mode.bass) {
-                            //rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
-                            //  midi.prepare(sf2, "bass.sf2");
-                            //});
                             groove.clearNotes();
                           }
                           playMode = Mode.bass;
@@ -368,40 +361,40 @@ class _MyHomePageState extends State<MyHomePage> {
                   switch (note1) {
                     case 'Bass Drum':
                       {
-                        midiNote1 = 70;
+                        index1 = 0;
                       }
                       break;
                     case 'Kick Drum':
                       {
-                        midiNote1 = 65;
+                        index1 = 1;
                       }
                       break;
                     case 'Snare Drum':
                       {
-                        midiNote1 = 69;
+                        index1 = 2;
                       }
                       break;
                     case 'High Hat Cymbal':
                       {
-                        midiNote1 = 99;
+                        index1 = 3;
                       }
                       break;
                     case 'Cowbell':
                       {
-                        midiNote1 = 118;
+                        index1 = 4;
                       }
                       break;
                     case 'Tambourine':
                       {
-                        midiNote1 = 116;
+                        index1 = 5;
                       }
                       break;
                     default:
                       {
-                        midiNote1 = 0;
+                        index1 = -1;
                       }
                   }
-                  groove.notes[0].midi = midiNote1;
+                  groove.notes[0].oggIndex = index1;
                   groove.notes[0].name = note1;
                 });
               },
@@ -441,45 +434,45 @@ class _MyHomePageState extends State<MyHomePage> {
                   switch (note2) {
                     case 'none':
                       {
-                        midiNote2 = 0;
+                        index2 = -1;
                       }
                       break;
                     case 'Bass Drum':
                       {
-                        midiNote2 = 70;
+                        index2 = 0;
                       }
                       break;
                     case 'Kick Drum':
                       {
-                        midiNote2 = 65;
+                        index2 = 1;
                       }
                       break;
                     case 'Snare Drum':
                       {
-                        midiNote2 = 69;
+                        index2 = 2;
                       }
                       break;
                     case 'High Hat Cymbal':
                       {
-                        midiNote2 = 99;
+                        index2 = 3;
                       }
                       break;
                     case 'Cowbell':
                       {
-                        midiNote2 = 118;
+                        index2 = 4;
                       }
                       break;
                     case 'Tambourine':
                       {
-                        midiNote2 = 116;
+                        index2 = 5;
                       }
                       break;
                     default:
                       {
-                        midiNote2 = 0;
+                        index2 = -1;
                       }
                   }
-                  groove.notes[1].midi = midiNote2;
+                  groove.notes[1].oggIndex = index2;
                   groove.notes[1].name = note2;
                 });
               },
