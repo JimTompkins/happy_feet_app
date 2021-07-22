@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
-// import 'package:bluelight_bloc/bloc_lib.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'BluetoothConnectionStateDTO.dart';
@@ -48,7 +47,8 @@ class BluetoothBLEService {
 
   static const TARGET_DEVICE_NAMES = ["HappyFeet"];
 
-  FlutterBlue? flutterBlue = FlutterBlue.instance;
+  final flutterReactiveBle FlutterReactiveBle();
+ // FlutterBlue? flutterBlue = FlutterBlue.instance;
   StreamSubscription<ScanResult>? scanSubScription;
 
   BluetoothDevice? targetDevice;

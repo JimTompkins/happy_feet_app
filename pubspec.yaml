@@ -33,12 +33,15 @@ dependencies:
   tonic: ^0.2.3
   #flutter_midi: ^1.0.2
   flutter_ogg_piano: ^1.1.3
-  flutter_blue: 0.8.0
+  #flutter_blue: 0.8.0
+  flutter_reactive_ble: ^3.1.1+1
   flutter_launcher_icons: 0.9.0
   circular_buffer: ^0.9.1
   package_info_plus: ^1.0.1
   get:
   url_launcher: ^6.0.6
+  provider: ^5.0.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

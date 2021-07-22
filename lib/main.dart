@@ -6,18 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 import 'colourPalette.dart';
-import 'BluetoothBLEService.dart';
-import 'BluetoothConnectionStateDTO.dart';
-import 'bluetoothConnectionState.dart';
+//import 'BluetoothBLEService.dart';
+//import 'BluetoothConnectionStateDTO.dart';
+//import 'bluetoothConnectionState.dart';
+import 'ble.dart';
 import 'oggPiano.dart';
 import 'groove.dart';
 import 'bass.dart';
 import 'saveAndLoad.dart';
 
-void main() {
-  runApp(MyApp());
-}
+
 
  _launchURL() async {
    const url = 'https://happyfeet-music.com';
@@ -27,6 +27,11 @@ void main() {
      throw 'Could not launch $url';
    }
  }
+
+ void main() {
+   runApp(MyApp());
+ }
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
@@ -77,92 +82,31 @@ class _MyHomePageState extends State<MyHomePage> {
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
   bool _playState = false;
-  static BluetoothBLEService? _bluetoothBLEService;
+  static BluetoothBLEService _bluetoothBLEService = new BluetoothBLEService();
   bool isBLEConnected = false;
 
   @override
   initState() {
      oggpiano.init();
 
-//    rootBundle.load("assets/sounds/bass.sf2").then((sf2) {
-//      midi.prepare(sf2, "bass.sf2"); });
-//    rootBundle.load("assets/sounds/acoust_kits_1-4.sf2").then((sf3) {
-//      midi.prepare(sf3, "acoust_kits_1-4.sf2"); });
-//    rootBundle.load("assets/sounds/happyfeet.sf2").then((sf4) {
-//      midi.prepare(sf4, "happyfeet.sf2"); });
-    // initialize BLE
-    if (_bluetoothBLEService == null) {
-      _bluetoothBLEService = new BluetoothBLEService();
-    }
+     // initialize BLE
+    if (_bluetoothBLEService != null) {
+//      _bluetoothBLEService = new BluetoothBLEService();
+      _bluetoothBLEService.init();
+   }
     // Waiting for connecting to bluetooth signal.
-    _bluetoothBLEService!.connectionStateStream
-        .listen(_handleBluetoothConnection);
+//    _bluetoothBLEService!.connectionStateStream
+//        .listen(_handleBluetoothConnection);
 
-    _bluetoothBLEService!.isDeviceBluetoothOn();
+//    _bluetoothBLEService!.isDeviceBluetoothOn();
 
     super.initState();
   }
 
-  void _handleBluetoothConnection(BluetoothConnectionStateDTO connectionState) {
-//    print('HF: connectionState: $connectionState');
-    if (_bluetoothBLEService != null) {
-      //print('HF: connectionState: got bluetooth service!');
-      switch (connectionState.bluetoothConnectionState) {
-        case BluetoothConnectionState.OFF:
-          Get.snackbar('Bluetooth status:','off', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: off');
-          break;
-        case BluetoothConnectionState.SCANNING:
-          Get.snackbar('Bluetooth status:', 'scanning', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: scanning');
-          break;
-        case BluetoothConnectionState.STOP_SCANNING:
-          Get.snackbar('Bluetooth status:','stop scanning', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: stop scanning');
-          break;
-        case BluetoothConnectionState.DEVICE_FOUND:
-          Get.snackbar('Bluetooth status:', 'device found', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: device found');
-          break;
-        case BluetoothConnectionState.DEVICE_CONNECTING:
-          Get.snackbar('Bluetooth status:', 'device connecting', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: device connecting');
-          break;
-        case BluetoothConnectionState.DEVICE_CONNECTED:
-          Get.snackbar('Bluetooth status:', 'device connected', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = true;
-          print('Bluetooth connection state: device connected');
-          break;
-        case BluetoothConnectionState.DEVICE_DISCONNECTED:
-          Get.snackbar('Bluetooth status:', 'device disconnected', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: device disconnected');
-          break;
-        case BluetoothConnectionState.FAILED:
-          Get.snackbar('Bluetooth status:', 'failed.  Please make sure Bluetooth is turned on and try again.', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: failed.  Please make sure Bluetooth is turned on and try again.');
-          break;
-        case BluetoothConnectionState.ERROR:
-          Get.snackbar('Bluetooth status:', 'error', snackPosition: SnackPosition.BOTTOM);
-          isBLEConnected = false;
-          print('Bluetooth connection state: error');
-          break;
-        default:
-          print("HF: Bluetooth connection state = unknown");
-          break;
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+      return Scaffold(
       appBar: AppBar(
         title: Text('Happy Feet'),
         leading: GestureDetector(
@@ -198,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
               )),
         ]),
 
+//        Text(bleStatusText(BleStatus), style: Theme.of(context).textTheme.caption),
         //row of buttons with text below each
         Row(children: <Widget>[
           Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
@@ -213,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   splashColor: Colors.purple,
                   onPressed: () {
                     // Start scanning and make connection
-                    _bluetoothBLEService!.startConnection();
+                    _bluetoothBLEService.connect();
                   }),
             ),
             Text('Connect',
@@ -232,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 splashColor: Colors.purple,
                 onPressed: () {
                   // stop the BLE connection
-                  _bluetoothBLEService!.disconnectFromDevice();
+                  _bluetoothBLEService.disconnect();
                   _playState = false;
                 },
               ),
@@ -506,12 +451,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: (){
                    if (_playState) {
                      // disable beats
-                     _bluetoothBLEService?.disableBeat();
+//                     _bluetoothBLEService?.disableBeat();
                      Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
                    } else {
                      if (isBLEConnected) {
                        // enable beats
-                       _bluetoothBLEService?.enableBeat();
+//                       _bluetoothBLEService?.enableBeat();
                        Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
                      } else {
                        Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
@@ -534,7 +479,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ]),
     );
   } // widget
-} // class
+
+ } // class
 
 // Groove page
 GroovePage groovePage = new GroovePage();
