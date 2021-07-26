@@ -83,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String? playModeString = 'Single Note';
   bool _playState = false;
   static BluetoothBLEService _bluetoothBLEService = new BluetoothBLEService();
-  bool isBLEConnected = false;
 
   @override
   initState() {
@@ -91,15 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
      // initialize BLE
     if (_bluetoothBLEService != null) {
-//      _bluetoothBLEService = new BluetoothBLEService();
       _bluetoothBLEService.init();
    }
-    // Waiting for connecting to bluetooth signal.
-//    _bluetoothBLEService!.connectionStateStream
-//        .listen(_handleBluetoothConnection);
-
-//    _bluetoothBLEService!.isDeviceBluetoothOn();
-
     super.initState();
   }
 
@@ -158,7 +150,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   splashColor: Colors.purple,
                   onPressed: () {
                     // Start scanning and make connection
-                    _bluetoothBLEService.connect();
+                    if (_bluetoothBLEService.isBleConnected()) {
+                      Get.snackbar('Error', 'already connected', snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      Get.snackbar('Status', 'connecting to Bluetooth', snackPosition: SnackPosition.BOTTOM);
+                      _bluetoothBLEService.connect();
+                    }
                   }),
             ),
             Text('Connect',
@@ -177,8 +174,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 splashColor: Colors.purple,
                 onPressed: () {
                   // stop the BLE connection
-                  _bluetoothBLEService.disconnect();
-                  _playState = false;
+                  if (_bluetoothBLEService.isBleConnected()) {
+                    Get.snackbar('Status', 'disconnecting Bluetooth', snackPosition: SnackPosition.BOTTOM);
+                    _bluetoothBLEService.disconnect();
+                    _playState = false;
+                  } else {
+                    Get.snackbar('Error', 'not connected', snackPosition: SnackPosition.BOTTOM);
+                  }
                 },
               ),
             ),
@@ -451,19 +453,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: (){
                    if (_playState) {
                      // disable beats
-//                     _bluetoothBLEService?.disableBeat();
+                     _bluetoothBLEService.disableBeat();
                      Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
                    } else {
-                     if (isBLEConnected) {
+                     if (_bluetoothBLEService.isBleConnected()) {
                        // enable beats
-//                       _bluetoothBLEService?.enableBeat();
+                       _bluetoothBLEService.enableBeat();
                        Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
                      } else {
                        Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
                      }
                    }
                    setState((){
-                     if (isBLEConnected) {
+                     if (_bluetoothBLEService.isBleConnected()) {
                        _playState = !_playState;
                      }
                    });
