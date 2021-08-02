@@ -154,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Get.snackbar('Error', 'already connected', snackPosition: SnackPosition.BOTTOM);
                     } else {
                       Get.snackbar('Status', 'connecting to Bluetooth', snackPosition: SnackPosition.BOTTOM);
-                      _bluetoothBLEService.connect();
+                      _bluetoothBLEService.startConnection();
                     }
                   }),
             ),
@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // stop the BLE connection
                   if (_bluetoothBLEService.isBleConnected()) {
                     Get.snackbar('Status', 'disconnecting Bluetooth', snackPosition: SnackPosition.BOTTOM);
-                    _bluetoothBLEService.disconnect();
+                    _bluetoothBLEService.disconnectFromDevice();
                     _playState = false;
                   } else {
                     Get.snackbar('Error', 'not connected', snackPosition: SnackPosition.BOTTOM);
@@ -455,6 +455,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      // disable beats
                      _bluetoothBLEService.disableBeat();
                      Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
+                     _bluetoothBLEService.readBeatEnable();
                    } else {
                      if (_bluetoothBLEService.isBleConnected()) {
                        // enable beats
@@ -463,6 +464,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      } else {
                        Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
                      }
+                     _bluetoothBLEService.readBeatEnable();
                    }
                    setState((){
                      if (_bluetoothBLEService.isBleConnected()) {
@@ -880,6 +882,7 @@ class _InfoPageState extends State<InfoPage> {
                 child: Text('Read model number'),
                 onPressed: () {
 //                  modelNumber = _bluetoothBLEService?.readModelNumber();
+//                   _bluetoothBLEService?.readWhoAmI();
                 }
               ),
 //              Text(modelNumber),

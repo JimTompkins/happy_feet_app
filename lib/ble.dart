@@ -8,6 +8,9 @@ import 'package:happy_feet_app/src/ble/ble_scanner.dart';
 import 'package:happy_feet_app/src/ble/ble_status_monitor.dart';
 import 'package:happy_feet_app/src/ble/ble_logger.dart';
 import 'package:provider/provider.dart';
+import 'BluetoothConnectionStateDTO.dart';
+import 'bluetoothConnectionState.dart';
+import 'package:rxdart/rxdart.dart';
 
 final _bleLogger = BleLogger();
 final _ble = FlutterReactiveBle();
@@ -27,6 +30,22 @@ final _serviceDiscoverer = BleDeviceInteractor(
 );
 
 class BluetoothBLEService {
+
+  static const String DEVINFO_SERVICE_UUID =
+      "0000180a-0000-1000-8000-00805f9b34fb";
+
+  static const String MODEL_NUMBER_CHARACTERISTIC_UUID =
+      "00002a24-0000-1000-8000-00805f9b34fb";
+  static const String SERIAL_NUMBER_CHARACTERISTIC_UUID =
+      "00002a25-0000-1000-8000-00805f9b34fb";
+  static const String FIRMWARE_REV_CHARACTERISTIC_UUID =
+      "00002a26-0000-1000-8000-00805f9b34fb";
+  static const String HARDWARE_REV_CHARACTERISTIC_UUID =
+      "00002a27-0000-1000-8000-00805f9b34fb";
+  static const String SOFTWARE_REV_CHARACTERISTIC_UUID =
+      "00002a28-0000-1000-8000-00805f9b34fb";
+  static const String MANUFACTURER_NAME_CHARACTERISTIC_UUID =
+      "00002a29-0000-1000-8000-00805f9b34fb";
 
   static const String HF_SERVICE_UUID =
       "0000fff0-0000-1000-8000-00805f9b34fb";
@@ -50,15 +69,36 @@ class BluetoothBLEService {
   static const String CHAR6_CHARACTERISTIC_UUID =
       "0000fff6-0000-1000-8000-00805f9b34fb";
 
+  var _char1;
+  var _char2;
+  var _char3;
+  var _char4;
+  var _char5;
+  var _char6;
+
+  var _modelNumber;
+  var _serialNumber;
+  var _firmwareRev;
+  var _hardwareRev;
+  var _softwareRev;
+  var _manufacturerName;
+
+  final _connectionStateSubject =
+  BehaviorSubject<BluetoothConnectionStateDTO>();
+  Stream<BluetoothConnectionStateDTO> get connectionStateStream =>
+      _connectionStateSubject.stream;
+
   bool isReady = false;
   bool isConnected = false;
   StreamSubscription? _subscription;
   StreamSubscription<ConnectionStateUpdate>? _connection;
-  int connectedDeviceIndex = -1;
   final _devices = <DiscoveredDevice>[];
-  final _characteristics = <QualifiedCharacteristic>[];
+  DiscoveredDevice? targetDevice;
 
   init() {
+    isReady = false;
+    isConnected = false;
+    _ble.logLevel = LogLevel.verbose;  // change to none for release version
     _ble.statusStream.listen((status) {
       switch (_ble.status) {
         case BleStatus.unknown:
@@ -97,8 +137,8 @@ class BluetoothBLEService {
   }
 
   // scan and connect to HappyFeet
-  connect() {
-    disconnect();
+  startConnection() {
+    disconnectFromDevice();
     Uuid hfServiceUUID = Uuid.parse(HF_SERVICE_UUID);
 
     // check that the BLE status is ready before proceeding
@@ -115,58 +155,27 @@ class BluetoothBLEService {
         withServices: [hfServiceUUID],
         scanMode: ScanMode.lowLatency,
         requireLocationServicesEnabled: true).listen((device) {
-      //code for handling results
-      final knownDeviceIndex = _devices.indexWhere((d) => d.id == device.id);
-      if (knownDeviceIndex >= 0) {
-        _devices[knownDeviceIndex] = device;
-        print('HF: found device!, $_devices[knownDeviceIndex], $_devices.itemCount');
-        connectedDeviceIndex = knownDeviceIndex;
-        stopScan();
         if (device.name == 'HappyFeet') {
-          print('HF: HappyFeet found.  Connecting to device...');
-          _connection = _ble.connectToDevice(
-            id: device.id,
-            connectionTimeout: const Duration(seconds:  2),
-          ).listen((connectionState) async {
-            print('HF: connection state: $connectionState.connectionState');
-            switch (connectionState.connectionState) {
-              case DeviceConnectionState.connected:
-                isConnected = true;
-                break;
-              case DeviceConnectionState.connecting:
-                isConnected = false;
-                break;
-              case DeviceConnectionState.disconnected:
-                isConnected = false;
-                break;
-              case DeviceConnectionState.disconnecting:
-                isConnected = false;
-                break;
-              default:
-                isConnected = false;
-                break;
-            }
-            if (connectionState.connectionState ==
-               DeviceConnectionState.connected) {
-              print('HF: connected to device $device');
-              await _ble.discoverServices(device.toString()).then(
-                    (value) => print('HF: services discovered: $value'),
-              );
-              // get pointers to the device characteristics
-              getCharacteristics(device);
-              // set the MTU size low for low latency
-              await _ble.requestMtu(deviceId: device.toString(), mtu: 20);
-              await Future.delayed(Duration(seconds: 1)); // not sure if this wait is needed...
-            }
-          },
-          onError: (Object e) => print('HF: connecting to $device.toString() resulted in error: $e')
-          );
-        }
-      } else {
-        _devices.add(device);
-      }
-    }, onError: (Object e) => print('HF: device scan fails with error: $e')
-    );
+           print('HF: found HappyFeet, connecting to device...');
+           print('HF:    ID = $device.id');
+           print('HF:    RSSI = $device.rssi.toString()');
+           stopScan();
+           targetDevice = device;
+           Get.snackbar('Bluetooth status', 'Found Happy Feet!  Connecting...', snackPosition: SnackPosition.BOTTOM);
+           connectToDevice();
+           }
+        },
+        onError: (Object e) => print('HF: device scan fails with error: $e'),
+        onDone: () => _onDoneScan(),
+        );
+  }
+
+  _onDoneScan() {
+    stopScan();
+    if (targetDevice == null) {
+ //     _connectionStateSubject.add(BluetoothConnectionStateDTO(
+ //         bluetoothConnectionState: BluetoothConnectionState.FAILED));
+    }
   }
 
   bool isBleConnected() {
@@ -177,40 +186,75 @@ class BluetoothBLEService {
     }
   }
 
-  int getCharacteristics(device) {
+  connectToDevice() async {
+    if (targetDevice == null) {
+      print("HF: connectToDevice: targetDevice is null");
+      return;
+    } else {
+      print("HF: connectToDevice");
+    }
+
+    try {
+      _connection = _ble.connectToDevice(
+        id: targetDevice!.id,
+        connectionTimeout: const Duration(seconds:  7),
+      ).listen((connectionState) async {
+        if (connectionState.connectionState == DeviceConnectionState.connected) {
+          print('HF: device connected');
+          Get.snackbar('Bluetooth status', 'Connected!', snackPosition: SnackPosition.BOTTOM);
+          isConnected = true;
+          // for HappyFeet, set the MTU as small as possible
+          final mtu = await _ble.requestMtu(
+              deviceId: targetDevice!.id, mtu: 20);
+          print("HF: MTU size: $mtu");
+          await Future.delayed(Duration(milliseconds: 1000));
+
+          getCharacteristics();
+        } else {
+          isConnected = false;
+        }
+      });
+    } catch (err) {
+      print('HF: device already connected');
+    }
+  }
+
+  void getCharacteristics() {
     print('HF: getCharacteristics');
-    int result = 0;
-    _characteristics.add(QualifiedCharacteristic(
+     _char1 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR1_CHARACTERISTIC_UUID),
-        deviceId: device.toString()));
-    _characteristics.add(QualifiedCharacteristic(
+        deviceId: targetDevice.toString());
+    _char2 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
-        deviceId: device.toString()));
-    _characteristics.add(QualifiedCharacteristic(
+        deviceId: targetDevice.toString());
+    _char3 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
-        deviceId: device.toString()));
-    _characteristics.add(QualifiedCharacteristic(
+        deviceId: targetDevice.toString());
+    _char4 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-        deviceId: device.toString()));
-    _characteristics.add(QualifiedCharacteristic(
+        deviceId: targetDevice.toString());
+    _char5 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR5_CHARACTERISTIC_UUID),
-        deviceId: device.toString()));
-    _characteristics.add(QualifiedCharacteristic(
+        deviceId: targetDevice.toString());
+    _char6 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR6_CHARACTERISTIC_UUID),
-        deviceId: device.toString()));
-    if (_characteristics[5] == null) {
-      result = -1;
-      print('HF: error adding characteristic 5');
+        deviceId: targetDevice.toString());
+    _modelNumber = QualifiedCharacteristic(
+        serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
+        characteristicId: Uuid.parse(MODEL_NUMBER_CHARACTERISTIC_UUID),
+        deviceId: targetDevice.toString());
+    if (_char6 == null) {
+      print('HF: error adding characteristic 6');
     } else {
-      print('HF: added characteristics: $_characteristics[5].characteristicId');
+      print('HF: added characteristics: $_char6.characteristicId');
     }
-    return result;
+    return;
   }
 
   Future<void> stopScan() async {
@@ -220,13 +264,14 @@ class BluetoothBLEService {
   }
 
   // disconnect from HappyFeet
-  Future<void> disconnect() async {
+  Future<void> disconnectFromDevice() async {
     this.isConnected = false;
     _subscription?.cancel();
     try {
       print('HF: disconnecting from device');
       if (_connection != null) {
         await _connection?.cancel();
+        Get.snackbar('Bluetooth status', 'Disconnecting', snackPosition: SnackPosition.BOTTOM);
       }
     } on Exception catch (e, _) {
       print('HF: Error disconnecting: $e');
@@ -234,24 +279,85 @@ class BluetoothBLEService {
   }
 
   disableBeat() {
-    if (_characteristics[5] == null) {
+    if (_char6 == null) {
       print('HF: disableBeat: error: null characteristic');
       // error
     } else {
       print('HF: disabling beats');
       _ble.writeCharacteristicWithoutResponse(
-          _characteristics[5], value: [0x00]);
+          _char6, value: [0x00]);
     }
   }
 
   enableBeat() {
-    if (_characteristics[5] == null) {
+    if (_char6 == null) {
       print('HF: enableBeat: error: null characteristic');
       // error
     } else {
       print('HF: enabling beats');
       _ble.writeCharacteristicWithoutResponse(
-          _characteristics[5], value: [0x01]);
+          _char6, value: [0xFF]);
     }
   }
+
+  // read the accelerometer's whoAmI register reading from char2
+  // the value should be 0x44
+  readWhoAmI() async {
+    if (_char2 == null) return;
+     try {
+        List<int> value = await _ble.readCharacteristic(_char2!);
+        if (value[0] == 0x44) {
+          print("HF: correct whoAmI value was read");
+        } else {
+          print("HF: *** incorrect whoAmI value was read");
+        }
+      } catch (err) {
+        print("HF: error readWhoAmI");
+        print(err);
+      }
+  }
+
+  // read the model number
+  Future<String?> readModelNumber() async {
+    String result = "ERROR";
+    if (_modelNumber == null) return result;
+      try {
+        List<int> value = await _ble.readCharacteristic(_modelNumber!);
+        // convert list of character codes to string
+        result = String.fromCharCodes(value);
+        if (result == null) {
+          result = "ERROR: null result";
+        }
+        return result;
+      } catch (err) {
+        print("HF: error readModelNumber");
+        print(err);
+      }
+  }
+
+  // read char6 to see if beat sending is enabled or not
+  readBeatEnable() async {
+    if (_char6 == null) {
+      print('HF: readBeatEnable: _char6 is null');
+      return;
+    } else {
+      try {
+        List<int> value = await _ble.readCharacteristic(_char6!);
+        if (value[0] == 0x00) {
+          print("HF: beats currently disabled.  Value = $value[0]");
+          return(false);
+        } else {
+          print("HF: beats currently enabled.  Value = $value[0]");
+          return(true);
+        }
+      } catch (err) {
+        print("HF: error readBeatEnable");
+        print(err);
+      }
+    }
+  }
+
+
+
+
 }

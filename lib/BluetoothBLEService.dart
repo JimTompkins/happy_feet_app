@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:get/get.dart';
 
 import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
@@ -45,32 +46,35 @@ class BluetoothBLEService {
   static const String CHAR6_CHARACTERISTIC_UUID =
       "0000fff6-0000-1000-8000-00805f9b34fb";
 
+  bool isReady = false;
+  bool isConnected = false;
+
   static const TARGET_DEVICE_NAMES = ["HappyFeet"];
 
-  final flutterReactiveBle FlutterReactiveBle();
+  FlutterReactiveBle _ble;
  // FlutterBlue? flutterBlue = FlutterBlue.instance;
   StreamSubscription<ScanResult>? scanSubScription;
 
-  BluetoothDevice? targetDevice;
+  final targetDevice;
 
-  BluetoothCharacteristic? _char1;
-  BluetoothCharacteristic? _char2;
-  BluetoothCharacteristic? _char3;
-  BluetoothCharacteristic? _char4;
-  BluetoothCharacteristic? _char5;
-  BluetoothCharacteristic? _char6;
+  final _char1;
+  final _char2;
+  final _char3;
+  final _char4;
+  final _char5;
+  final _char6;
 
-  BluetoothCharacteristic? _modelNumber;
-  BluetoothCharacteristic? _serialNumber;
-  BluetoothCharacteristic? _firmwareRev;
-  BluetoothCharacteristic? _hardwareRev;
-  BluetoothCharacteristic? _softwareRev;
-  BluetoothCharacteristic? _manufacturerName;
+  final _modelNumber;
+  final _serialNumber;
+  final _firmwareRev;
+  final _hardwareRev;
+  final _softwareRev;
+  final _manufacturerName;
 
   StreamSubscription<List<int>>? _beatSubscription;
 
   String? connectionText = "";
-  List<BluetoothDevice>? _devicesList;
+  List? _devicesList;
 
   BluetoothBLEService() {
     _devicesList = [];
@@ -91,22 +95,47 @@ class BluetoothBLEService {
   final _beatSubject = BehaviorSubject<List<int>>();
   Stream<List<int>> get beatStream => _beatSubject.stream;
 
+  init() {
+    _ble.logLevel = LogLevel.verbose;  // change to none for release version
+    _ble.statusStream.listen((status) {
+      switch (_ble.status) {
+        case BleStatus.unknown:
+          print('HF: BLE status unknown');
+          isReady = false;
+          break;
+        case BleStatus.unsupported:
+          print('HF: BLE status unsupported');
+          Get.snackbar('Bluetooth status', 'This device does not support Bluetooth', snackPosition: SnackPosition.BOTTOM);
+          isReady = false;
+          break;
+        case BleStatus.unauthorized:
+          print('HF: BLE status unauthorized');
+          Get.snackbar('Bluetooth status', 'Authorize the HappyFeet app to use Bluetooth and location', snackPosition: SnackPosition.BOTTOM);
+          isReady = false;
+          break;
+        case BleStatus.poweredOff:
+          print('HF: BLE status powered off');
+          Get.snackbar('Bluetooth status', 'Bluetooth is turned off.  Please turn it on', snackPosition: SnackPosition.BOTTOM);
+          isReady = false;
+          break;
+        case BleStatus.locationServicesDisabled:
+          print('HF: BLE status powered off');
+          Get.snackbar('Bluetooth status', 'Enable location servies', snackPosition: SnackPosition.BOTTOM);
+          isReady = false;
+          break;
+        case BleStatus.ready:
+          print('HF: BLE status ready');
+          isReady = true;
+          break;
+        default:
+          print('HF: BLE status unknown');
+          break;
+      }
+    });
+  }
+
   isDeviceBluetoothOn() async {
-    try {
-      bool isBluetoothOn = await flutterBlue!.isOn;
-      _deviceBluetoothStateSubject.add(isBluetoothOn);
-      // flutterBlue.state.listen((state) {
-      //   _deviceBluetoothStateSubject.add(state == BluetoothState.on);
-      // });
-      // .onError(() {
-      //   _deviceBluetoothStateSubject.add(false);
-      // });
-    } catch (err) {
-      //_deviceBluetoothStateSubject.add(false);
-      _connectionStateSubject.add(BluetoothConnectionStateDTO(
-          bluetoothConnectionState: BluetoothConnectionState.FAILED,
-          error: err));
-    }
+     return isReady;
   }
 
   startConnection() {
@@ -116,13 +145,16 @@ class BluetoothBLEService {
 
       try {
         stopScan();
-        scanSubScription = flutterBlue!
-            .scan(scanMode: ScanMode.lowPower, timeout: Duration(seconds: 7))
-            .listen(
-                (scanResult) {
+        scanSubScription =
+            _ble.scanForDevices(
+                withServices: [Uuid.parse(HF_SERVICE_UUID)],
+                scanMode: ScanMode.lowLatency,
+                requireLocationServicesEnabled: true).listen((scanResult) {
+//        scanSubScription = flutterBlue!
+//            .scan(scanMode: ScanMode.lowPower, timeout: Duration(seconds: 7))
+//            .listen(
+//                (scanResult) {
                   try {
-                    // if (scanResult.device.name.isEmpty) return;
-
                     _devicesList!.add(scanResult.device);
 
                     String foundDevice = TARGET_DEVICE_NAMES
@@ -170,10 +202,17 @@ class BluetoothBLEService {
   }
 
   stopScan() {
-    flutterBlue!.stopScan();
+//    flutterBlue!.stopScan();
     scanSubScription?.cancel();
     scanSubScription = null;
-    //_connectionStateSubject.add(BluetoothConnectionState.STOP_SCANNING);
+  }
+
+  bool isBleConnected() {
+    if (_connection == null) {
+      return false;
+    } else {
+      return isConnected;
+    }
   }
 
   connectToDevice() async {
@@ -189,13 +228,18 @@ class BluetoothBLEService {
 
       try {
         await targetDevice!.connect();
-        print('HF: device connected');
-        _connectionStateSubject.add(BluetoothConnectionStateDTO(
-            bluetoothConnectionState: BluetoothConnectionState.DEVICE_CONNECTED));
-      } catch (err) {
+        _connection = _ble.connectToDevice(
+          id: targetDevice.id,
+          connectionTimeout: const Duration(seconds:  2),
+        ).listen((connectionState) async {
+          print('HF: device connected');
+          _connectionStateSubject.add(BluetoothConnectionStateDTO(
+              bluetoothConnectionState: BluetoothConnectionState
+                  .DEVICE_CONNECTED));
+          })
+        } catch (err) {
         print('HF: device already connected');
-      }
-
+        }
       discoverServices();
   }
 
