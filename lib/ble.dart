@@ -12,24 +12,26 @@ import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 import 'package:rxdart/rxdart.dart';
 
-final _bleLogger = BleLogger();
-final _ble = FlutterReactiveBle();
-final _scanner = BleScanner(ble: _ble, logMessage: _bleLogger.addToLog);
-final _monitor = BleStatusMonitor(_ble);
-final _connector = BleDeviceConnector(
-  ble: _ble,
-  logMessage: _bleLogger.addToLog,
-);
-final _serviceDiscoverer = BleDeviceInteractor(
-  bleDiscoverServices: _ble.discoverServices,
-  readCharacteristic: _ble.readCharacteristic,
-  writeWithResponse: _ble.writeCharacteristicWithResponse,
-  writeWithOutResponse: _ble.writeCharacteristicWithoutResponse,
-  subscribeToCharacteristic: _ble.subscribeToCharacteristic,
-  logMessage: _bleLogger.addToLog,
-);
+//final _bleLogger = BleLogger();
+//final _ble = FlutterReactiveBle();
+//final _scanner = BleScanner(ble: _ble, logMessage: _bleLogger.addToLog);
+//final _monitor = BleStatusMonitor(_ble);
+//final _connector = BleDeviceConnector(
+//  ble: _ble,
+//  logMessage: _bleLogger.addToLog,
+//);
+//final _serviceDiscoverer = BleDeviceInteractor(
+//  bleDiscoverServices: _ble.discoverServices,
+//  readCharacteristic: _ble.readCharacteristic,
+//  writeWithResponse: _ble.writeCharacteristicWithResponse,
+//  writeWithOutResponse: _ble.writeCharacteristicWithoutResponse,
+//  subscribeToCharacteristic: _ble.subscribeToCharacteristic,
+//  logMessage: _bleLogger.addToLog,
+//);
 
 class BluetoothBLEService {
+
+  static FlutterReactiveBle _ble = FlutterReactiveBle();
 
   static const String DEVINFO_SERVICE_UUID =
       "0000180a-0000-1000-8000-00805f9b34fb";
@@ -136,7 +138,7 @@ class BluetoothBLEService {
     });
   }
 
-  // scan and connect to HappyFeet
+  // start the connection process by doing a scan of Bluetooth devices
   startConnection() {
     disconnectFromDevice();
     Uuid hfServiceUUID = Uuid.parse(HF_SERVICE_UUID);
@@ -197,23 +199,24 @@ class BluetoothBLEService {
     try {
       _connection = _ble.connectToDevice(
         id: targetDevice!.id,
-        connectionTimeout: const Duration(seconds:  7),
+        connectionTimeout: const Duration(seconds:  30),
       ).listen((connectionState) async {
         if (connectionState.connectionState == DeviceConnectionState.connected) {
-          print('HF: device connected');
-          Get.snackbar('Bluetooth status', 'Connected!', snackPosition: SnackPosition.BOTTOM);
           isConnected = true;
           // for HappyFeet, set the MTU as small as possible
-          final mtu = await _ble.requestMtu(
-              deviceId: targetDevice!.id, mtu: 20);
-          print("HF: MTU size: $mtu");
-          await Future.delayed(Duration(milliseconds: 1000));
-
+//          final mtu = await _ble.requestMtu(
+//              deviceId: targetDevice!.id, mtu: 20);
+//          print("HF: MTU size: $mtu");
+//          await Future.delayed(Duration(milliseconds: 1000));
+          print('HF: device connected');
+          Get.snackbar('Bluetooth status', 'Connected!', snackPosition: SnackPosition.BOTTOM);
           getCharacteristics();
-        } else {
+         } else {
           isConnected = false;
         }
-      });
+      },
+      onError: (Object e) => print('HF: connect to device fails with error: $e'),
+      );
     } catch (err) {
       print('HF: device already connected');
     }
@@ -221,34 +224,38 @@ class BluetoothBLEService {
 
   void getCharacteristics() {
     print('HF: getCharacteristics');
+    if (targetDevice == null) {
+      print('HF:    error: targetDevice is null!');
+      return;
+    }
      _char1 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR1_CHARACTERISTIC_UUID),
-        deviceId: targetDevice.toString());
+        deviceId: targetDevice!.id);
     _char2 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
-        deviceId: targetDevice.toString());
+        deviceId: targetDevice!.id);
     _char3 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
-        deviceId: targetDevice.toString());
+        deviceId: targetDevice!.id);
     _char4 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-        deviceId: targetDevice.toString());
+        deviceId: targetDevice!.id);
     _char5 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR5_CHARACTERISTIC_UUID),
-        deviceId: targetDevice.toString());
+        deviceId: targetDevice!.id);
     _char6 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR6_CHARACTERISTIC_UUID),
-        deviceId: targetDevice.toString());
+        deviceId: targetDevice!.id);
     _modelNumber = QualifiedCharacteristic(
         serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
         characteristicId: Uuid.parse(MODEL_NUMBER_CHARACTERISTIC_UUID),
-        deviceId: targetDevice.toString());
+        deviceId: targetDevice!.id);
     if (_char6 == null) {
       print('HF: error adding characteristic 6');
     } else {
@@ -278,31 +285,30 @@ class BluetoothBLEService {
     }
   }
 
-  disableBeat() {
+  Future<void> disableBeat() async {
     if (_char6 == null) {
       print('HF: disableBeat: error: null characteristic');
       // error
     } else {
       print('HF: disabling beats');
-      _ble.writeCharacteristicWithoutResponse(
+      var response = await _ble.writeCharacteristicWithoutResponse(
           _char6, value: [0x00]);
     }
   }
-
-  enableBeat() {
+  Future<void> enableBeat() async {
     if (_char6 == null) {
       print('HF: enableBeat: error: null characteristic');
       // error
     } else {
       print('HF: enabling beats');
-      _ble.writeCharacteristicWithoutResponse(
-          _char6, value: [0xFF]);
+      var response = await _ble.writeCharacteristicWithoutResponse(
+          _char6, value: [0x01]);
     }
   }
 
   // read the accelerometer's whoAmI register reading from char2
   // the value should be 0x44
-  readWhoAmI() async {
+  Future<void> readWhoAmI() async {
     if (_char2 == null) return;
      try {
         List<int> value = await _ble.readCharacteristic(_char2!);
@@ -336,7 +342,7 @@ class BluetoothBLEService {
   }
 
   // read char6 to see if beat sending is enabled or not
-  readBeatEnable() async {
+  Future readBeatEnable() async {
     if (_char6 == null) {
       print('HF: readBeatEnable: _char6 is null');
       return;

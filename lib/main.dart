@@ -455,7 +455,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      // disable beats
                      _bluetoothBLEService.disableBeat();
                      Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
-                     _bluetoothBLEService.readBeatEnable();
+//                     _bluetoothBLEService.readBeatEnable();
                    } else {
                      if (_bluetoothBLEService.isBleConnected()) {
                        // enable beats
@@ -464,7 +464,7 @@ class _MyHomePageState extends State<MyHomePage> {
                      } else {
                        Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
                      }
-                     _bluetoothBLEService.readBeatEnable();
+ //                    _bluetoothBLEService.readBeatEnable();
                    }
                    setState((){
                      if (_bluetoothBLEService.isBleConnected()) {
