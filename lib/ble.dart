@@ -12,6 +12,8 @@ import 'BluetoothConnectionStateDTO.dart';
 import 'bluetoothConnectionState.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'groove.dart';
+
 //final _bleLogger = BleLogger();
 //final _ble = FlutterReactiveBle();
 //final _scanner = BleScanner(ble: _ble, logMessage: _bleLogger.addToLog);
@@ -84,6 +86,8 @@ class BluetoothBLEService {
   var _hardwareRev;
   var _softwareRev;
   var _manufacturerName;
+
+  StreamSubscription<List<int>>? _beatSubscription;
 
   final _connectionStateSubject =
   BehaviorSubject<BluetoothConnectionStateDTO>();
@@ -211,6 +215,11 @@ class BluetoothBLEService {
           print('HF: device connected');
           Get.snackbar('Bluetooth status', 'Connected!', snackPosition: SnackPosition.BOTTOM);
           getCharacteristics();
+          print("HF: enable processing notifications on char4...");
+          // they should not actually be sent yet because of the call
+          // to disableBeat above.
+          processBeats();
+
          } else {
           isConnected = false;
         }
@@ -305,6 +314,45 @@ class BluetoothBLEService {
           _char6, value: [0x01]);
     }
   }
+
+  // method to process beats received as notifications on char4
+  processBeats() async {
+    if (_char4 == null) {
+      print("HF: processBeats: _char4 is null");
+      return;
+    }
+
+    print("HF: process beats");
+
+    // enable notifies on char4
+    try {
+      await _char4?.setNotifyValue(true);
+    } catch (err) {
+      print("HF: error enabling _char4 notifies");
+      print(err);
+    }
+
+    _beatSubscription?.cancel();
+    _beatSubscription = await _ble.subscribeToCharacteristic(_char4).listen((data) {
+          if (data.isNotEmpty) {
+            var time = DateTime.now();   // get system time
+            print('HF:   notify received at time: $time');
+            if ((data[0] & 0xFF) == 0xFF) {
+              print("HF: heartbeat notify received");
+              Timeline.timeSync("HF: heartbeat received", () {});
+            } else {
+              // play the next note in the groove
+              //groove.play(data[0]);
+              Timeline.timeSync("HF: play note", () {
+                groove.play(data[0]);
+              });
+            }
+          }
+        }, onError: (dynamic e) {
+              print('HF: error on chr4 subscription: $e');
+        });
+    }
+
 
   // read the accelerometer's whoAmI register reading from char2
   // the value should be 0x44
