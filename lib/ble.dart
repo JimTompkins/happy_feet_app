@@ -14,23 +14,6 @@ import 'package:rxdart/rxdart.dart';
 
 import 'groove.dart';
 
-//final _bleLogger = BleLogger();
-//final _ble = FlutterReactiveBle();
-//final _scanner = BleScanner(ble: _ble, logMessage: _bleLogger.addToLog);
-//final _monitor = BleStatusMonitor(_ble);
-//final _connector = BleDeviceConnector(
-//  ble: _ble,
-//  logMessage: _bleLogger.addToLog,
-//);
-//final _serviceDiscoverer = BleDeviceInteractor(
-//  bleDiscoverServices: _ble.discoverServices,
-//  readCharacteristic: _ble.readCharacteristic,
-//  writeWithResponse: _ble.writeCharacteristicWithResponse,
-//  writeWithOutResponse: _ble.writeCharacteristicWithoutResponse,
-//  subscribeToCharacteristic: _ble.subscribeToCharacteristic,
-//  logMessage: _bleLogger.addToLog,
-//);
-
 class BluetoothBLEService {
 
   static FlutterReactiveBle _ble = FlutterReactiveBle();

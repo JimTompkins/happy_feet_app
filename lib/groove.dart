@@ -24,6 +24,14 @@ class Note {
 
   Note.empty() {
   }
+
+  copyFrom(Note from) {
+    this.oggIndex = from.oggIndex;
+    this.oggNote = from.oggNote;
+    this.name = from.name;
+    this.initial = from.initial;
+  }
+
 }
 
 class Groove {
@@ -256,6 +264,8 @@ class Groove {
   // TODO: if increasing the number of beats per measure, duplicate the last beat(s)
   // TODO: if increasing the number of measures, duplicate the last measure
   void resize(int beat, int measure) {
+    var origBpm = this.bpm;
+    var origMeasures = this.numMeasures;
     this.bpm = beat;
     this.numMeasures = measure;
     this.index = 0;
@@ -272,6 +282,20 @@ class Groove {
       for (var i = 0; i < numToAdd; i++) {
         // add items to the list
         this.notes.add(Note(-1, "-"));
+      }
+      // if adding measures...
+      if (measure > origMeasures) {
+        var measuresToAdd = measure - origMeasures;
+        var copyFromStart = (origMeasures - 1) * origBpm;
+        for(int i=0; i<measuresToAdd; i++) {
+          var copyToStart = (origMeasures + i) * beat;
+          for(int n=0; n<beat; n++) {
+            var src = copyFromStart + n;
+            var dest = copyToStart + n;
+            this.notes[dest].copyFrom(this.notes[src]);
+            print('HF: resize: copying from $src to $dest');
+          }
+        }
       }
     }
   }
