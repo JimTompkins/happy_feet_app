@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 import 'colourPalette.dart';
+ import 'package:permission_handler/permission_handler.dart';
 //import 'BluetoothBLEService.dart';
 //import 'BluetoothConnectionStateDTO.dart';
 //import 'bluetoothConnectionState.dart';
@@ -85,9 +86,25 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _connectedState = false;
   static BluetoothBLEService _bluetoothBLEService = new BluetoothBLEService();
 
+  Future<void> _checkPermission() async {
+   final status = await Permission.locationWhenInUse.request();
+    if (status == PermissionStatus.granted) {
+      print('HF: Permission granted');
+    } else if (status == PermissionStatus.denied) {
+      print('HF: Permission denied. Show a dialog and again ask for the permission');
+    } else if (status == PermissionStatus.permanentlyDenied) {
+      print('HF: Take the user to the settings page.');
+      await openAppSettings();
+    }
+  }
+
+
   @override
   initState() {
      oggpiano.init();
+
+     // request needed permissions
+     _checkPermission();
 
      // initialize BLE
     if (_bluetoothBLEService != null) {

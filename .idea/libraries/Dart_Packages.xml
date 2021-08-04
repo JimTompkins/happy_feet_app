@@ -317,6 +317,20 @@
             </list>
           </value>
         </entry>
+        <entry key="permission_handler">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-8.1.4+2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="permission_handler_platform_interface">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler_platform_interface-3.6.1/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="petitparser">
           <value>
             <list>
@@ -551,6 +565,8 @@
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_platform_interface-2.0.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-2.0.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/pedantic-1.11.0/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-8.1.4+2/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler_platform_interface-3.6.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/petitparser-4.1.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/platform-3.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/plugin_platform_interface-2.0.0/lib" />
