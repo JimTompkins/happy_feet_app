@@ -11,9 +11,10 @@ GrooveStorage grooveStorage = new GrooveStorage();
 class GrooveStorage {
   List grooveFileNames = [];
 
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
+  Future<String?> get _localPath async {
+    final directory = (await getExternalStorageDirectory())?.path;
+    print('HF: application documents directory : $directory');
+    return directory;
   }
 
   Future<File> get _localFile async {
@@ -23,11 +24,13 @@ class GrooveStorage {
 
   // get list of .csv files in the applications doc directory
   void listofSavedGrooves() async {
-    String directory = (await getApplicationDocumentsDirectory()).path;
-    this.grooveFileNames = Directory("$directory/").listSync();
-    print('HF: listofSavedGrooves in $directory, $this.grooveFileNames.length.toString()');
-    for (int i = 0; i < this.grooveFileNames.length; i++) {
-      print('HF:    $listofSavedGrooves[i]');
+    var directory = (await getExternalStorageDirectory())?.path;
+    print('HF: external storage directory = $directory');
+    this.grooveFileNames = await Directory("$directory/").listSync();
+    var len = this.grooveFileNames.length;
+    print('HF: listofSavedGrooves in $directory, $len');
+    for (int i = 0; i < len; i++) {
+      print('HF:  $i:  $this.grooveFileName[i].name');
     }
 
   }

@@ -1098,16 +1098,14 @@ class _MenuPageState extends State<MenuPage> {
        appBar: AppBar(
          title: Text("Happy Feet - Load Groove"),
        ),
-       body: Center(
-         child: ListView(
-             children: <Widget>[
-               Column(
+       body: Container(
+           alignment: Alignment.center,
+           padding: const EdgeInsets.all(6),
+         child: Column(
                  children: <Widget>[
                    Text('Saved grooves: ',
                      style: Theme.of(context).textTheme.caption,),
-                   Text(grooveStorage.grooveFileNames.toString(),
-                     style: Theme.of(context).textTheme.caption,),
-                   Expanded(
+                   Flexible(
                      child: ListView.builder(
                        itemCount: grooveStorage.grooveFileNames.length,
                        itemBuilder: (BuildContext context, int index) {
@@ -1141,9 +1139,8 @@ class _MenuPageState extends State<MenuPage> {
                    ]),
                  ],
                ),
-             ]),
-       ),
-     );
+             ),
+       );
    }  // Widget
  } // class
 
