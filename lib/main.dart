@@ -1109,7 +1109,9 @@ class _MenuPageState extends State<MenuPage> {
                      child: ListView.builder(
                        itemCount: grooveStorage.grooveFileNames.length,
                        itemBuilder: (BuildContext context, int index) {
-                         return Text(grooveStorage.grooveFileNames[index].toString());
+                         return ListTile(
+                             title: Text(grooveStorage.grooveFileNames[index]),
+                         );
                        }
                      )
                    ),
