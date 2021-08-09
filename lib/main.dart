@@ -354,6 +354,26 @@ class _MyHomePageState extends State<MyHomePage> {
                         index1 = 5;
                       }
                       break;
+                    case 'Fingersnap':
+                      {
+                        index1 = 7;
+                      }
+                      break;
+                    case 'Rim shot':
+                      {
+                        index1 = 8;
+                      }
+                      break;
+                    case 'Shaker':
+                      {
+                        index1 = 9;
+                      }
+                      break;
+                    case 'Woodblock':
+                      {
+                        index1 = 10;
+                      }
+                      break;
                     default:
                       {
                         index1 = -1;
@@ -369,7 +389,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Snare Drum',
                 'High Hat Cymbal',
                 'Cowbell',
-                'Tambourine'
+                'Tambourine',
+                'Fingersnap',
+                'Rim shot',
+                'Shaker',
+                'Woodblock',
               ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -432,6 +456,26 @@ class _MyHomePageState extends State<MyHomePage> {
                         index2 = 5;
                       }
                       break;
+                    case 'Fingersnap':
+                      {
+                        index2 = 7;
+                      }
+                      break;
+                    case 'Rim shot':
+                      {
+                        index2 = 8;
+                      }
+                      break;
+                    case 'Shaker':
+                      {
+                        index2 = 9;
+                      }
+                      break;
+                    case 'Woodblock':
+                      {
+                        index2 = 10;
+                      }
+                      break;
                     default:
                       {
                         index2 = -1;
@@ -449,6 +493,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 'High Hat Cymbal',
                 'Cowbell',
                 'Tambourine',
+                'Fingersnap',
+                'Rim shot',
+                'Shaker',
+                'Woodblock',
               ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -476,7 +524,9 @@ class _MyHomePageState extends State<MyHomePage> {
                    } else {
                      if (_bluetoothBLEService.isBleConnected()) {
                        // enable beats
+                       groove.reset();
                        _bluetoothBLEService.enableBeat();
+//                       _bluetoothBLEService.enableTestMode();
                        Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
                      } else {
                        Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
@@ -530,6 +580,7 @@ class _GroovePageState extends State<GroovePage> {
 
   @override
   Widget build(BuildContext context) {
+//    dropdownValue = groove.getInitials();
     return Scaffold(
       appBar: AppBar(
         title: Text("Happy Feet - Grooves"),
@@ -588,7 +639,7 @@ class _GroovePageState extends State<GroovePage> {
           ]), // Column
 
           // beat grid
-          Text(' Choose "-" for no note, B for bass drum, K for kick drum, S for snare drum, H for hi-hat cymbal, T for tambourine, C for cowbell ',
+          Text(' Choose "-" for no note, B for bass drum, K for kick drum, S for snare drum, H for hi-hat cymbal, T for tambourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock ',
             style: Theme.of(context).textTheme.caption,), // Text
 
           GridView.count(
@@ -614,7 +665,7 @@ class _GroovePageState extends State<GroovePage> {
                          dropdownValue[index] = newValue;
                       });
                    },
-                   items: <String>['-','B', 'K', 'S', 'H', 'T', 'C']
+                   items: <String>['-','B', 'K', 'S', 'H', 'T', 'C', 'F', 'R', 'A', 'W']
                      .map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                          value: value,
@@ -1051,7 +1102,6 @@ class _MenuPageState extends State<MenuPage> {
                            grooveStorage.writeGroove(_filenameController.text, _descriptionController.text);
                            Get.snackbar('Status:','groove saved', snackPosition: SnackPosition.BOTTOM);
                            // go back to previous screen
-                           // go back to previous screen
                            switch(groove.type) {
                              case GrooveType.percussion: {
                                Get.to(() => groovePage);
@@ -1111,34 +1161,32 @@ class _MenuPageState extends State<MenuPage> {
                        itemBuilder: (BuildContext context, int index) {
                          return ListTile(
                              title: Text(grooveStorage.grooveFileNames[index]),
+                             trailing: Icon(Icons.file_upload),
+                             onTap: () {
+                               // load the selected groove
+                               var name = grooveStorage.grooveFileNames[index];
+                               grooveStorage.readGroove(name);
+//                               Get.snackbar('Load status', 'Loaded groove ' + name, snackPosition: SnackPosition.BOTTOM);
+                               // go back to previous screen
+                               switch(groove.type) {
+                                 case GrooveType.percussion: {
+                                   Get.to(() => groovePage);
+                                   break;
+                                 }
+                                 case GrooveType.bass: {
+                                   Get.to(() => bassPage);
+                                   break;
+                                 }
+                                 default: {
+                                   Get.to(() => groovePage);
+                                   break;
+                                 }
+                               }
+                             }
                          );
                        }
                      )
                    ),
-                   Row(children: <Widget>[
-                     ElevatedButton(
-                         child: Text('Load groove'),
-                         onPressed: () {
-                           grooveStorage.readGroove('xxx');
-                           Get.snackbar('Loaded groove', groove.description, snackPosition: SnackPosition.BOTTOM);
-                           // go back to previous screen
-                           switch(groove.type) {
-                             case GrooveType.percussion: {
-                               Get.to(() => groovePage);
-                               break;
-                             }
-                             case GrooveType.bass: {
-                               Get.to(() => bassPage);
-                               break;
-                             }
-                             default: {
-                               Get.to(() => groovePage);
-                               break;
-                             }
-                           }
-                         }
-                     ),
-                   ]),
                  ],
                ),
              ),

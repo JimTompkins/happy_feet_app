@@ -2,14 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'package:happy_feet_app/src/ble/ble_device_connector.dart';
-import 'package:happy_feet_app/src/ble/ble_device_interactor.dart';
-import 'package:happy_feet_app/src/ble/ble_scanner.dart';
-import 'package:happy_feet_app/src/ble/ble_status_monitor.dart';
-import 'package:happy_feet_app/src/ble/ble_logger.dart';
-import 'package:provider/provider.dart';
 import 'BluetoothConnectionStateDTO.dart';
-import 'bluetoothConnectionState.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'groove.dart';
@@ -56,19 +49,19 @@ class BluetoothBLEService {
   static const String CHAR6_CHARACTERISTIC_UUID =
       "0000fff6-0000-1000-8000-00805f9b34fb";
 
-  var _char1;
+//  var _char1;
   var _char2;
-  var _char3;
+//  var _char3;
   var _char4;
-  var _char5;
+//  var _char5;
   var _char6;
 
   var _modelNumber;
-  var _serialNumber;
-  var _firmwareRev;
-  var _hardwareRev;
-  var _softwareRev;
-  var _manufacturerName;
+//  var _serialNumber;
+//  var _firmwareRev;
+//  var _hardwareRev;
+//  var _softwareRev;
+//  var _manufacturerName;
 
   StreamSubscription<List<int>>? _beatSubscription;
 
@@ -111,7 +104,7 @@ class BluetoothBLEService {
           break;
         case BleStatus.locationServicesDisabled:
           print('HF: BLE status powered off');
-          Get.snackbar('Bluetooth status', 'Enable location servies', snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Bluetooth status', 'Enable location services', snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BleStatus.ready:
@@ -146,8 +139,9 @@ class BluetoothBLEService {
         requireLocationServicesEnabled: true).listen((device) {
         if (device.name == 'HappyFeet') {
            print('HF: found HappyFeet, connecting to device...');
-           print('HF:    ID = $device.id');
-           print('HF:    RSSI = $device.rssi.toString()');
+           print('HF:    $device');
+           var rssi = device.rssi;
+           print('HF: RSSI = $rssi');
            stopScan();
            targetDevice = device;
            Get.snackbar('Bluetooth status', 'Found Happy Feet!  Connecting...', snackPosition: SnackPosition.BOTTOM);
@@ -220,26 +214,26 @@ class BluetoothBLEService {
       print('HF:    error: targetDevice is null!');
       return;
     }
-     _char1 = QualifiedCharacteristic(
-        serviceId: Uuid.parse(HF_SERVICE_UUID),
-        characteristicId: Uuid.parse(CHAR1_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
+//     _char1 = QualifiedCharacteristic(
+//        serviceId: Uuid.parse(HF_SERVICE_UUID),
+//        characteristicId: Uuid.parse(CHAR1_CHARACTERISTIC_UUID),
+//        deviceId: targetDevice!.id);
     _char2 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
         deviceId: targetDevice!.id);
-    _char3 = QualifiedCharacteristic(
-        serviceId: Uuid.parse(HF_SERVICE_UUID),
-        characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
+//    _char3 = QualifiedCharacteristic(
+//        serviceId: Uuid.parse(HF_SERVICE_UUID),
+//        characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
+//        deviceId: targetDevice!.id);
     _char4 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
         deviceId: targetDevice!.id);
-    _char5 = QualifiedCharacteristic(
-        serviceId: Uuid.parse(HF_SERVICE_UUID),
-        characteristicId: Uuid.parse(CHAR5_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
+//    _char5 = QualifiedCharacteristic(
+//       serviceId: Uuid.parse(HF_SERVICE_UUID),
+//        characteristicId: Uuid.parse(CHAR5_CHARACTERISTIC_UUID),
+//        deviceId: targetDevice!.id);
     _char6 = QualifiedCharacteristic(
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR6_CHARACTERISTIC_UUID),
@@ -298,6 +292,18 @@ class BluetoothBLEService {
     }
   }
 
+  Future<void> enableTestMode() async {
+    if (_char6 == null) {
+      print('HF: enableTestMode: error: null characteristic');
+      // error
+    } else {
+      print('HF: enabling test mode: HF will send beats at a fixed rate');
+      var response = await _ble.writeCharacteristicWithoutResponse(
+          _char6, value: [0x80]);
+    }
+  }
+
+
   // method to process beats received as notifications on char4
   processBeats() async {
     if (_char4 == null) {
@@ -307,21 +313,13 @@ class BluetoothBLEService {
 
     print("HF: process beats");
 
-    // enable notifies on char4
-    try {
-      await _char4?.setNotifyValue(true);
-    } catch (err) {
-      print("HF: error enabling _char4 notifies");
-      print(err);
-    }
-
     _beatSubscription?.cancel();
     _beatSubscription = await _ble.subscribeToCharacteristic(_char4).listen((data) {
           if (data.isNotEmpty) {
-            var time = DateTime.now();   // get system time
-            print('HF:   notify received at time: $time');
+//            var time = DateTime.now();   // get system time
+//            print('HF:   notify received at time: $time');
             if ((data[0] & 0xFF) == 0xFF) {
-              print("HF: heartbeat notify received");
+//              print("HF: heartbeat notify received");
               Timeline.timeSync("HF: heartbeat received", () {});
             } else {
               // play the next note in the groove
@@ -361,14 +359,9 @@ class BluetoothBLEService {
       try {
         List<int> value = await _ble.readCharacteristic(_modelNumber!);
         // convert list of character codes to string
-        result = String.fromCharCodes(value);
-        if (result == null) {
-          result = "ERROR: null result";
-        }
-        return result;
-      } catch (err) {
-        print("HF: error readModelNumber");
-        print(err);
+        return String.fromCharCodes(value);
+      } catch (e) {
+        print("HF: error readModelNumber $e");
       }
   }
 

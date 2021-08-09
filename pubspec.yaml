@@ -106,5 +106,10 @@ flutter:
     - assets/sounds/high_hat.ogg
     - assets/sounds/cowbell.ogg
     - assets/sounds/tambourine.ogg
-    - assets/sounds/Bass74MapleJazzA1.ogg
+    - assets/sounds/fingersnap.ogg
+    - assets/sounds/sidestick.ogg
+    - assets/sounds/shaker.ogg
+    - assets/sounds/woodblock1.ogg
+#    - assets/sounds/Bass74MapleJazzA1.ogg
+    - assets/sounds/Bass74MapleJazzA1_1sTrim.ogg
     - assets/images/icon.png

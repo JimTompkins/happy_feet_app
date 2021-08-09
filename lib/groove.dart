@@ -19,7 +19,7 @@ class Note {
     this.oggIndex = index;
     this.oggNote = 0;
     this.name = name;
-    this.initial = name.substring(0,1);
+    this.initial = initialMap[name];
   }
 
   Note.empty() {
@@ -84,6 +84,10 @@ class Groove {
     this.key = 'E';
   }
 
+  reset() {
+    this.index = 0;
+    this.lastSequenceBit = -1;
+  }
   // retain the bpm and numMeasures but set all notes to -
   // used when changing between groove and bass mode
   void clearNotes() {
@@ -145,6 +149,30 @@ class Groove {
         this.notes[index].name = 'Tambourine';
       }
       break;
+      case 'F': {
+        this.notes[index].oggIndex = 7;
+        this.notes[index].oggNote = 0;
+        this.notes[index].name = 'Fingersnap';
+      }
+      break;
+      case 'R': {
+        this.notes[index].oggIndex = 8;
+        this.notes[index].oggNote = 0;
+        this.notes[index].name = 'Rim shot';
+      }
+      break;
+      case 'A': {
+        this.notes[index].oggIndex = 9;
+        this.notes[index].oggNote = 0;
+        this.notes[index].name = 'Shaker';
+      }
+      break;
+      case 'W': {
+        this.notes[index].oggIndex = 10;
+        this.notes[index].oggNote = 0;
+        this.notes[index].name = 'Woodblock';
+      }
+      break;
       default: {
         this.notes[index].oggIndex = -1;
         this.notes[index].oggNote = 0;
@@ -204,9 +232,12 @@ class Groove {
     }
   }
 
-  // return the first letter of a notes name
+  // return an initial to be used as shorthand for a note's name.
+  // Generally, the initial is the first letter of the name.  The
+  // exception is Shaker which uses  K as its initial since S is
+  // already used by Snare drum.
   String initialNote(int index) {
-    return this.notes[index].substring(0,1);
+    return initialMap[this.notes[index].name]!;
   }
 
   // return the type of this groove
@@ -334,8 +365,7 @@ class Groove {
     sum += timeBuffer.last - first;  // update the running sum
     mean = sum.toDouble() / timeBuffer.length; // calculate the mean delta time
     BeatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
-//    print(sprintf("%s %d %.1f %.1f",["HF: beats per minute = ", data & 0x3F, mean, BeatsPerMinute]));
-    print("HF: beats per minute = ${data & 0x3F} ${mean.toStringAsFixed(1)} ${BeatsPerMinute.toStringAsFixed(1)}");
+//    print("HF: beats per minute = ${data & 0x3F} ${mean.toStringAsFixed(1)} ${BeatsPerMinute.toStringAsFixed(1)}");
 
     // increment pointer to the next note
     this.index = (this.index + 1) % (this.bpm * this.numMeasures);

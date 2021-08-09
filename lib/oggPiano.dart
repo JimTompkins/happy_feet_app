@@ -3,6 +3,36 @@ import 'package:flutter_ogg_piano/flutter_ogg_piano.dart';
 
 final OggPiano oggpiano = new OggPiano();
 
+// Mapping from note name to ogg voice number
+var oggMap = <String, num>{
+  'Bass drum':0,
+  'Kick drum':1,
+  'Snare drum':2,
+  'Hi-hat Cymbal':3,
+  'Cowbell':4,
+  'Tambourine':5,
+  'Fingersnap':7,
+  'Rim shot':8,
+  'Shaker':9,
+  'Woodblock':10,
+};
+
+// Mapping from note name to single character reference.  Note
+// that this can't be done by grabbing the first character since
+// there are two notes starting with 'S'.
+var initialMap = <String, String>{
+  'Bass drum':'B',
+  'Kick drum':'K',
+  'Snare drum':'S',
+  'Hi-hat Cymbal':'H',
+  'Cowbell':'C',
+  'Tambourine':'T',
+  'Fingersnap':'F',
+  'Rim shot':'R',
+  'Shaker':'A',
+  'Woodblock':'W',
+};
+
 class OggPiano {
 
   final fop = FlutterOggPiano();
@@ -30,8 +60,20 @@ class OggPiano {
     rootBundle.load('assets/sounds/tambourine.ogg').then((ogg) {
       fop.load(src: ogg, name: 'tambourine.ogg', index: 5, forceLoad: true);
     });
-    rootBundle.load('assets/sounds/Bass74MapleJazzA1.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'Bass74MapleJazzA1.ogg', index: 6, forceLoad: true);
+    rootBundle.load('assets/sounds/Bass74MapleJazzA1_1sTrim.ogg').then((ogg) {
+      fop.load(src: ogg, name: 'Bass74MapleJazzA1_1sTrim.ogg', index: 6, forceLoad: true);
+    });
+    rootBundle.load('assets/sounds/fingersnap.ogg').then((ogg) {
+      fop.load(src: ogg, name: 'fingersnap.ogg', index: 7, forceLoad: true);
+    });
+    rootBundle.load('assets/sounds/sidestick.ogg').then((ogg) {
+      fop.load(src: ogg, name: 'sidestick.ogg', index: 8, forceLoad: true);
+    });
+    rootBundle.load('assets/sounds/shaker.ogg').then((ogg) {
+      fop.load(src: ogg, name: 'shaker.ogg', index: 9, forceLoad: true);
+    });
+    rootBundle.load('assets/sounds/woodblock1.ogg').then((ogg) {
+      fop.load(src: ogg, name: 'woodblock1.ogg', index: 10, forceLoad: true);
     });
   }
 
