@@ -1,4 +1,3 @@
- // @dart-2.9
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -42,16 +41,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.deepOrange[500],
-        accentColor: Colors.blue[400],
+        secondaryHeaderColor: Colors.blue[400],
+//        accentColor: Colors.blue[400],
 //        fontFamily: 'Roboto',
         textTheme: TextTheme(
           headline1: TextStyle(
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).colorScheme.secondary,
               fontSize: 20,
               height: 1,
               fontWeight: FontWeight.bold),
           caption: TextStyle(
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).colorScheme.secondary,
               fontSize: 16,
               height: 1,
               fontWeight: FontWeight.normal),
@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-enum Mode { singleNote, alternatingNotes, groove, bass, unknown }
+enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -74,7 +74,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Mode? _character = Mode.singleNote;
   String note1 = 'Bass Drum';
   int index1 = 0;
   String note2 = 'none';
@@ -83,7 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
   bool _playState = false;
-  bool _connectedState = false;
   static BluetoothBLEService _bluetoothBLEService = new BluetoothBLEService();
 
   Future<void> _checkPermission() async {
@@ -107,9 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
      _checkPermission();
 
      // initialize BLE
-    if (_bluetoothBLEService != null) {
-      _bluetoothBLEService.init();
-   }
+    _bluetoothBLEService.init();
+
     super.initState();
   }
 
@@ -141,7 +138,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Column(children: <Widget>[
+      body:
+          ListView(children: <Widget>[
+        Column(children: <Widget>[
         // Bluetooth heading
         Wrap(children: <Widget>[
           Container(
@@ -242,6 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Single Note':
                         {
                           playMode = Mode.singleNote;
+                          groove.voices = 1;
                           groove.resize(1,1);
                           groove.notes[0].oggIndex = index1;
                           groove.notes[0].name = note1;
@@ -250,15 +250,32 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Alternating Notes':
                         {
                           playMode = Mode.alternatingNotes;
+                          groove.voices = 1;
                           groove.resize(2,1);
                           groove.notes[0].oggIndex = index1;
                           groove.notes[0].name = note1;
                           groove.notes[1].oggIndex = index2;
                           groove.notes[1].name = note2;
+                          groove.notes2[0].oggIndex = -1;
+                          groove.notes2[0].name = 0;
+                          groove.notes2[1].oggIndex = -1;
+                          groove.notes2[1].name = 0;
+                        }
+                        break;
+                      case 'Dual Notes':
+                        {
+                          playMode = Mode.dualNotes;
+                          groove.voices = 2;
+                          groove.resize(1,1);
+                          groove.notes[0].oggIndex = index1;
+                          groove.notes[0].name = note1;
+                          groove.notes2[0].oggIndex = index2;
+                          groove.notes2[0].name = note2;
                         }
                         break;
                       case 'Groove':
                         {
+                          groove.voices = 1;
                           if (playMode != Mode.groove) {
                             groove.clearNotes();
                           }
@@ -268,6 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         break;
                       case 'Bass':
                         {
+                          groove.voices = 1;
                           if (playMode != Mode.bass) {
                             groove.clearNotes();
                           }
@@ -282,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     }
                   });
                 },
-                items: <String>['Single Note', 'Alternating Notes', 'Groove', 'Bass']
+                items: <String>['Single Note', 'Alternating Notes', 'Dual Notes', 'Groove', 'Bass']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -481,8 +499,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         index2 = -1;
                       }
                   }
-                  groove.notes[1].oggIndex = index2;
-                  groove.notes[1].name = note2;
+                  if (playMode == Mode.alternatingNotes) {
+                    groove.notes[1].oggIndex = index2;
+                    groove.notes[1].name = note2;
+                  } else if (playMode == Mode.dualNotes) {
+                    groove.notes2[0].oggIndex = index2;
+                    groove.notes2[0].name = note2;
+                  }
                 });
               },
               items: <String>[
@@ -514,7 +537,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
               child: FloatingActionButton(
-                foregroundColor: Theme.of(context).accentColor,
+                foregroundColor: Theme.of(context).colorScheme.secondary,
                 elevation: 25,
                 onPressed: (){
                    if (_playState) {
@@ -547,6 +570,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ]),
+    ]),
     );
   } // widget
 
@@ -1139,7 +1163,7 @@ class _MenuPageState extends State<MenuPage> {
    @override
    initState() {
      super.initState();
-     grooveStorage.listofSavedGrooves();
+     grooveStorage.listOfSavedGrooves();
    }
 
    @override
@@ -1166,7 +1190,7 @@ class _MenuPageState extends State<MenuPage> {
                                // load the selected groove
                                var name = grooveStorage.grooveFileNames[index];
                                grooveStorage.readGroove(name);
-//                               Get.snackbar('Load status', 'Loaded groove ' + name, snackPosition: SnackPosition.BOTTOM);
+                               Get.snackbar('Load status', 'Loaded groove ' + name, snackPosition: SnackPosition.BOTTOM);
                                // go back to previous screen
                                switch(groove.type) {
                                  case GrooveType.percussion: {

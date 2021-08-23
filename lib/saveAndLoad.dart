@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:get/get.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'groove.dart';
 
@@ -20,13 +18,9 @@ class GrooveStorage {
     return directory!.path;
   }
 
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/groove.csv');
-  }
 
   // get list of .csv files in the applications doc directory
-  void listofSavedGrooves() async {
+  void listOfSavedGrooves() async {
     String dir = (await getExternalStorageDirectory())!.path;
     print('HF: external storage directory = $dir');
     List<FileSystemEntity> files = Directory(dir).listSync(recursive: false);
@@ -52,7 +46,6 @@ class GrooveStorage {
     print('HF: reading groove from file $fileNameAndPath');
 
     File file = File(fileNameAndPath);
-    if (file != null) {
       try {
         // Read the file
         final contents = await file.readAsString();
@@ -67,11 +60,6 @@ class GrooveStorage {
         print('HF: readGroove readAsString error: $e');
         return;
       }
-    }
-    else {
-      print('HF: readGroove error: file not found');
-      return;
-    }
   }
 
   Future<void> writeGroove(String filename, String description) async {

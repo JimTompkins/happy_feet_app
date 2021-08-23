@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 
 Note note = new Note(0, "Bass drum");
 List<Note> notes = [note];
-Groove groove = new Groove(1,1,notes, GrooveType.percussion);
+List<Note> notes2 = [note];
+Groove groove = new Groove(1,1,notes, notes2, GrooveType.percussion);
 
 enum GrooveType { percussion, bass, guitarNotes, guitarChords, pianoNotes, pianoChords }
 
@@ -22,8 +23,7 @@ class Note {
     this.initial = initialMap[name];
   }
 
-  Note.empty() {
-  }
+  Note.empty();
 
   copyFrom(Note from) {
     this.oggIndex = from.oggIndex;
@@ -37,34 +37,42 @@ class Note {
 class Groove {
   int bpm = 1;  // number of beat per measure
   int numMeasures = 1; // number of measures
+  int voices = 1;
   int index = 0; // pointer to next note to play
   int lastSequenceBit = -1;  // sequence bit of last notify received
                              // note that -1 is used to indicate that a first beat has not yet been received
   final timeBuffer = CircularBuffer<int>(8);  // circular buffer of beat delta timestamps
-  double BeatsPerMinute = 0.0;
+  double beatsPerMinute = 0.0;
   double sum = 0;
   List notes = <Note>[]; // list of notes
+  List notes2 = <Note>[]; // list of notes
   String? key = 'E';
   GrooveType type = GrooveType.percussion;
   String description = '';
 
   // constructor with list of notes
-  Groove(int beats, int measures, List notes, GrooveType type) {
+  Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
     this.bpm = beats;
     this.numMeasures = measures;
     this.index = 0;
     this.lastSequenceBit = -1;
     this.notes = notes;
+    this.notes2 = notes2;
     this.type = type;
+    this.voices = 1;
   }
 
   // constructor without list of notes
   Groove.empty(int beats, int measures, GrooveType type) {
     this.bpm = beats;
     this.numMeasures = measures;
+    this.voices = 1;
     this.index = 0;
     this.lastSequenceBit = -1;
     this.notes = List<Note>.generate(beats * measures,(i){
+      return Note(-1, "-");
+    });
+    this.notes2 = List<Note>.generate(beats * measures,(i){
       return Note(-1, "-");
     });
     this.type = type;
@@ -73,6 +81,7 @@ class Groove {
   initialize() {
     this.bpm = 1;
     this.numMeasures = 1;
+    this.voices = 1;
     this.index = 0;
     this.lastSequenceBit = -1;
     this.notes.clear();
@@ -80,6 +89,11 @@ class Groove {
     this.notes[0].oggIndex = -1;
     this.notes[0].oggNote = 0;
     this.notes[0].initial = '-';
+    this.notes2.clear();
+    this.notes2[0].name = '-';
+    this.notes2[0].oggIndex = -1;
+    this.notes2[0].oggNote = 0;
+    this.notes2[0].initial = '-';
     this.type = GrooveType.percussion;
     this.key = 'E';
   }
@@ -96,6 +110,11 @@ class Groove {
        this.notes[i].oggIndex = -1;
        this.notes[i].oggNote = 0;
        this.notes[i].initial = '-';
+
+       this.notes2[i].name = '-';
+       this.notes2[i].oggIndex = -1;
+       this.notes2[i].oggNote = 0;
+       this.notes2[i].initial = '-';
      }
   }
 
@@ -305,6 +324,7 @@ class Groove {
     if (this.notes.length > beats) {
       // remove the extra items
       this.notes.removeRange(beat, this.notes.length - 1);
+      this.notes2.removeRange(beat, this.notes.length - 1);
     }
     // if the list is too short
     if (this.notes.length < beats) {
@@ -313,6 +333,7 @@ class Groove {
       for (var i = 0; i < numToAdd; i++) {
         // add items to the list
         this.notes.add(Note(-1, "-"));
+        this.notes2.add(Note(-1, "-"));
       }
       // if adding measures...
       if (measure > origMeasures) {
@@ -324,6 +345,7 @@ class Groove {
             var src = copyFromStart + n;
             var dest = copyToStart + n;
             this.notes[dest].copyFrom(this.notes[src]);
+            this.notes2[dest].copyFrom(this.notes2[src]);
             print('HF: resize: copying from $src to $dest');
           }
         }
@@ -353,18 +375,15 @@ class Groove {
     }
     lastSequenceBit = sequenceBit;
 
-    // play the note if non-zero
-    if (this.notes[this.index].oggIndex != -1) {
-      // play the note
-      oggpiano.play(this.notes[this.index].oggIndex, this.notes[index].oggNote);
-    }
+    oggpiano.play(this.voices, this.notes[this.index].oggIndex, this.notes[this.index].oggNote,
+                  this.notes2[this.index].oggIndex, this.notes2[this.index].oggNote);
 
     // calculate Beats Per Minute
     final first = timeBuffer.isFilled ? timeBuffer.first : 0;
     timeBuffer.add(data & 0x3F); // add the latest beat delta to the circular buffer
     sum += timeBuffer.last - first;  // update the running sum
     mean = sum.toDouble() / timeBuffer.length; // calculate the mean delta time
-    BeatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
+    beatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
 //    print("HF: beats per minute = ${data & 0x3F} ${mean.toStringAsFixed(1)} ${BeatsPerMinute.toStringAsFixed(1)}");
 
     // increment pointer to the next note
@@ -375,6 +394,22 @@ class Groove {
   void restart() {
     this.index = 0;
   }
+
+  // Grooves are saved to and loaded from comma separated variable (CSV) files with
+  // the fields defined as follows:
+  // 0 = description of groove
+  // 1 = beats per measure
+  // 2 = number of measures
+  // 3 = number of voices
+  // 4 = groove type e.g. percussion or bass
+  // 5 = key (only used for bass grooves)
+  // 6:6+BPM*measures*4 = 1st voice notes
+  //     for each note...
+  //        ogg number
+  //        transpose
+  //        name
+  //        initial
+  // ??:??+BPM*measures*4 = 2nd voice notes
 
   // convert groove to  a csv string for writing to a file
   String toCSV(String description) {
@@ -394,10 +429,8 @@ class Groove {
         break;
       }
 
-      if (description == null) {
-        description = '';
-      }
-    result = description + ',' + this.bpm.toString() + ',' + this.numMeasures.toString() + ',' + type + ',';
+    result = description + ',' + this.bpm.toString() + ',' + this.numMeasures.toString() + ',' +
+        this.voices.toString() + ',' + type + ',' + this.key! + ',';
 
     print('HF: toCSV: $result');
 
@@ -410,6 +443,15 @@ class Groove {
        result = result + note;
     }
 
+    // for each note in the 2nd voice
+    for(int i=0; i<beats; i++) {
+      String note2 = this.notes2[i].oggIndex.toString() + ',' +
+          this.notes2[i].oggNote.toString() + ',' +
+          this.notes2[i].name + ',' + this.notes2[i].initial + ',';
+      print('HF: toCSV: $note2');
+      result = result + note2;
+    }
+
     return result;
   }
 
@@ -418,28 +460,60 @@ class Groove {
     // split the string on ,
     List<String> fields = txt.split(',');
     int numFields = fields.length;
-    String type;
-    String description;
+    String _description;
+    String _type;
+    int _voices;
+    String _key;
 
     print('HF groove.fromCSV : number of fields = $numFields');
 
-    description = fields[0];
-    this.description = description;
+    _description = fields[0];
+    this.description = _description;
 
     groove.resize(int.parse(fields[1]), int.parse(fields[2]));
     int beats = int.parse(fields[1]) * int.parse(fields[2]);
-    type = fields[3];
-    print('HF groove.fromCSV : type = $type, number of beats = $beats');
+    this.voices = int.parse(fields[3]);
+    _voices = this.voices;
+    switch(fields[4]) {
+      case 'percussion': {
+        this.type = GrooveType.percussion;
+        _type = 'percussion'; }
+      break;
+      case 'bass': {
+        this.type = GrooveType.bass;
+        _type = 'bass'; }
+      break;
+      default: {
+        this.type = GrooveType.percussion;
+        _type = 'error';}
+      break;
+    }
+    this.key = fields[5];
+    _key = this.key!;
+    print('HF groove.fromCSV : description = $_description, number of beats = $beats, voices = $_voices, type = $_type, key = $_key');
 
     // for each note
     for(int i=0; i<beats; i++) {
-      this.notes[i].oggIndex = int.parse(fields[i*4+4]);
-      this.notes[i].oggNote = int.parse(fields[i*4+5]);
-      this.notes[i].name = fields[i*4+6];
-      this.notes[i].initial = fields[i*4+7];
+      this.notes[i].oggIndex = int.parse(fields[i*4+5]);
+      this.notes[i].oggNote = int.parse(fields[i*4+6]);
+      this.notes[i].name = fields[i*4+7];
+      this.notes[i].initial = fields[i*4+8];
       String note = this.notes[i].oggIndex.toString() + ',' +
                     this.notes[i].oggNote.toString() + ',' +
                     this.notes[i].name + ',' + this.notes[i].initial + ',';
+      print('HF: groove.fromCSV: $note');
+    }
+
+    // for each note in the 2nd voice
+    var offset = 5 + beats * 4;
+    for(int i=0; i<beats; i++) {
+      this.notes2[i].oggIndex = int.parse(fields[i*4+offset]);
+      this.notes2[i].oggNote = int.parse(fields[i*4+offset+1]);
+      this.notes2[i].name = fields[i*4+offset+2];
+      this.notes2[i].initial = fields[i*4+offset+3];
+      String note = this.notes2[i].oggIndex.toString() + ',' +
+          this.notes2[i].oggNote.toString() + ',' +
+          this.notes2[i].name + ',' + this.notes2[i].initial + ',';
       print('HF: groove.fromCSV: $note');
     }
 
@@ -450,6 +524,7 @@ class Groove {
     int beats = this.bpm * this.numMeasures;
     int _bpm = this.bpm;
     int _numMeasures = this.numMeasures;
+    int _voices = this.voices;
     String? _key = this.key;
     String type;
 
@@ -465,7 +540,7 @@ class Groove {
       break;
     }
 
-    print('HF: print groove: $_bpm, $_numMeasures, $_key, $type');
+    print('HF: print groove: BPM = $_bpm, num measures = $_numMeasures, voices = $_voices, key = $_key, type = $type');
 
     if (this.description != '') {
       print('HF: print groove: $this.description');

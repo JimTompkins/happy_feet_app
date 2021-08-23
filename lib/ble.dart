@@ -277,7 +277,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: disabling beats');
-      var response = await _ble.writeCharacteristicWithoutResponse(
+      await _ble.writeCharacteristicWithoutResponse(
           _char6, value: [0x00]);
     }
   }
@@ -287,7 +287,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: enabling beats');
-      var response = await _ble.writeCharacteristicWithoutResponse(
+      await _ble.writeCharacteristicWithoutResponse(
           _char6, value: [0x01]);
     }
   }
@@ -298,7 +298,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: enabling test mode: HF will send beats at a fixed rate');
-      var response = await _ble.writeCharacteristicWithoutResponse(
+      await _ble.writeCharacteristicWithoutResponse(
           _char6, value: [0x80]);
     }
   }
@@ -314,7 +314,7 @@ class BluetoothBLEService {
     print("HF: process beats");
 
     _beatSubscription?.cancel();
-    _beatSubscription = await _ble.subscribeToCharacteristic(_char4).listen((data) {
+    _beatSubscription = _ble.subscribeToCharacteristic(_char4).listen((data) {
           if (data.isNotEmpty) {
 //            var time = DateTime.now();   // get system time
 //            print('HF:   notify received at time: $time');
