@@ -4,9 +4,10 @@ import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
 
 Note note = new Note(0, "Bass drum");
-List<Note> notes = [note];
-List<Note> notes2 = [note];
-Groove groove = new Groove(1,1,notes, notes2, GrooveType.percussion);
+//List<Note> notes = [note];
+//List<Note> notes2 = [note];
+//Groove groove = new Groove(1,1,notes, notes2, GrooveType.percussion);
+Groove groove = new Groove.empty(1,1,GrooveType.percussion);
 
 enum GrooveType { percussion, bass, guitarNotes, guitarChords, pianoNotes, pianoChords }
 
@@ -60,6 +61,23 @@ class Groove {
     this.notes2 = notes2;
     this.type = type;
     this.voices = 1;
+
+    // add notes
+    for(int i=0; i<(beats * measures); i++) {
+      this.notes.add(null);
+      this.notes[i].name = 'none';
+      this.notes[i].oggIndex = -1;
+      this.notes[i].oggNote = 0;
+      this.notes[i].initial = '-';
+
+      this.notes2.add(null);
+      this.notes2[i].name = 'none';
+      this.notes2[i].oggIndex = -1;
+      this.notes2[i].oggNote = 0;
+      this.notes2[i].initial = '-';
+    }
+
+    this.key = 'E';
   }
 
   // constructor without list of notes
@@ -78,40 +96,61 @@ class Groove {
     this.type = type;
   }
 
-  initialize() {
-    this.bpm = 1;
-    this.numMeasures = 1;
+  // initialize the groove in single note mode
+  initSingle(String name) {
+    this.resize(1,1);
     this.voices = 1;
-    this.index = 0;
-    this.lastSequenceBit = -1;
-    this.notes.clear();
-    this.notes[0].name = '-';
-    this.notes[0].oggIndex = -1;
+    this.notes[0].oggIndex = oggMap[name];
     this.notes[0].oggNote = 0;
-    this.notes[0].initial = '-';
-    this.notes2.clear();
-    this.notes2[0].name = '-';
-    this.notes2[0].oggIndex = -1;
+    this.notes[0].name = name;
+    this.notes[0].initial = initialMap[name];
+  }
+
+  // initialize the groove in alternating note mode
+  initAlternating(String name1, String name2) {
+    this.resize(2,1);
+    this.voices = 1;
+    this.notes[0].oggIndex = oggMap[name1];
+    this.notes[0].oggNote = 0;
+    this.notes[0].name = name1;
+    this.notes[0].initial = initialMap[name1];
+
+    this.notes[1].oggIndex = oggMap[name2];
+    this.notes[1].oggNote = 0;
+    this.notes[1].name = name2;
+    this.notes[1].initial = initialMap[name2];
+  }
+
+  // initialize the groove in dual note mode
+  initDual(String name1, String name2) {
+    this.resize(1,1);
+    this.voices = 2;
+    this.notes[0].oggIndex = oggMap[name1];
+    this.notes[0].oggNote = 0;
+    this.notes[0].name = name1;
+    this.notes[0].initial = initialMap[name1];
+
+    this.notes2[0].oggIndex = oggMap[name2];
     this.notes2[0].oggNote = 0;
-    this.notes2[0].initial = '-';
-    this.type = GrooveType.percussion;
-    this.key = 'E';
+    this.notes2[0].name = name2;
+    this.notes2[0].initial = initialMap[name2];
   }
 
   reset() {
     this.index = 0;
     this.lastSequenceBit = -1;
   }
+
   // retain the bpm and numMeasures but set all notes to -
   // used when changing between groove and bass mode
   void clearNotes() {
      for(int i = 0; i<this.bpm*this.numMeasures; i++) {
-       this.notes[i].name = '-';
+       this.notes[i].name = 'none';
        this.notes[i].oggIndex = -1;
        this.notes[i].oggNote = 0;
        this.notes[i].initial = '-';
 
-       this.notes2[i].name = '-';
+       this.notes2[i].name = 'none';
        this.notes2[i].oggIndex = -1;
        this.notes2[i].oggNote = 0;
        this.notes2[i].initial = '-';
@@ -216,7 +255,7 @@ class Groove {
 
   // add a bass note to the groove using the roman numeral and which key
   // we're in currently e.g. key of C, III would be E.
-  addBassNote(index, roman, keyName) {
+  addBassNote(int index, String roman, String keyName) {
     // if no note is to be played, as indicated by -,
     // then set oggIndex to -1 and name and initial to -
     if (roman == '-') {
@@ -224,10 +263,9 @@ class Groove {
       this.notes[index].initial = '-';
       this.notes[index].oggIndex = -1;
       this.notes[index].oggNote = 0;
-    }
-    // create a name by concatenating the key name, a "-" and the
-    // roman numeral,  e.g. C-IV
-    else {
+    } else {
+      // create a name by concatenating the key name, a "-" and the
+      // roman numeral,  e.g. C-IV
       this.notes[index].name = keyName + '-' + roman;
       this.notes[index].initial = roman;
 
@@ -241,12 +279,13 @@ class Groove {
 
       int offset = scaleTonesIndex[romanIndex];
 
+      this.notes[index].oggIndex = 6;  // the bass sample
+
       // create the oggNote by adding the following:
       //   the MIDI code for E1
       //   the key (starting from E)
       //   the roman numeral offset from the tonic
       // and subtracting the MIDI code for A1 (the note of the sample file)
-      this.notes[index].oggIndex = 6;
       this.notes[index].oggNote = E1midi + keyIndex + offset - A1midi;
     }
   }
@@ -320,14 +359,13 @@ class Groove {
     this.numMeasures = measure;
     this.index = 0;
     final beats = beat * measure;
+
     // if the list of notes is too long
     if (this.notes.length > beats) {
       // remove the extra items
       this.notes.removeRange(beat, this.notes.length - 1);
-      this.notes2.removeRange(beat, this.notes.length - 1);
-    }
-    // if the list is too short
-    if (this.notes.length < beats) {
+      this.notes2.removeRange(beat, this.notes2.length - 1);
+    } else if (this.notes.length < beats) { // if the list is too short
       var numToAdd = beats - this.notes.length;
       print("HF: resize groove adding $numToAdd notes");
       for (var i = 0; i < numToAdd; i++) {
@@ -375,6 +413,9 @@ class Groove {
     }
     lastSequenceBit = sequenceBit;
 
+    var n1 = this.notes[this.index].oggIndex;
+    var n2 = this.notes2[this.index].oggIndex;
+    print('HF: call to oggpiano.play, n1 = $n1, n2 = $n2');
     oggpiano.play(this.voices, this.notes[this.index].oggIndex, this.notes[this.index].oggNote,
                   this.notes2[this.index].oggIndex, this.notes2[this.index].oggNote);
 
@@ -429,17 +470,29 @@ class Groove {
         break;
       }
 
+//    print('HF: oggMap: $oggMap');
+//    print('HF: initialMap: $initialMap');
+
     result = description + ',' + this.bpm.toString() + ',' + this.numMeasures.toString() + ',' +
         this.voices.toString() + ',' + type + ',' + this.key! + ',';
 
-    print('HF: toCSV: $result');
+//    print('HF: toCSV1: $result');
 
     // for each note
     for(int i=0; i<beats; i++) {
+//       print('HF: toCSV: note $i');
+//       var val = this.notes[i].oggIndex.toString();
+//       print('HF:        oggIndex = $val');
+//       val = this.notes[i].oggNote.toString();
+//       print('HF:        oggNote = $val');
+//       val = this.notes[i].name;
+//       print('HF:        name = $val');
+//       val = this.notes[i].initial;
+//       print('HF:        initial = $val');
        String note = this.notes[i].oggIndex.toString() + ',' +
                      this.notes[i].oggNote.toString() + ',' +
                      this.notes[i].name + ',' + this.notes[i].initial + ',';
-       print('HF: toCSV: $note');
+//       print('HF: toCSV2: $note');
        result = result + note;
     }
 
@@ -448,7 +501,7 @@ class Groove {
       String note2 = this.notes2[i].oggIndex.toString() + ',' +
           this.notes2[i].oggNote.toString() + ',' +
           this.notes2[i].name + ',' + this.notes2[i].initial + ',';
-      print('HF: toCSV: $note2');
+//      print('HF: toCSV3: $note2');
       result = result + note2;
     }
 
@@ -501,7 +554,7 @@ class Groove {
       String note = this.notes[i].oggIndex.toString() + ',' +
                     this.notes[i].oggNote.toString() + ',' +
                     this.notes[i].name + ',' + this.notes[i].initial + ',';
-      print('HF: groove.fromCSV: $note');
+      print('HF: groove.fromCSV notes: $note');
     }
 
     // for each note in the 2nd voice
@@ -514,7 +567,7 @@ class Groove {
       String note = this.notes2[i].oggIndex.toString() + ',' +
           this.notes2[i].oggNote.toString() + ',' +
           this.notes2[i].name + ',' + this.notes2[i].initial + ',';
-      print('HF: groove.fromCSV: $note');
+      print('HF: groove.fromCSV notes2: $note');
     }
 
     return;

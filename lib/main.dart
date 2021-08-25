@@ -74,7 +74,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String note1 = 'Bass Drum';
+  String note1 = 'Bass drum';
   int index1 = 0;
   String note2 = 'none';
   int index2 = -1;
@@ -100,6 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
      oggpiano.init();
+
+     groove.initSingle(note1);
 
      // request needed permissions
      _checkPermission();
@@ -241,36 +243,25 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Single Note':
                         {
                           playMode = Mode.singleNote;
-                          groove.voices = 1;
-                          groove.resize(1,1);
-                          groove.notes[0].oggIndex = index1;
-                          groove.notes[0].name = note1;
+                          groove.initSingle(note1);
+//                          groove.voices = 1;
+//                          groove.resize(1,1);
+//                          groove.notes[0].oggIndex = index1;
+//                          groove.notes[0].oggNote = 0;
+//                          groove.notes[0].name = note1;
+//                          groove.notes[0].initial = initialMap[note1];
                         }
                         break;
                       case 'Alternating Notes':
                         {
                           playMode = Mode.alternatingNotes;
-                          groove.voices = 1;
-                          groove.resize(2,1);
-                          groove.notes[0].oggIndex = index1;
-                          groove.notes[0].name = note1;
-                          groove.notes[1].oggIndex = index2;
-                          groove.notes[1].name = note2;
-                          groove.notes2[0].oggIndex = -1;
-                          groove.notes2[0].name = 0;
-                          groove.notes2[1].oggIndex = -1;
-                          groove.notes2[1].name = 0;
+                          groove.initAlternating(note1, note2);
                         }
                         break;
                       case 'Dual Notes':
                         {
                           playMode = Mode.dualNotes;
-                          groove.voices = 2;
-                          groove.resize(1,1);
-                          groove.notes[0].oggIndex = index1;
-                          groove.notes[0].name = note1;
-                          groove.notes2[0].oggIndex = index2;
-                          groove.notes2[0].name = note2;
+                          groove.initDual(note1, note2);
                         }
                         break;
                       case 'Groove':
@@ -298,6 +289,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           playMode = Mode.unknown;
                         }
                     }
+                    String text = groove.toCSV('after changing play mode');
+                    print("HF: $text");
                   });
                 },
                 items: <String>['Single Note', 'Alternating Notes', 'Dual Notes', 'Groove', 'Bass']
@@ -341,71 +334,31 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: (String? newValue) {
                 setState(() {
                   note1 = newValue!;
-                  switch (note1) {
-                    case 'Bass Drum':
-                      {
-                        index1 = 0;
-                      }
+                  switch (playMode) {
+                    case Mode.singleNote:
+                      groove.initSingle(note1);
                       break;
-                    case 'Kick Drum':
-                      {
-                        index1 = 1;
-                      }
+                    case Mode.alternatingNotes:
+                      groove.initAlternating(note1, note2);
                       break;
-                    case 'Snare Drum':
-                      {
-                        index1 = 2;
-                      }
+                    case Mode.dualNotes:
+                      groove.initDual(note1, note2);
                       break;
-                    case 'High Hat Cymbal':
-                      {
-                        index1 = 3;
-                      }
-                      break;
-                    case 'Cowbell':
-                      {
-                        index1 = 4;
-                      }
-                      break;
-                    case 'Tambourine':
-                      {
-                        index1 = 5;
-                      }
-                      break;
-                    case 'Fingersnap':
-                      {
-                        index1 = 7;
-                      }
-                      break;
-                    case 'Rim shot':
-                      {
-                        index1 = 8;
-                      }
-                      break;
-                    case 'Shaker':
-                      {
-                        index1 = 9;
-                      }
-                      break;
-                    case 'Woodblock':
-                      {
-                        index1 = 10;
-                      }
-                      break;
+                    case Mode.groove:
+                    case Mode.bass:
+                    case Mode.unknown:
                     default:
-                      {
-                        index1 = -1;
-                      }
+                      break;
                   }
-                  groove.notes[0].oggIndex = index1;
-                  groove.notes[0].name = note1;
+                  String text = groove.toCSV('after changing note 1');
+                  print("HF: $text");
                 });
               },
               items: <String>[
-                'Bass Drum',
-                'Kick Drum',
-                'Snare Drum',
-                'High Hat Cymbal',
+                'Bass drum',
+                'Kick drum',
+                'Snare drum',
+                'Hi-hat cymbal',
                 'Cowbell',
                 'Tambourine',
                 'Fingersnap',
@@ -438,82 +391,33 @@ class _MyHomePageState extends State<MyHomePage> {
               onChanged: (String? newValue) {
                 setState(() {
                   note2 = newValue!;
-                  switch (note2) {
-                    case 'none':
-                      {
-                        index2 = -1;
-                      }
+                  switch (playMode) {
+                    case Mode.singleNote:
+                      groove.initSingle(note1);
                       break;
-                    case 'Bass Drum':
-                      {
-                        index2 = 0;
-                      }
+                    case Mode.alternatingNotes:
+                      groove.initAlternating(note1, note2);
                       break;
-                    case 'Kick Drum':
-                      {
-                        index2 = 1;
-                      }
+                    case Mode.dualNotes:
+                      groove.initDual(note1, note2);
                       break;
-                    case 'Snare Drum':
-                      {
-                        index2 = 2;
-                      }
-                      break;
-                    case 'High Hat Cymbal':
-                      {
-                        index2 = 3;
-                      }
-                      break;
-                    case 'Cowbell':
-                      {
-                        index2 = 4;
-                      }
-                      break;
-                    case 'Tambourine':
-                      {
-                        index2 = 5;
-                      }
-                      break;
-                    case 'Fingersnap':
-                      {
-                        index2 = 7;
-                      }
-                      break;
-                    case 'Rim shot':
-                      {
-                        index2 = 8;
-                      }
-                      break;
-                    case 'Shaker':
-                      {
-                        index2 = 9;
-                      }
-                      break;
-                    case 'Woodblock':
-                      {
-                        index2 = 10;
-                      }
-                      break;
+                    case Mode.groove:
+                    case Mode.bass:
+                    case Mode.unknown:
                     default:
-                      {
-                        index2 = -1;
-                      }
+                      break;
                   }
-                  if (playMode == Mode.alternatingNotes) {
-                    groove.notes[1].oggIndex = index2;
-                    groove.notes[1].name = note2;
-                  } else if (playMode == Mode.dualNotes) {
-                    groove.notes2[0].oggIndex = index2;
-                    groove.notes2[0].name = note2;
-                  }
+                  String text = groove.toCSV('after changing note 2');
+                  print("HF: $text");
+
                 });
               },
               items: <String>[
                 'none',
-                'Bass Drum',
-                'Kick Drum',
-                'Snare Drum',
-                'High Hat Cymbal',
+                'Bass drum',
+                'Kick drum',
+                'Snare drum',
+                'Hi-hat cymbal',
                 'Cowbell',
                 'Tambourine',
                 'Fingersnap',

@@ -188,7 +188,7 @@ class BluetoothBLEService {
 //          final mtu = await _ble.requestMtu(
 //              deviceId: targetDevice!.id, mtu: 20);
 //          print("HF: MTU size: $mtu");
-//          await Future.delayed(Duration(milliseconds: 1000));
+          await Future.delayed(Duration(milliseconds: 1000));
           print('HF: device connected');
           Get.snackbar('Bluetooth status', 'Connected!', snackPosition: SnackPosition.BOTTOM);
           getCharacteristics();

@@ -6,10 +6,12 @@ final OggPiano oggpiano = new OggPiano();
 
 // Mapping from note name to ogg voice number
 var oggMap = <String, num>{
+  'none':-1,
+  '-':-1,
   'Bass drum':0,
   'Kick drum':1,
   'Snare drum':2,
-  'Hi-hat Cymbal':3,
+  'Hi-hat cymbal':3,
   'Cowbell':4,
   'Tambourine':5,
   'Fingersnap':7,
@@ -22,10 +24,12 @@ var oggMap = <String, num>{
 // that this can't be done by grabbing the first character since
 // there are two notes starting with 'S'.
 var initialMap = <String, String>{
+  'none':'-',
+  '-':'-',
   'Bass drum':'B',
   'Kick drum':'K',
   'Snare drum':'S',
-  'Hi-hat Cymbal':'H',
+  'Hi-hat cymbal':'H',
   'Cowbell':'C',
   'Tambourine':'T',
   'Fingersnap':'F',
@@ -43,38 +47,38 @@ class OggPiano {
     fop.init(mode: MODE.LOW_LATENCY);
 
     // load the sound sample files
-    rootBundle.load('assets/sounds/bass_drum.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'bass_drum.ogg', index: 0, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/bass_drum.ogg').then((ogg0) {
+      fop.load(src: ogg0, name: 'bass_drum.ogg', index: 0);
     });
-    rootBundle.load('assets/sounds/kick_drum.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'kick_drum.ogg', index: 1, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/kick_drum.ogg').then((ogg1) {
+      fop.load(src: ogg1, name: 'kick_drum.ogg', index: 1);
     });
-    rootBundle.load('assets/sounds/snare_drum.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'snare_drum.ogg', index: 2, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/snare_drum.ogg').then((ogg2) {
+      fop.load(src: ogg2, name: 'snare_drum.ogg', index: 2);
     });
-    rootBundle.load('assets/sounds/high_hat.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'high_hat.ogg', index: 3, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/high_hat.ogg').then((ogg3) {
+      fop.load(src: ogg3, name: 'high_hat.ogg', index: 3);
     });
-    rootBundle.load('assets/sounds/cowbell.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'cowbell.ogg', index: 4, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/cowbell.ogg').then((ogg4) {
+      fop.load(src: ogg4, name: 'cowbell.ogg', index: 4);
     });
-    rootBundle.load('assets/sounds/tambourine.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'tambourine.ogg', index: 5, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/tambourine.ogg').then((ogg5) {
+      fop.load(src: ogg5, name: 'tambourine.ogg', index: 5);
     });
-    rootBundle.load('assets/sounds/Bass74MapleJazzA1_1sTrim.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'Bass74MapleJazzA1_1sTrim.ogg', index: 6, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/Bass74MapleJazzA1_1sTrim.ogg').then((ogg6) {
+      fop.load(src: ogg6, name: 'Bass74MapleJazzA1_1sTrim.ogg', index: 6);
     });
-    rootBundle.load('assets/sounds/fingersnap.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'fingersnap.ogg', index: 7, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/fingersnap.ogg').then((ogg7) {
+      fop.load(src: ogg7, name: 'fingersnap.ogg', index: 7);
     });
-    rootBundle.load('assets/sounds/sidestick.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'sidestick.ogg', index: 8, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/sidestick.ogg').then((ogg8) {
+      fop.load(src: ogg8, name: 'sidestick.ogg', index: 8);
     });
-    rootBundle.load('assets/sounds/shaker.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'shaker.ogg', index: 9, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/shaker.ogg').then((ogg9) {
+      fop.load(src: ogg9, name: 'shaker.ogg', index: 9);
     });
-    rootBundle.load('assets/sounds/woodblock1.ogg').then((ogg) {
-      fop.load(src: ogg, name: 'woodblock1.ogg', index: 10, forceLoad: true, replace: true);
+    rootBundle.load('assets/sounds/woodblock1.ogg').then((ogg10) {
+      fop.load(src: ogg10, name: 'woodblock1.ogg', index: 10);
     });
   }
 
@@ -85,16 +89,19 @@ class OggPiano {
 
     if (voices == 1) {
       if (note1 != -1) {
+        print('HF:   1 voice');
         fop.play(index: note1, note: transpose1, pan: 0.0);
         return;
       }
     } else if (voices == 2) {
         if (note1 == -1 && note2 != -1) {
+          print('HF:  2 voices, 1 note, note: $note2, transpose: $transpose2');
           // play note 2 as a single note
           fop.play(index: note2, note: transpose2, pan: 0.0);
           return;
         }
         if (note2 == -1 && note1 != -1) {
+          print('HF:  2 voices, 1 note, note: $note1, transpose: $transpose1');
           // play note 1 as a single note
           fop.play(index: note1, note: transpose1, pan: 0.0);
           return;
@@ -104,6 +111,7 @@ class OggPiano {
           return;
         }
         if (note1 != -1 && note2 != -1) {
+          print('HF:  2 voices, 2 notes');
           // play both notes at the same time
           Map<int, List<Float64List>> map = Map();
           List<Float64List> sounds1 = [];
