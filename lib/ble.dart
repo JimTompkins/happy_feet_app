@@ -306,6 +306,18 @@ class BluetoothBLEService {
   }
 
 
+  Future<void> writeThreshold(int threshold) async {
+    if (_char6 == null) {
+      print('HF: writeThreshold: error: null characteristic');
+      // error
+    } else {
+      int value = ((threshold & 0x3F) << 1) | 0x01;
+      print('HF: writeThreshold: threshold = $threshold, value = $value');
+      await _ble.writeCharacteristicWithoutResponse(
+          _char6, value: [value]);
+    }
+  }
+
   // method to process beats received as notifications on char4
   processBeats() async {
     if (_char4 == null) {
@@ -355,12 +367,14 @@ class BluetoothBLEService {
   }
 
   // read the model number
-  Future<String?> readModelNumber() async {
+  Future<String>? readModelNumber() async {
     String result = "ERROR";
     if (_modelNumber == null) return result;
       try {
         List<int> value = await _ble.readCharacteristic(_modelNumber!);
         // convert list of character codes to string
+        var valString = String.fromCharCodes(value);
+        print('HF: readModelNumber: read result = $valString');
         return String.fromCharCodes(value);
       } catch (e) {
         print("HF: error readModelNumber $e");

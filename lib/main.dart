@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
   bool _playState = false;
-  static BluetoothBLEService _bluetoothBLEService = new BluetoothBLEService();
+  static BluetoothBLEService _bluetoothBLEService = Get.put(BluetoothBLEService());
 
   Future<void> _checkPermission() async {
    final status = await Permission.locationWhenInUse.request();
@@ -877,12 +877,14 @@ class _InfoPageState extends State<InfoPage> {
     version: 'Unknown',
     buildNumber: 'Unknown',
   );
-  Future<String?>? modelNumber;
+  static BluetoothBLEService _bluetoothBLEService = Get.find();
+  Future<String>? modelNumber;
 
   @override
   initState() {
     super.initState();
     _initPackageInfo();
+    modelNumber = _bluetoothBLEService.readModelNumber();
   }
 
   Future<void> _initPackageInfo() async {
@@ -914,15 +916,61 @@ class _InfoPageState extends State<InfoPage> {
               _infoTile('App version', _packageInfo.version),
 //              _infoTile('Build number', _packageInfo.buildNumber),
             Row(children: <Widget>[
-              ElevatedButton(
-                child: Text('Read model number'),
-                onPressed: () {
-//                  modelNumber = _bluetoothBLEService?.readModelNumber();
-//                   _bluetoothBLEService?.readWhoAmI();
-                }
-              ),
-//              Text(modelNumber),
-               Text('???'),
+//              ElevatedButton(
+                Text('Model number:'),
+//                onPressed: () {
+//                  modelNumber = _bluetoothBLEService.readModelNumber();
+//                }
+//              ),
+              FutureBuilder<String>(
+                future: modelNumber,
+                builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  List<Widget> children;
+                  if (snapshot.hasData) {
+                    children = <Widget>[
+                      const Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green,
+                        size: 60,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text('Result: ${snapshot.data}'),
+                      )
+                    ];
+                  } else if (snapshot.hasError) {
+                    children = <Widget>[
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 60,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Text('Error: ${snapshot.error}'),
+                      )
+                    ];
+                  } else {
+                    children = const <Widget>[
+                      SizedBox(
+                        child: CircularProgressIndicator(),
+                        width: 60,
+                        height: 60,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: Text('Awaiting result...'),
+                      )
+                    ];
+                  }
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: children,
+                    ),
+                  );
+                })
             ]),
            Row(children: <Widget>[
              ElevatedButton(
@@ -950,6 +998,7 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   int _detectionThreshold = 128;
+  static BluetoothBLEService _bluetoothBLEService = Get.find();
 
   @override
   initState() {
@@ -978,7 +1027,7 @@ class _MenuPageState extends State<MenuPage> {
                 onChanged: (double value) {
                   setState(() {
                     _detectionThreshold = value.toInt();
-                    //_bluetoothBLEService?.writeThreshold(_detectionThreshold & 0xFF);
+                    _bluetoothBLEService.writeThreshold(_detectionThreshold & 0xFF);
                   });
                 }, // setState, onChanged
               ), // Slider
