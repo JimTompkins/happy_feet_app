@@ -47,7 +47,7 @@ class Groove {
   double sum = 0;
   List notes = <Note>[]; // list of notes
   List notes2 = <Note>[]; // list of notes
-  String? key = 'E';
+  String key = 'E';
   GrooveType type = GrooveType.percussion;
   String description = '';
 
@@ -243,12 +243,20 @@ class Groove {
   changeKey(String? keyName) {
     String roman;
     int romanIndex;
+    String key;
+    if (keyName == null) {
+      key = 'E';
+    } else {
+      key = keyName;
+    }
+    this.key = key;
+
     // loop over all of the notes in the groove
     for(int i=0; i<this.bpm*this.numMeasures; i++) {
       if (this.notes[i].name != '-') {  // ignore empty notes
         romanIndex = this.notes[i].name.indexOf('-') + 1;
         roman = this.notes[i].name.substring(romanIndex); //
-        this.addBassNote(i, roman, keyName);
+        this.addBassNote(i, roman, key);
       }
     }
   }
@@ -272,12 +280,19 @@ class Groove {
       // get the index of the keyName
       int keyIndex = keys.indexWhere((element) =>
       element == keyName);
+      print('HF: addBassNote: keyName = $keyName, keyIndex = $keyIndex');
 
       // get the index of the roman numeral
+      if (roman == 'none') {
+        roman = '-';
+      }
       int romanIndex = scaleTonesRoman.indexWhere((element) =>
       element == roman);
+      print('HF: addBassNote: roman = $roman');
+      print('HF: addBassNote: romanIndex = $romanIndex');
 
       int offset = scaleTonesIndex[romanIndex];
+      print('HF: addBassNote: offset = $offset');
 
       this.notes[index].oggIndex = 6;  // the bass sample
 
@@ -474,7 +489,7 @@ class Groove {
 //    print('HF: initialMap: $initialMap');
 
     result = description + ',' + this.bpm.toString() + ',' + this.numMeasures.toString() + ',' +
-        this.voices.toString() + ',' + type + ',' + this.key! + ',';
+        this.voices.toString() + ',' + type + ',' + this.key + ',';
 
 //    print('HF: toCSV1: $result');
 
@@ -542,7 +557,7 @@ class Groove {
       break;
     }
     this.key = fields[5];
-    _key = this.key!;
+    _key = this.key;
     print('HF groove.fromCSV : description = $_description, number of beats = $beats, voices = $_voices, type = $_type, key = $_key');
 
     // for each note

@@ -55,6 +55,16 @@ class MyApp extends StatelessWidget {
               fontSize: 16,
               height: 1,
               fontWeight: FontWeight.normal),
+          headline2: TextStyle(
+              color: Colors.blue[400],
+              fontSize: 16,
+              height: 1,
+              fontWeight: FontWeight.normal),
+          headline3: TextStyle(
+              color: Colors.deepOrange[500],
+              fontSize: 16,
+              height: 1,
+              fontWeight: FontWeight.normal),
           headline4: TextStyle(
               color: Colors.grey[700],
               fontSize: 16,
@@ -506,6 +516,27 @@ class _GroovePageState extends State<GroovePage> {
     dropdownValue = groove.getInitials();
   }
 
+  // return a colour to use for each gridview element based on its index
+  // this is done to improve readability when entering notes into a groove.
+  Color? rowColor(int index) {
+    if (groove.voices == 1) {
+      return ((index ~/ _beatsPerMeasure) & 0x01 == 0x01)
+          ? Colors.blue[200]
+          : Colors.blue[400];
+    } else if (groove.voices == 2) {
+      switch ((index ~/ _beatsPerMeasure) & 0x03) {
+        case 0: return Colors.blue[400];
+           break;
+        case 1: return Colors.deepOrange[400];
+          break;
+        case 2: return Colors.blue[200];
+          break;
+        case 3: return Colors.deepOrange[200];
+          break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 //    dropdownValue = groove.getInitials();
@@ -582,6 +613,7 @@ class _GroovePageState extends State<GroovePage> {
                 return Center(
                   child: Container(
                     decoration: new BoxDecoration(
+                      color: rowColor(index),
                       border: Border.all(width: 1.0)
                     ),
                    child: DropdownButton<String>(
@@ -648,7 +680,7 @@ class _GroovePageState extends State<GroovePage> {
    int _beatsPerMeasure = groove.bpm;
    int _numberOfMeasures = groove.numMeasures;
    int _totalBeats = groove.bpm * groove.numMeasures;
-   String? key = groove.key;
+   String key = groove.key;
    List<String> dropdownValue = groove.getInitials();
 
    @override
@@ -663,6 +695,12 @@ class _GroovePageState extends State<GroovePage> {
      print('HF: dropdownValue = $dropdownValue');
      groove.printGroove();
    }
+
+   // return a colour to use for each gridview element based on its index
+   // this is done to improve readability when entering notes into a bass groove.
+   Color? rowColor(int index) {
+     return ((index ~/ _beatsPerMeasure)&0x01==0x01)? Colors.blue[200] : Colors.blue[400];
+  }
 
    @override
    Widget build(BuildContext context) {
@@ -733,8 +771,7 @@ class _GroovePageState extends State<GroovePage> {
                    style: Theme.of(context).textTheme.headline4,
                    onChanged: (String? newValue) {
                      setState(() {
-                       key = newValue;
-                       groove.key = newValue;
+                       key = newValue!;
                        groove.changeKey(key);
                      });
                    },
@@ -768,6 +805,7 @@ class _GroovePageState extends State<GroovePage> {
                      return Center(
                          child: Container(
                             decoration: new BoxDecoration(
+                               color: rowColor(index),
                                border: Border.all(width: 1.0)
                                ),
                          child: DropdownButton<String>(
@@ -782,7 +820,7 @@ class _GroovePageState extends State<GroovePage> {
                            items: <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].map<DropdownMenuItem<String>>((String value) {
                              return DropdownMenuItem<String>(
                                value: value,
-                               child: Text(value),
+                               child: Text(value)
                              );
                            }).toList(),
                          ) // DropdownButton

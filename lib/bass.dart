@@ -9,14 +9,14 @@ List scaleTonesRoman = <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 List chordsInKey = <String>['M', 'm', 'm', 'M', 'M', 'm', 'dim'];
 
 List chordTypes = <String>['M', 'm', 'dim', 'Aug', 'Pwr', 'sus4', 'sus2'];
-List MajorNotes = <int>[0,4,7];  // where 0 is the tonic
-List MinorNotes = <int>[0,3,7];
-List DiminishedNotes = <int>[0,3,6];
-List AugmentedNotes = <int>[0,4,8];
-List PowerNotes = <int>[0,7];
-List Sus4Notes = <int>[0,5,7];
-List Sus2Notes = <int>[0,2,7];
-List chordNotes = <List>[MajorNotes, MinorNotes, DiminishedNotes, AugmentedNotes, PowerNotes, Sus4Notes, Sus2Notes];
+List majorNotes = <int>[0,4,7];  // where 0 is the tonic
+List minorNotes = <int>[0,3,7];
+List diminishedNotes = <int>[0,3,6];
+List augmentedNotes = <int>[0,4,8];
+List powerNotes = <int>[0,7];
+List sus4Notes = <int>[0,5,7];
+List sus2Notes = <int>[0,2,7];
+List chordNotes = <List>[majorNotes, minorNotes, diminishedNotes, augmentedNotes, powerNotes, sus4Notes, sus2Notes];
 
 // return a string containing the names of the scale tones in a given key
 String scaleTones(String? key) {
