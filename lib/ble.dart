@@ -71,7 +71,9 @@ class BluetoothBLEService {
       _connectionStateSubject.stream;
 
   bool isReady = false;
-  bool isConnected = false;
+//  bool isConnected = false;
+  final isConnected=false.obs;
+
   StreamSubscription? _subscription;
   StreamSubscription<ConnectionStateUpdate>? _connection;
   final _devices = <DiscoveredDevice>[];
@@ -79,7 +81,7 @@ class BluetoothBLEService {
 
   init() {
     isReady = false;
-    isConnected = false;
+    isConnected(false);
     _ble.logLevel = LogLevel.verbose;  // change to none for release version
     _ble.statusStream.listen((status) {
       switch (_ble.status) {
@@ -165,7 +167,7 @@ class BluetoothBLEService {
     if (_connection == null) {
        return false;
     } else {
-      return isConnected;
+      return isConnected.value;
     }
   }
 
@@ -183,7 +185,7 @@ class BluetoothBLEService {
         connectionTimeout: const Duration(seconds:  30),
       ).listen((connectionState) async {
         if (connectionState.connectionState == DeviceConnectionState.connected) {
-          isConnected = true;
+          isConnected(true);
           // for HappyFeet, set the MTU as small as possible
 //          final mtu = await _ble.requestMtu(
 //              deviceId: targetDevice!.id, mtu: 20);
@@ -198,7 +200,7 @@ class BluetoothBLEService {
           processBeats();
 
          } else {
-          isConnected = false;
+          isConnected(false);
         }
       },
       onError: (Object e) => print('HF: connect to device fails with error: $e'),
@@ -258,7 +260,7 @@ class BluetoothBLEService {
 
   // disconnect from HappyFeet
   Future<void> disconnectFromDevice() async {
-    this.isConnected = false;
+    isConnected(false);
     _subscription?.cancel();
     try {
       print('HF: disconnecting from device');

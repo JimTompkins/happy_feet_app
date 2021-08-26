@@ -170,12 +170,13 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
-              child: IconButton(
+              child: Obx(()=>
+                  IconButton(
                   icon: Icon(
                     Icons.bluetooth_searching,
                   ),
                   iconSize: 50,
-                  color: myColour,
+                  color: _bluetoothBLEService.isConnected.value? Colors.grey: myColour,
                   splashColor: Colors.purple,
                   onPressed: () {
                     // Start scanning and make connection
@@ -186,6 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       _bluetoothBLEService.startConnection();
                     }
                   }),
+                  ),
             ),
             Text('Connect',
               style: Theme.of(context).textTheme.caption,)
@@ -194,12 +196,13 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
-              child: IconButton(
+              child: Obx(()=>
+              IconButton(
                 icon: Icon(
                   Icons.bluetooth_disabled,
                 ),
                 iconSize: 50,
-                color: Colors.grey,
+                color: _bluetoothBLEService.isConnected.value? myColour: Colors.grey,
                 splashColor: Colors.purple,
                 onPressed: () {
                   // stop the BLE connection
@@ -212,7 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 },
               ),
-            ),
+            ),),
             Text('Disconnect',
               style: Theme.of(context).textTheme.caption,)
           ]),
