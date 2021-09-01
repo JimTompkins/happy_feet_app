@@ -257,12 +257,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         {
                           playMode = Mode.singleNote;
                           groove.initSingle(note1);
-//                          groove.voices = 1;
-//                          groove.resize(1,1);
-//                          groove.notes[0].oggIndex = index1;
-//                          groove.notes[0].oggNote = 0;
-//                          groove.notes[0].name = note1;
-//                          groove.notes[0].initial = initialMap[note1];
                         }
                         break;
                       case 'Alternating Notes':
@@ -683,7 +677,7 @@ class _GroovePageState extends State<GroovePage> {
    int _beatsPerMeasure = groove.bpm;
    int _numberOfMeasures = groove.numMeasures;
    int _totalBeats = groove.bpm * groove.numMeasures;
-   String key = groove.key;
+   String _key = groove.key;
    List<String> dropdownValue = groove.getInitials();
 
    @override
@@ -692,7 +686,7 @@ class _GroovePageState extends State<GroovePage> {
      _beatsPerMeasure = groove.bpm;
      _numberOfMeasures = groove.numMeasures;
      _totalBeats = groove.bpm * groove.numMeasures;
-     key = groove.key;
+     _key = groove.key;
      groove.checkType('bass');
      dropdownValue = groove.getInitials();
      print('HF: dropdownValue = $dropdownValue');
@@ -767,15 +761,15 @@ class _GroovePageState extends State<GroovePage> {
                  Text(' Key of ',
                    style: Theme.of(context).textTheme.caption,), // Text
                  DropdownButton<String>(
-                   value: key,
+                   value: _key,
                    icon: const Icon(Icons.arrow_downward),
                    iconSize: 24,
                    elevation: 24,
                    style: Theme.of(context).textTheme.headline4,
                    onChanged: (String? newValue) {
                      setState(() {
-                       key = newValue!;
-                       groove.changeKey(key);
+                       _key = newValue!;
+                       groove.changeKey(_key);
                      });
                    },
                    items: <String>['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
@@ -787,7 +781,7 @@ class _GroovePageState extends State<GroovePage> {
                    }).toList(),
                  ),
                  // print a list of tones in the selected scale
-                 Text('Scale tones: ' + scaleTones(key),
+                 Text('Scale tones: ' + scaleTones(_key),
                    style: Theme.of(context).textTheme.caption,), // Text
                ]),
                ]), // Column
@@ -816,7 +810,7 @@ class _GroovePageState extends State<GroovePage> {
                            elevation: 24,
                            onChanged: (String? newValue) {
                              setState(() {
-                               groove.addBassNote(index, newValue!, key);
+                               groove.addBassNote(index, newValue!, _key);
                                dropdownValue[index] = newValue;
                              });
                            },
@@ -1031,7 +1025,18 @@ class _MenuPageState extends State<MenuPage> {
                   });
                 }, // setState, onChanged
               ), // Slider
-            ]), // Row
+            ]),
+            Row(children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _detectionThreshold = 128;
+                    _bluetoothBLEService.writeThreshold(_detectionThreshold & 0xFF);
+                  });
+                  },
+                child: new Text('Reset threshold to default'),
+              ),
+            ]),// Row
           ]), // Column
         ]),
         ),

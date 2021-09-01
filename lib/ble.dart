@@ -71,7 +71,6 @@ class BluetoothBLEService {
       _connectionStateSubject.stream;
 
   bool isReady = false;
-//  bool isConnected = false;
   final isConnected=false.obs;
 
   StreamSubscription? _subscription;
@@ -158,8 +157,7 @@ class BluetoothBLEService {
   _onDoneScan() {
     stopScan();
     if (targetDevice == null) {
- //     _connectionStateSubject.add(BluetoothConnectionStateDTO(
- //         bluetoothConnectionState: BluetoothConnectionState.FAILED));
+      Get.snackbar('Bluetooth status', 'Can\'t find Happy Feet!  Do you own one?  Is it nearby?  Is it charged?', snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -369,7 +367,10 @@ class BluetoothBLEService {
   // read the model number
   Future<String>? readModelNumber() async {
     String result = "ERROR";
-    if (_modelNumber == null) return result;
+    if (_modelNumber == null) {
+      print('HF: readModelNumner: _modelMumber is null');
+      return result;
+    } else {
       try {
         List<int> value = await _ble.readCharacteristic(_modelNumber!);
         // convert list of character codes to string
@@ -379,6 +380,7 @@ class BluetoothBLEService {
       } catch (e) {
         print("HF: error readModelNumber $e");
       }
+    }
   }
 
   // read char6 to see if beat sending is enabled or not

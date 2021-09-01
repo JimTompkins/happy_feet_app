@@ -56,3 +56,5 @@ const int E1midi = 40;
 const int E2midi = E1midi + 12;
 
 const int A1midi = 33;
+const int C2midi = 48;
+const int C4midi = 72;
