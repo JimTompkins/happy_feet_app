@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-//import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'ble.dart';
 import 'oggPiano.dart';
@@ -172,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.bluetooth_searching,
                   ),
                   iconSize: 50,
-                  color: _bluetoothBLEService.isConnected.value? Colors.grey: myColour,
+                  color: _bluetoothBLEService.isConnected.value? Colors.grey: Colors.deepOrange[400],
                   splashColor: Colors.purple,
                   onPressed: () {
                     // Start scanning and make connection
@@ -198,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Icons.bluetooth_disabled,
                 ),
                 iconSize: 50,
-                color: _bluetoothBLEService.isConnected.value? myColour: Colors.grey,
+                color: _bluetoothBLEService.isConnected.value? Colors.deepOrange[400]: Colors.grey,
                 splashColor: Colors.purple,
                 onPressed: () {
                   // stop the BLE connection

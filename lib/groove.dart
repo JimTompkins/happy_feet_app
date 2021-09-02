@@ -40,8 +40,11 @@ class Groove extends GetxController {
   int lastSequenceBit = -1;  // sequence bit of last notify received
                              // note that -1 is used to indicate that a first beat has not yet been received
   final timeBuffer = CircularBuffer<int>(8);  // circular buffer of beat delta timestamps
+  final sysTimeBuffer = CircularBuffer<double>(8);
+  DateTime lastBeatTime = DateTime.now();   // get system time
   double beatsPerMinute = 0.0;
   double sum = 0;
+  double sum2 = 0;
   List notes = <Note>[]; // list of notes
   List notes2 = <Note>[]; // list of notes
   String key = 'E';
@@ -406,9 +409,10 @@ class Groove extends GetxController {
   // play the next note in the groove
   void play(int data) {
     int sequenceBit;
-    double mean;
-    var time = DateTime.now();   // get system time
-    print('HF:   Time: $time, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
+    double mean2;
+//    double beatsPerMinute = 0.0;
+    var now = DateTime.now();   // get system time
+    print('HF:   Time: $now, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
@@ -431,13 +435,25 @@ class Groove extends GetxController {
     oggpiano.play(this.voices, this.notes[this.index].oggIndex, this.notes[this.index].oggNote,
                   this.notes2[this.index].oggIndex, this.notes2[this.index].oggNote);
 
-    // calculate Beats Per Minute
-    final first = timeBuffer.isFilled ? timeBuffer.first : 0;
-    timeBuffer.add(data & 0x3F); // add the latest beat delta to the circular buffer
-    sum += timeBuffer.last - first;  // update the running sum
-    mean = sum.toDouble() / timeBuffer.length; // calculate the mean delta time
-    beatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
-//    print("HF: beats per minute = ${data & 0x3F} ${mean.toStringAsFixed(1)} ${BeatsPerMinute.toStringAsFixed(1)}");
+    // calculate Beats Per Minute using timestamp received in BLE notify
+//    final first = timeBuffer.isFilled ? timeBuffer.first : 0;
+//    timeBuffer.add(data & 0x3F); // add the latest beat delta to the circular buffer
+//    sum += timeBuffer.last - first;  // update the running sum
+//    mean = sum.toDouble() / timeBuffer.length; // calculate the mean delta time
+//    beatsPerMinute = 1/(mean * 0.040) * 60; // calculate beats per minute.
+//    print("HF: beats per minute from timestamp = ${data & 0x3F} ${mean.toStringAsFixed(1)} ${beatsPerMinute.toStringAsFixed(1)}");
+
+    // calculate Beats Per Minute using system time
+    Duration beatInterval = now.difference(lastBeatTime);
+    final first2 = sysTimeBuffer.isFilled ? sysTimeBuffer.first : 0;
+    sysTimeBuffer.add(beatInterval.inMilliseconds.toDouble()); // add the latest sys time interval to the circular buffer
+    sum2 += sysTimeBuffer.last - first2;  // update the running sum
+    mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
+    double sysLatestBPM = (60000.0 / beatInterval.inMilliseconds.toDouble());
+    double sysFilteredBPM = (60000.0 / mean2);
+    double variation = (sysLatestBPM - sysFilteredBPM).abs() / sysFilteredBPM * 100.0;
+    print('HF: beats per minute from system time = ${sysLatestBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}');
+    lastBeatTime = now;
 
     // increment pointer to the next note
     this.index = (this.index + 1) % (this.bpm * this.numMeasures);
