@@ -36,6 +36,7 @@ class Groove extends GetxController {
   int bpm = 1;  // number of beat per measure
   int numMeasures = 1; // number of measures
   int voices = 1;
+  bool interpolate = false;
   int index = 0; // pointer to next note to play
   int lastSequenceBit = -1;  // sequence bit of last notify received
                              // note that -1 is used to indicate that a first beat has not yet been received
@@ -61,6 +62,7 @@ class Groove extends GetxController {
     this.notes2 = notes2;
     this.type = type;
     this.voices = 1;
+    this.interpolate = false;
 
     // add notes
     for(int i=0; i<(beats * measures); i++) {
@@ -86,6 +88,7 @@ class Groove extends GetxController {
     this.numMeasures = measures;
     this.voices = 1;
     this.index = 0;
+    this.interpolate = false;
     this.lastSequenceBit = -1;
     this.notes = List<Note>.generate(beats * measures,(i){
       return Note(-1, "-");
@@ -100,6 +103,7 @@ class Groove extends GetxController {
   initSingle(String name) {
     this.resize(1,1);
     this.voices = 1;
+    this.interpolate = false;
     this.notes[0].oggIndex = oggMap[name];
     this.notes[0].oggNote = 0;
     this.notes[0].name = name;
@@ -110,6 +114,7 @@ class Groove extends GetxController {
   initAlternating(String name1, String name2) {
     this.resize(2,1);
     this.voices = 1;
+    this.interpolate = false;
     this.notes[0].oggIndex = oggMap[name1];
     this.notes[0].oggNote = 0;
     this.notes[0].name = name1;
@@ -125,6 +130,7 @@ class Groove extends GetxController {
   initDual(String name1, String name2) {
     this.resize(1,1);
     this.voices = 2;
+    this.interpolate = false;
     this.notes[0].oggIndex = oggMap[name1];
     this.notes[0].oggNote = 0;
     this.notes[0].name = name1;
@@ -163,78 +169,107 @@ class Groove extends GetxController {
 
   // add a note to the groove using its initial only
   void addInitialNote(int index, String initial) {
-    this.notes[index].initial = initial;
+    int _oggIndex = -1;
+    int _oggNote = 0;
+    String _name = '-';
+    int _voices = this.voices;
+
+    print('HF: addInitialNote: index = $index, initial = $initial, _voices = $_voices');
+
     switch (initial) {
       case '-': {
-        this.notes[index].oggIndex = -1;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = '-';
+        _oggIndex = -1;
+        _oggNote = 0;
+        _name = '-';
       }
       break;
       case 'B': {
-        this.notes[index].oggIndex = 0;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Bass drum';
+        _oggIndex = 0;
+        _oggNote = 0;
+        _name = 'Bass drum';
       }
       break;
       case 'K': {
-        this.notes[index].oggIndex = 1;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Kick drum';
+        _oggIndex = 1;
+        _oggNote = 0;
+        _name = 'Kick drum';
       }
       break;
       case 'S': {
-        this.notes[index].oggIndex = 2;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Snare drum';
+        _oggIndex = 2;
+        _oggNote = 0;
+        _name = 'Snare drum';
       }
       break;
       case 'H': {
-        this.notes[index].oggIndex = 3;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'High Hat Cymbal';
+        _oggIndex = 3;
+        _oggNote = 0;
+        _name = 'High Hat Cymbal';
       }
       break;
       case 'C': {
-        this.notes[index].oggIndex = 4;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Cowbell';
+        _oggIndex = 4;
+        _oggNote = 0;
+        _name = 'Cowbell';
       }
       break;
       case 'T': {
-        this.notes[index].oggIndex = 5;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Tambourine';
+        _oggIndex = 5;
+        _oggNote = 0;
+        _name = 'Tambourine';
       }
       break;
       case 'F': {
-        this.notes[index].oggIndex = 7;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Fingersnap';
+        _oggIndex = 7;
+        _oggNote = 0;
+        _name = 'Fingersnap';
       }
       break;
       case 'R': {
-        this.notes[index].oggIndex = 8;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Rim shot';
+        _oggIndex = 8;
+        _oggNote = 0;
+        _name = 'Rim shot';
       }
       break;
       case 'A': {
-        this.notes[index].oggIndex = 9;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Shaker';
+        _oggIndex = 9;
+        _oggNote = 0;
+        _name = 'Shaker';
       }
       break;
       case 'W': {
-        this.notes[index].oggIndex = 10;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = 'Woodblock';
+        _oggIndex = 10;
+        _oggNote = 0;
+        _name = 'Woodblock';
       }
       break;
       default: {
-        this.notes[index].oggIndex = -1;
-        this.notes[index].oggNote = 0;
-        this.notes[index].name = '-';
+        _oggIndex = -1;
+        _oggNote = 0;
+        _name = '-';
+      }
+    }
+    
+    if (this.voices == 1) {
+      this.notes[index].oggIndex = _oggIndex;
+      this.notes[index].oggNote = _oggNote;
+      this.notes[index].name = _name;
+      print('HF: addInitialNote single voice: index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+    } else if (this.voices == 2) {
+      var _measure = index ~/ this.bpm;
+      var _beat = index % this.bpm;
+      var _i = (_measure ~/ 2) * this.bpm + _beat;
+      print('HF: addInitialNote dual voice: _measure = $_measure, _beat = $_beat, _i = $_i');
+      if (_measure.isEven) {
+        print('HF: addInitialNote dual voice: notes _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+        this.notes[_i].oggIndex = _oggIndex;
+        this.notes[_i].oggNote = _oggNote;
+        this.notes[_i].name = _name;
+      } else {
+        print('HF: addInitialNote dual voice: notes2 _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+        this.notes2[_i].oggIndex = _oggIndex;
+        this.notes2[_i].oggNote = _oggNote;
+        this.notes2[_i].name = _name;
       }
     }
   }
@@ -347,21 +382,37 @@ class Groove extends GetxController {
   }
 
   // return a list of initials of the current groove notes
+  // max number of beats in groove is:
+  //    max beats per measure = 8
+  //    max measures = 12
+  //    max voices = 2
+  //    total = 8 x 12 x 2
   List<String> getInitials() {
-    var returnValue = new List<String>.filled(96,'-');
-    for(int i=0; i< this.bpm*this.numMeasures; i++) {
+    int _beats = this.bpm * this.numMeasures * this.voices;
+    print('HF: getInitials: _beats = $_beats');
+    var initialList = new List<String>.filled(_beats,'-');
+    for(int i=0; i<_beats; i++) {
       if (this.type == GrooveType.percussion) {
-        returnValue[i] = this.notes[i].initial;
+        if (voices == 1) {
+           initialList[i] = this.notes[i].initial;}
+        else {
+          if ((i ~/ this.bpm).isEven) {
+            initialList[i] = this.notes[i].initial;
+          } else {
+            initialList[i] = this.notes2[i].initial;
+          }
+        }
       } else if (this.type == GrooveType.bass) {
         if (this.notes[i].name == '-') {
-          returnValue[i] = '-';
+          initialList[i] = '-';
         } else {
           int hyphenIndex = this.notes[i].name.indexOf('-') + 1;
-          returnValue[i] = this.notes[i].name.substring(hyphenIndex);
+          initialList[i] = this.notes[i].name.substring(hyphenIndex);
         }
       }
     }
-    return returnValue;
+    print('HF: getInitials: initialList = $initialList');
+    return initialList;
   }
 
   // resize the groove
@@ -452,7 +503,7 @@ class Groove extends GetxController {
     double sysLatestBPM = (60000.0 / beatInterval.inMilliseconds.toDouble());
     double sysFilteredBPM = (60000.0 / mean2);
     double variation = (sysLatestBPM - sysFilteredBPM).abs() / sysFilteredBPM * 100.0;
-    print('HF: beats per minute from system time = ${sysLatestBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}');
+    print('HF: beats per minute = ${sysLatestBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
     lastBeatTime = now;
 
     // increment pointer to the next note
@@ -471,9 +522,10 @@ class Groove extends GetxController {
   // 2 = beats per measure
   // 3 = number of measures
   // 4 = number of voices
-  // 5 = groove type e.g. percussion or bass
-  // 6 = key (only used for bass grooves)
-  // 7:6+BPM*measures*4 = 1st voice notes
+  // 5 = interpolate flag (0 = no interpolation, 1 = with interpolation)
+  // 6 = groove type e.g. percussion or bass
+  // 7 = key (only used for bass grooves)
+  // 8:6+BPM*measures*4 = 1st voice notes
   //     for each note...
   //        ogg number
   //        transpose
@@ -481,13 +533,17 @@ class Groove extends GetxController {
   //        initial
   // ??:??+BPM*measures*4 = 2nd voice notes
 
-  static const String grooveFormatVersion = "1";
+  static const String grooveFormatVersion = "2";
+  // Format version    Added in release    Reason
+  // 1                 rel11               initial release
+  // 2                 rel12               added interpolate flag
 
   // convert groove to  a csv string for writing to a file
   String toCSV(String description) {
     String result = '';
     int beats = this.bpm * this.numMeasures;
     String type;
+    var _interp = 0;
 
     switch(this.type) {
       case GrooveType.percussion: {
@@ -501,11 +557,15 @@ class Groove extends GetxController {
         break;
       }
 
+      if (this.interpolate) {
+        _interp = 1;
+      }
+
 //    print('HF: oggMap: $oggMap');
 //    print('HF: initialMap: $initialMap');
 
     result = grooveFormatVersion + ',' + description + ',' + this.bpm.toString() + ',' + this.numMeasures.toString() + ',' +
-        this.voices.toString() + ',' + type + ',' + this.key + ',';
+        this.voices.toString() + ',' + _interp.toString() + ',' + type + ',' + this.key + ',';
 
 //    print('HF: toCSV1: $result');
 
@@ -548,6 +608,7 @@ class Groove extends GetxController {
     String _description;
     String _type;
     int _voices;
+    int _interp;
     String _key;
 
     print('HF groove.fromCSV : number of fields = $numFields');
@@ -567,7 +628,13 @@ class Groove extends GetxController {
     int beats = int.parse(fields[2]) * int.parse(fields[3]);
     this.voices = int.parse(fields[4]);
     _voices = this.voices;
-    switch(fields[5]) {
+    _interp = int.parse(fields[5]);
+    if (_interp == 1) {
+      this.interpolate = true;
+    } else {
+      this.interpolate = false;
+    }
+    switch(fields[6]) {
       case 'percussion': {
         this.type = GrooveType.percussion;
         _type = 'percussion'; }
@@ -581,16 +648,16 @@ class Groove extends GetxController {
         _type = 'error';}
       break;
     }
-    this.key = fields[6];
+    this.key = fields[7];
     _key = this.key;
     print('HF groove.fromCSV : description = $_description, number of beats = $beats, voices = $_voices, type = $_type, key = $_key');
 
     // for each note
     for(int i=0; i<beats; i++) {
-      this.notes[i].oggIndex = int.parse(fields[i*4+7]);
-      this.notes[i].oggNote = int.parse(fields[i*4+8]);
-      this.notes[i].name = fields[i*4+9];
-      this.notes[i].initial = fields[i*4+10];
+      this.notes[i].oggIndex = int.parse(fields[i*4+8]);
+      this.notes[i].oggNote = int.parse(fields[i*4+9]);
+      this.notes[i].name = fields[i*4+10];
+      this.notes[i].initial = fields[i*4+11];
       String note = this.notes[i].oggIndex.toString() + ',' +
                     this.notes[i].oggNote.toString() + ',' +
                     this.notes[i].name + ',' + this.notes[i].initial + ',';
@@ -598,7 +665,7 @@ class Groove extends GetxController {
     }
 
     // for each note in the 2nd voice
-    var offset = 7 + (beats * 4);
+    var offset = 8 + (beats * 4);
     for(int i=0; i<beats; i++) {
       this.notes2[i].oggIndex = int.parse(fields[i*4+offset]);
       this.notes2[i].oggNote = int.parse(fields[i*4+offset+1]);

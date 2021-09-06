@@ -495,6 +495,7 @@ class _GroovePageState extends State<GroovePage> {
   int _beatsPerMeasure = groove.bpm;
   int _numberOfMeasures = groove.numMeasures;
   int _totalBeats = groove.bpm * groove.numMeasures;
+  int _voices = groove.voices;
   var dropdownValue = groove.getInitials();
 
   @override
@@ -502,7 +503,8 @@ class _GroovePageState extends State<GroovePage> {
     super.initState();
     _beatsPerMeasure = groove.bpm;
     _numberOfMeasures = groove.numMeasures;
-    _totalBeats = groove.bpm * groove.numMeasures;
+    _totalBeats = groove.bpm * groove.numMeasures * groove.voices;
+    _voices = groove.voices;
     groove.checkType('percussion');
     groove.printGroove();
     dropdownValue = groove.getInitials();
@@ -564,7 +566,9 @@ class _GroovePageState extends State<GroovePage> {
                   setState(() {
                     _beatsPerMeasure = value.toInt();
                     groove.resize(_beatsPerMeasure, _numberOfMeasures);
-                    _totalBeats = _beatsPerMeasure * _numberOfMeasures;
+                    _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
+                    print('HF: changing number of beats per measure, _beatsPerMeasure = $_beatsPerMeasure, _totalBeats = $_totalBeats');
+                    dropdownValue = groove.getInitials();
                   });
                 }, // setState, onChanged
               ), // Slider
@@ -582,11 +586,49 @@ class _GroovePageState extends State<GroovePage> {
                   setState(() {
                     _numberOfMeasures = value.toInt();
                     groove.resize(_beatsPerMeasure, _numberOfMeasures);
-                    _totalBeats = _beatsPerMeasure * _numberOfMeasures;
+                    _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
+                    print('HF: changing number of measures, _numberOfMeasures = $_numberOfMeasures, _totalBeats = $_totalBeats');
+                    dropdownValue = groove.getInitials();
                   });
                 }, // setState, onChanged
               ), // Slider
             ]), // Row
+            // radio buttons for number of voices
+            Row(children:<Widget>[
+              Text('Voices',
+              style: Theme.of(context).textTheme.caption),
+              Radio(
+                value: 1,
+                groupValue: _voices,
+                activeColor: Colors.blue[400],
+                onChanged: (val) {
+                  setState(() {
+                    _voices = 1;
+                    groove.voices = 1;
+                    _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
+                    print('HF: changing to 1 voice, _totalBeats = $_totalBeats');
+                    dropdownValue = groove.getInitials();
+                  });
+                },
+              ),
+              Text('1'),
+              Radio(
+                value: 2,
+                groupValue: _voices,
+                activeColor: Colors.deepOrange[500],
+                onChanged: (val) {
+                  setState(() {
+                    _voices = 2;
+                    groove.voices = 2;
+                    _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
+                    print('HF: changing to 2 voices, _totalBeats = $_totalBeats');
+                    dropdownValue = groove.getInitials();
+                  });
+                },
+              ),
+              Text('2'),
+            ]
+            )
           ]), // Column
 
           // beat grid
@@ -824,7 +866,7 @@ class _GroovePageState extends State<GroovePage> {
                // Save groove
                Wrap(children: <Widget>[
                      Row(children: <Widget>[
-                        TextButton(
+                        ElevatedButton(
                            child: Text('Save groove'),
                            onPressed: () {
                              Get.to(() => saveGroovePage);
@@ -836,7 +878,7 @@ class _GroovePageState extends State<GroovePage> {
                // load groove
                Wrap(children: <Widget>[
                  Row(children: <Widget>[
-                   TextButton(
+                   ElevatedButton(
                        child: Text('Load groove'),
                        onPressed: () {
                          Get.to(() => loadGroovePage);
