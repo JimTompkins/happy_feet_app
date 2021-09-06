@@ -32,7 +32,7 @@ class Note {
 
 }
 
-class Groove extends GetxController {
+class Groove {
   int bpm = 1;  // number of beat per measure
   int numMeasures = 1; // number of measures
   int voices = 1;
@@ -101,8 +101,7 @@ class Groove extends GetxController {
 
   // initialize the groove in single note mode
   initSingle(String name) {
-    this.resize(1,1);
-    this.voices = 1;
+    this.resize(1,1,1);
     this.interpolate = false;
     this.notes[0].oggIndex = oggMap[name];
     this.notes[0].oggNote = 0;
@@ -112,8 +111,7 @@ class Groove extends GetxController {
 
   // initialize the groove in alternating note mode
   initAlternating(String name1, String name2) {
-    this.resize(2,1);
-    this.voices = 1;
+    this.resize(2,1,1);
     this.interpolate = false;
     this.notes[0].oggIndex = oggMap[name1];
     this.notes[0].oggNote = 0;
@@ -128,8 +126,7 @@ class Groove extends GetxController {
 
   // initialize the groove in dual note mode
   initDual(String name1, String name2) {
-    this.resize(1,1);
-    this.voices = 2;
+    this.resize(1,1,2);
     this.interpolate = false;
     this.notes[0].oggIndex = oggMap[name1];
     this.notes[0].oggNote = 0;
@@ -161,6 +158,7 @@ class Groove extends GetxController {
        this.notes2[i].oggNote = 0;
        this.notes2[i].initial = '-';
      }
+     this.voices = 1;
   }
 
   void addNote(int beat, int measure, Note note) {
@@ -254,6 +252,7 @@ class Groove extends GetxController {
       this.notes[index].oggIndex = _oggIndex;
       this.notes[index].oggNote = _oggNote;
       this.notes[index].name = _name;
+      this.notes[index].initial = initial;
       print('HF: addInitialNote single voice: index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
     } else if (this.voices == 2) {
       var _measure = index ~/ this.bpm;
@@ -265,11 +264,13 @@ class Groove extends GetxController {
         this.notes[_i].oggIndex = _oggIndex;
         this.notes[_i].oggNote = _oggNote;
         this.notes[_i].name = _name;
+        this.notes[_i].initial = initial;
       } else {
         print('HF: addInitialNote dual voice: notes2 _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
         this.notes2[_i].oggIndex = _oggIndex;
         this.notes2[_i].oggNote = _oggNote;
         this.notes2[_i].name = _name;
+        this.notes2[_i].initial = initial;
       }
     }
   }
@@ -387,19 +388,42 @@ class Groove extends GetxController {
   //    max measures = 12
   //    max voices = 2
   //    total = 8 x 12 x 2
+  // In single voice mode, the notes are listed by beat then measure
+  // e.g. <B0, M0>, <B1, M0>, <B0, M1>, <B1, M1> for a 2 BPM, 2 measure groove
+  // In dual voice mode, the notes are listed by beat, voice, then measure
+  // For a 2 BPM, 2 voice, 2 measure groove, they are listed as:
+  // e.g. <B0, V0, M0>, <B0, V1, M0>, <B1, V0, M0>, <B1, V1, M0>...
+  // The reason for this is that there is a difference between how beats are
+  // shown on the screen (with the voices on separate lines) vs
+  // how they are played
   List<String> getInitials() {
     int _beats = this.bpm * this.numMeasures * this.voices;
     print('HF: getInitials: _beats = $_beats');
+    String _currentGroove = this.toCSV('groove snapshot in getInitials');
+    print('HF:    _currentGroove = $_currentGroove');
     var initialList = new List<String>.filled(_beats,'-');
     for(int i=0; i<_beats; i++) {
       if (this.type == GrooveType.percussion) {
+        print('HF:    groove type = percussion');
         if (voices == 1) {
-           initialList[i] = this.notes[i].initial;}
+           print('HF:   voices = 1');
+           initialList[i] = this.notes[i].initial;
+           String _x = this.notes[i].initial;
+           print('HF: i = $i, _x = $_x');
+        }
         else {
-          if ((i ~/ this.bpm).isEven) {
-            initialList[i] = this.notes[i].initial;
+          print('HF:    voices = 2');
+          var _measure = i ~/ this.bpm;
+          var _beat = i % this.bpm;
+          var _x = (_measure ~/ 2) * this.bpm + _beat;
+          if (_measure.isEven) {
+            initialList[i] = this.notes[_x].initial;
+            String _y = this.notes[_x].initial;
+            print('HF:    voice 1: _x = $_x, this.notes[_x].initial = $_y');
           } else {
-            initialList[i] = this.notes2[i].initial;
+            initialList[i] = this.notes2[_x].initial;
+            String _y = this.notes2[_x].initial;
+            print('HF:    voice 2: _x = $_x, this.notes2[_x].initial = $_y');
           }
         }
       } else if (this.type == GrooveType.bass) {
@@ -418,11 +442,12 @@ class Groove extends GetxController {
   // resize the groove
   // TODO: if increasing the number of beats per measure, duplicate the last beat(s)
   // TODO: if increasing the number of measures, duplicate the last measure
-  void resize(int beat, int measure) {
+  void resize(int beat, int measure, int voices) {
     var origBpm = this.bpm;
     var origMeasures = this.numMeasures;
     this.bpm = beat;
     this.numMeasures = measure;
+    this.voices = voices;
     this.index = 0;
     final beats = beat * measure;
 
@@ -624,9 +649,10 @@ class Groove extends GetxController {
     _description = fields[1];
     this.description = _description;
 
-    groove.resize(int.parse(fields[2]), int.parse(fields[3]));
+    this.resize(int.parse(fields[2]),
+        int.parse(fields[3]), int.parse(fields[4]));
     int beats = int.parse(fields[2]) * int.parse(fields[3]);
-    this.voices = int.parse(fields[4]);
+//    this.voices = int.parse(fields[4]);
     _voices = this.voices;
     _interp = int.parse(fields[5]);
     if (_interp == 1) {
@@ -711,7 +737,16 @@ class Groove extends GetxController {
       String note = this.notes[i].oggIndex.toString() + ',' +
                     this.notes[i].oggNote.toString() + ',' +
                     this.notes[i].name + ',' + this.notes[i].initial + ',';
-      print('HF: print groove note [$i]: $note');
+      print('HF: print groove voice 1 note [$i]: $note');
+    }
+    // if there are two voices...
+    if (this.voices == 2) {
+      for (int i = 0; i < beats; i++) {
+        String note = this.notes2[i].oggIndex.toString() + ',' +
+            this.notes2[i].oggNote.toString() + ',' +
+            this.notes2[i].name + ',' + this.notes2[i].initial + ',';
+        print('HF: print groove voice 2 note [$i]: $note');
+      }
     }
   }
 

@@ -268,7 +268,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         break;
                       case 'Groove':
                         {
-                          groove.voices = 1;
                           if (playMode != Mode.groove) {
                             groove.clearNotes();
                           }
@@ -512,7 +511,7 @@ class _GroovePageState extends State<GroovePage> {
 
   // return a colour to use for each gridview element based on its index
   // this is done to improve readability when entering notes into a groove.
-  Color? rowColor(int index) {
+  Color? noteColor(int index) {
     if (groove.voices == 1) {
       return ((index ~/ _beatsPerMeasure) & 0x01 == 0x01)
           ? Colors.blue[200]
@@ -565,7 +564,7 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (double value) {
                   setState(() {
                     _beatsPerMeasure = value.toInt();
-                    groove.resize(_beatsPerMeasure, _numberOfMeasures);
+                    groove.resize(_beatsPerMeasure, _numberOfMeasures, _voices);
                     _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
                     print('HF: changing number of beats per measure, _beatsPerMeasure = $_beatsPerMeasure, _totalBeats = $_totalBeats');
                     dropdownValue = groove.getInitials();
@@ -585,7 +584,7 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (double value) {
                   setState(() {
                     _numberOfMeasures = value.toInt();
-                    groove.resize(_beatsPerMeasure, _numberOfMeasures);
+                    groove.resize(_beatsPerMeasure, _numberOfMeasures, _voices);
                     _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
                     print('HF: changing number of measures, _numberOfMeasures = $_numberOfMeasures, _totalBeats = $_totalBeats');
                     dropdownValue = groove.getInitials();
@@ -604,7 +603,7 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (val) {
                   setState(() {
                     _voices = 1;
-                    groove.voices = 1;
+                    groove.resize(_beatsPerMeasure, _numberOfMeasures, _voices);
                     _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
                     print('HF: changing to 1 voice, _totalBeats = $_totalBeats');
                     dropdownValue = groove.getInitials();
@@ -619,7 +618,7 @@ class _GroovePageState extends State<GroovePage> {
                 onChanged: (val) {
                   setState(() {
                     _voices = 2;
-                    groove.voices = 2;
+                    groove.resize(_beatsPerMeasure, _numberOfMeasures, _voices);
                     _totalBeats = _beatsPerMeasure * _numberOfMeasures * _voices;
                     print('HF: changing to 2 voices, _totalBeats = $_totalBeats');
                     dropdownValue = groove.getInitials();
@@ -647,7 +646,7 @@ class _GroovePageState extends State<GroovePage> {
                 return Center(
                   child: Container(
                     decoration: new BoxDecoration(
-                      color: rowColor(index),
+                      color: noteColor(index),
                       border: Border.all(width: 1.0)
                     ),
                    child: DropdownButton<String>(
@@ -769,7 +768,7 @@ class _GroovePageState extends State<GroovePage> {
                      onChanged: (double value) {
                        setState(() {
                          _beatsPerMeasure = value.toInt();
-                         groove.resize(_beatsPerMeasure, _numberOfMeasures);
+                         groove.resize(_beatsPerMeasure, _numberOfMeasures, 1);
                          _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                        });
                      }, // setState, onChanged
@@ -787,7 +786,7 @@ class _GroovePageState extends State<GroovePage> {
                      onChanged: (double value) {
                        setState(() {
                          _numberOfMeasures = value.toInt();
-                         groove.resize(_beatsPerMeasure, _numberOfMeasures);
+                         groove.resize(_beatsPerMeasure, _numberOfMeasures, 1);
                          _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                        });
                      }, // setState, onChanged

@@ -54,7 +54,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/icon.png"
+  image_path: "assets/images/Logo_v7.png"
   remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
@@ -119,4 +119,5 @@ flutter:
 #    - assets/sounds/Yamaha-TG55-Jazz-Man-C2.ogg
 #    - assets/sounds/Yamaha-TG-77-Acoustic-Bass-C4.ogg
     - assets/images/icon.png
-    - assets/image/Logo_v7.png
+    - assets/images/Logo_v7.png
+
