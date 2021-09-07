@@ -1,4 +1,5 @@
 import 'oggPiano.dart';
+import 'dart:async';
 import 'bass.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
@@ -36,12 +37,15 @@ class Groove {
   int bpm = 1;  // number of beat per measure
   int numMeasures = 1; // number of measures
   int voices = 1;
-  bool interpolate = false;
+  bool interpolate = false;  // a flag to control interpolation mode aka back beat
+      // in interpolate mode, every 2nd note in the groove is played at a time
+      // predicted from 1/2 of the period
   int index = 0; // pointer to next note to play
+  int leadInCount = 4;  // number of beats to skip at the start in interpolate mode
   int lastSequenceBit = -1;  // sequence bit of last notify received
                              // note that -1 is used to indicate that a first beat has not yet been received
-  final timeBuffer = CircularBuffer<int>(8);  // circular buffer of beat delta timestamps
-  final sysTimeBuffer = CircularBuffer<double>(8);
+  final timeBuffer = CircularBuffer<int>(4);  // circular buffer of beat delta timestamps
+  final sysTimeBuffer = CircularBuffer<double>(4);
   DateTime lastBeatTime = DateTime.now();   // get system time
   double beatsPerMinute = 0.0;
   double sum = 0;
@@ -398,32 +402,32 @@ class Groove {
   // how they are played
   List<String> getInitials() {
     int _beats = this.bpm * this.numMeasures * this.voices;
-    print('HF: getInitials: _beats = $_beats');
-    String _currentGroove = this.toCSV('groove snapshot in getInitials');
-    print('HF:    _currentGroove = $_currentGroove');
+//    print('HF: getInitials: _beats = $_beats');
+//    String _currentGroove = this.toCSV('groove snapshot in getInitials');
+//    print('HF:    _currentGroove = $_currentGroove');
     var initialList = new List<String>.filled(_beats,'-');
     for(int i=0; i<_beats; i++) {
       if (this.type == GrooveType.percussion) {
-        print('HF:    groove type = percussion');
+//        print('HF:    groove type = percussion');
         if (voices == 1) {
-           print('HF:   voices = 1');
+//           print('HF:   voices = 1');
            initialList[i] = this.notes[i].initial;
-           String _x = this.notes[i].initial;
-           print('HF: i = $i, _x = $_x');
+//           String _x = this.notes[i].initial;
+//           print('HF: i = $i, _x = $_x');
         }
         else {
-          print('HF:    voices = 2');
+//          print('HF:    voices = 2');
           var _measure = i ~/ this.bpm;
           var _beat = i % this.bpm;
           var _x = (_measure ~/ 2) * this.bpm + _beat;
           if (_measure.isEven) {
             initialList[i] = this.notes[_x].initial;
-            String _y = this.notes[_x].initial;
-            print('HF:    voice 1: _x = $_x, this.notes[_x].initial = $_y');
+//            String _y = this.notes[_x].initial;
+//            print('HF:    voice 1: _x = $_x, this.notes[_x].initial = $_y');
           } else {
             initialList[i] = this.notes2[_x].initial;
-            String _y = this.notes2[_x].initial;
-            print('HF:    voice 2: _x = $_x, this.notes2[_x].initial = $_y');
+//            String _y = this.notes2[_x].initial;
+//            print('HF:    voice 2: _x = $_x, this.notes2[_x].initial = $_y');
           }
         }
       } else if (this.type == GrooveType.bass) {
@@ -505,11 +509,25 @@ class Groove {
     }
     lastSequenceBit = sequenceBit;
 
-    var n1 = this.notes[this.index].oggIndex;
-    var n2 = this.notes2[this.index].oggIndex;
-    print('HF: call to oggpiano.play, n1 = $n1, n2 = $n2');
-    oggpiano.play(this.voices, this.notes[this.index].oggIndex, this.notes[this.index].oggNote,
-                  this.notes2[this.index].oggIndex, this.notes2[this.index].oggNote);
+    // play the next note in the groove in these cases:
+    // i) not in interpolate mode
+    // ii) in interpolate mode, and
+    //     past the lead-in as indicated by leadInCount == 0
+    //     index is even i.e. not a back beat
+    if (!groove.interpolate ||
+        (groove.interpolate && (groove.leadInCount == 0)) && (groove.index.isEven)) {
+      var n1 = this.notes[this.index].oggIndex;
+      var n2 = this.notes2[this.index].oggIndex;
+//      print('HF: call to oggpiano.play, n1 = $n1, n2 = $n2');
+      oggpiano.play(this.voices, this.notes[this.index].oggIndex,
+          this.notes[this.index].oggNote,
+          this.notes2[this.index].oggIndex, this.notes2[this.index].oggNote);
+      // increment pointer to the next note
+      this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+    } else if (groove.interpolate && (groove.leadInCount > 0)) {
+      groove.leadInCount--;
+      print('HF:  lead-in count decremented to $groove.leadInCount');
+    }
 
     // calculate Beats Per Minute using timestamp received in BLE notify
 //    final first = timeBuffer.isFilled ? timeBuffer.first : 0;
@@ -522,17 +540,45 @@ class Groove {
     // calculate Beats Per Minute using system time
     Duration beatInterval = now.difference(lastBeatTime);
     final first2 = sysTimeBuffer.isFilled ? sysTimeBuffer.first : 0;
-    sysTimeBuffer.add(beatInterval.inMilliseconds.toDouble()); // add the latest sys time interval to the circular buffer
+    var beatPeriod = beatInterval.inMilliseconds.toDouble();
+    sysTimeBuffer.add(beatPeriod); // add the latest sys time interval to the circular buffer
     sum2 += sysTimeBuffer.last - first2;  // update the running sum
     mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
-    double sysLatestBPM = (60000.0 / beatInterval.inMilliseconds.toDouble());
+    double sysLatestBPM = (60000.0 / beatPeriod);
     double sysFilteredBPM = (60000.0 / mean2);
     double variation = (sysLatestBPM - sysFilteredBPM).abs() / sysFilteredBPM * 100.0;
-    print('HF: beats per minute = ${sysLatestBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
+    print('HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
     lastBeatTime = now;
 
-    // increment pointer to the next note
-    this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+    // interpolate mode: schedule a note to be played at a future time if these conditions are met:
+    // i)   in interpolate mode
+    // ii)  we're past the lead-in, as indicated by leadInCount == 0
+    // iii) variation < 20% i.e. the beat is consistent
+    if (groove.interpolate && (groove.leadInCount == 0)) {
+        // the index should only be odd at this point.  If not, print an error message
+        if (this.index.isEven) {
+          print('HF: ERROR: index should only be odd for backbeat!  Incrementing...');
+          this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        }
+        // schedule the next note using a timer.  1/2 of the mean beat interval will be used to
+        // schedule the note at the expected mid-point of the beat.
+        var halfPeriodInMs = mean2.toInt() ~/ 2;
+        Timer(Duration(milliseconds: halfPeriodInMs), () {
+          if (variation <= 20.0) {  // only play the note if the beat is stable i.e. variation < 20%
+            oggpiano.play(this.voices, this.notes[this.index].oggIndex,
+                this.notes[this.index].oggNote,
+                this.notes2[this.index].oggIndex,
+                this.notes2[this.index].oggNote);
+          }
+          var _interpolateNow = DateTime.now(); // get system time
+          print('HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this
+              .index}, Name1: ${this.notes[this.index].name}, Name2: ${this
+              .notes2[this.index].name}');
+          // increment pointer to the next note
+          this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        });
+    }
+
   }
 
   // restart by setting index to 0

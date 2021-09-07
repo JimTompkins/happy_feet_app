@@ -495,6 +495,7 @@ class _GroovePageState extends State<GroovePage> {
   int _numberOfMeasures = groove.numMeasures;
   int _totalBeats = groove.bpm * groove.numMeasures;
   int _voices = groove.voices;
+  bool _interpolate = groove.interpolate;
   var dropdownValue = groove.getInitials();
 
   @override
@@ -504,6 +505,11 @@ class _GroovePageState extends State<GroovePage> {
     _numberOfMeasures = groove.numMeasures;
     _totalBeats = groove.bpm * groove.numMeasures * groove.voices;
     _voices = groove.voices;
+    _interpolate = groove.interpolate;
+    if (_interpolate) {
+      groove.leadInCount = 4;
+      print('HF: set lead-in counter to 4');
+    } else { groove.leadInCount = 0; }
     groove.checkType('percussion');
     groove.printGroove();
     dropdownValue = groove.getInitials();
@@ -512,22 +518,31 @@ class _GroovePageState extends State<GroovePage> {
   // return a colour to use for each gridview element based on its index
   // this is done to improve readability when entering notes into a groove.
   Color? noteColor(int index) {
+    Color? _result;
     if (groove.voices == 1) {
-      return ((index ~/ _beatsPerMeasure) & 0x01 == 0x01)
-          ? Colors.blue[200]
-          : Colors.blue[400];
+      if ((index ~/ _beatsPerMeasure) & 0x01 == 0x01) {
+        _result = Colors.blue[200];
+      } else {
+        _result = Colors.blue[400];
+      }
     } else if (groove.voices == 2) {
       switch ((index ~/ _beatsPerMeasure) & 0x03) {
-        case 0: return Colors.blue[400];
+        case 0: _result = Colors.blue[400];
            break;
-        case 1: return Colors.deepOrange[400];
+        case 1: _result = Colors.deepOrange[400];
           break;
-        case 2: return Colors.blue[200];
+        case 2: _result = Colors.blue[200];
           break;
-        case 3: return Colors.deepOrange[200];
+        case 3: _result = Colors.deepOrange[200];
           break;
       }
     }
+    // if in interpolate mode, use a separate colour for the back beats
+    if (groove.interpolate && index.isOdd) {
+       _result = Colors.deepPurple[200];
+    }
+
+    return _result;
   }
 
   @override
@@ -626,6 +641,24 @@ class _GroovePageState extends State<GroovePage> {
                 },
               ),
               Text('2'),
+              Text('  Backbeat',
+                  style: Theme.of(context).textTheme.caption),
+              Switch(
+                value: _interpolate,
+                onChanged: (value) {
+                  setState(() {
+                    // check if the number of beats per measure is even.  If not, open a snackbar
+                    // and don't set interpolate mode
+                    if (_beatsPerMeasure.isEven) {
+                      _interpolate = value;
+                      groove.interpolate = value;
+                      if (value) { groove.leadInCount = 4; } // if changing to interpolate mode, add a 4 beat lead-in
+                    } else {
+                      Get.snackbar('Notice', 'back beat mode can only be used with even number of beats per measure.', snackPosition: SnackPosition.BOTTOM);
+                    }
+                  });
+                }
+              ),
             ]
             )
           ]), // Column
@@ -674,7 +707,7 @@ class _GroovePageState extends State<GroovePage> {
           // Save groove
           Wrap(children: <Widget>[
             Row(children: <Widget>[
-              TextButton(
+              ElevatedButton(
                   child: Text('Save groove'),
                   onPressed: () {
                     Get.to(() => saveGroovePage);
@@ -686,7 +719,7 @@ class _GroovePageState extends State<GroovePage> {
           // load groove
           Wrap(children: <Widget>[
             Row(children: <Widget>[
-              TextButton(
+              ElevatedButton(
                   child: Text('Load groove'),
                   onPressed: () {
                     Get.to(() => loadGroovePage);

@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
-import 'BluetoothConnectionStateDTO.dart';
-import 'package:rxdart/rxdart.dart';
 
 import 'groove.dart';
 
@@ -65,10 +63,10 @@ class BluetoothBLEService {
 
   StreamSubscription<List<int>>? _beatSubscription;
 
-  final _connectionStateSubject =
-  BehaviorSubject<BluetoothConnectionStateDTO>();
-  Stream<BluetoothConnectionStateDTO> get connectionStateStream =>
-      _connectionStateSubject.stream;
+//  final _connectionStateSubject =
+//  BehaviorSubject<BluetoothConnectionStateDTO>();
+//  Stream<BluetoothConnectionStateDTO> get connectionStateStream =>
+//      _connectionStateSubject.stream;
 
   bool isReady = false;
   final isConnected=false.obs;
@@ -368,7 +366,7 @@ class BluetoothBLEService {
   Future<String>? readModelNumber() async {
     String result = "ERROR";
     if (_modelNumber == null) {
-      print('HF: readModelNumner: _modelMumber is null');
+      print('HF: readModelNumber: _modelNumber is null');
       return result;
     } else {
       try {
