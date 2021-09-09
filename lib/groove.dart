@@ -55,8 +55,8 @@ class Groove {
   String key = 'E';
   GrooveType type = GrooveType.percussion;
   String description = '';
-  var bpmString = '-'.obs;
-  var indexString = '1'.obs;
+  var bpmString = '---'.obs;
+  var indexString = 'beat 1'.obs;
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
@@ -581,9 +581,14 @@ class Groove {
         });
     }
 
-  // update the BPM and index info on the bottom app bar
-  bpmString.value = sysFilteredBPM.toStringAsFixed(1);
-  indexString.value = this.index.toString();
+    // update the BPM and index info on the bottom app bar
+    // if variation is high, or BPM is non-sensical i.e. < 0 or > 320, then show '---'
+    if ((variation < 50.0) && ((sysFilteredBPM > 20.0) && (sysFilteredBPM < 320.0))) {
+      bpmString.value = sysFilteredBPM.toStringAsFixed(1);
+    } else {
+      bpmString.value = '---';
+    }
+    indexString.value = 'beat '+ (this.index+1).toString();
 
   }
 
