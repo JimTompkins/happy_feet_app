@@ -55,8 +55,8 @@ class Groove {
   String key = 'E';
   GrooveType type = GrooveType.percussion;
   String description = '';
-  var bpmString = '-';
-  var indexString = '1';
+  var bpmString = '-'.obs;
+  var indexString = '1'.obs;
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
@@ -582,8 +582,8 @@ class Groove {
     }
 
   // update the BPM and index info on the bottom app bar
-  bpmString = sysFilteredBPM.toStringAsFixed(1);
-  indexString = this.index.toString();
+  bpmString.value = sysFilteredBPM.toStringAsFixed(1);
+  indexString.value = this.index.toString();
 
   }
 
