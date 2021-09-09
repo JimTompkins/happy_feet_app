@@ -2,9 +2,13 @@
 // note on an electric bass.
 List keys = <String>['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', ];
 
-List scaleTonesIndex = <int>[0, 0,	2,	4,	5,	7,	9,	11];
+// Original version: only major scale tones in these lists
+//List scaleTonesIndex = <int>[0, 0,	2,	4,	5,	7,	9,	11];
+//List scaleTonesRoman = <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 
-List scaleTonesRoman = <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+// Revised version: all tones in these lists
+List scaleTonesIndex = <int>[   0,    0,	 1,     2,	  3,      4,	   5,	   6,   7,	 8,     9,    10,	    11];
+List scaleTonesRoman = <String>['-', 'I', 'bII', 'II', 'bIII', 'III', 'IV', 'bV','V', 'bVI', 'VI', 'bVII', 'VII'];
 
 List chordsInKey = <String>['M', 'm', 'm', 'M', 'M', 'm', 'dim'];
 
@@ -34,7 +38,7 @@ String scaleTones(String? key) {
 //  print('HF: scaleTones $key, $keyIndex');
 
   String result = '';
-  for(int i=1; i<=7; i++) {
+  for(int i=1; i<=12; i++) {  // start at 1 to ignore the '-'
     index = keyIndex;
     offset = scaleTonesIndex[i];
     finalIndex = (index + offset) % 12;

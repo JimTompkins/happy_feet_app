@@ -154,12 +154,12 @@ class Groove {
   // used when changing between groove and bass mode
   void clearNotes() {
      for(int i = 0; i<this.bpm*this.numMeasures; i++) {
-       this.notes[i].name = 'none';
+       this.notes[i].name = '-';
        this.notes[i].oggIndex = -1;
        this.notes[i].oggNote = 0;
        this.notes[i].initial = '-';
 
-       this.notes2[i].name = 'none';
+       this.notes2[i].name = '-';
        this.notes2[i].oggIndex = -1;
        this.notes2[i].oggNote = 0;
        this.notes2[i].initial = '-';
@@ -464,14 +464,20 @@ class Groove {
       this.notes2.removeRange(beat, this.notes2.length - 1);
     } else if (this.notes.length < beats) { // if the list is too short
       var numToAdd = beats - this.notes.length;
-      print("HF: resize groove adding $numToAdd notes");
+      var notesLength = this.notes.length;
+      var notes2Length = this.notes2.length;
+      print("HF: resize groove adding $numToAdd notes, beat = $beat, measure = $measure, notes length = $notesLength, notes2 length = $notes2Length");
       for (var i = 0; i < numToAdd; i++) {
         // add items to the list
+        print('    i = $i');
         this.notes.add(Note(-1, "-"));
+        print('    ... added to Note');
         this.notes2.add(Note(-1, "-"));
+        print('    ... added to Note2');
       }
       // if adding measures...
       if (measure > origMeasures) {
+        print('HF:  resize: adding measures');
         var measuresToAdd = measure - origMeasures;
         var copyFromStart = (origMeasures - 1) * origBpm;
         for(int i=0; i<measuresToAdd; i++) {
@@ -486,6 +492,8 @@ class Groove {
         }
       }
     }
+    // print out the resized grooveq
+    this.printGroove();
   }
 
   // play the next note in the groove

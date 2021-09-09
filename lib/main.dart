@@ -94,7 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int sequenceCount = 0;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
-//  bool _playState = false;
   MyBool _playState = Get.put(MyBool(false));
   static BluetoothBLEService _bluetoothBLEService = Get.put(BluetoothBLEService());
 
@@ -819,7 +818,6 @@ class _GroovePageState extends State<GroovePage> {
    String _key = groove.key;
    List<String> dropdownValue = groove.getInitials();
    static BluetoothBLEService _bluetoothBLEService = Get.find();
-//   static bool _playState = Get.find();
    MyBool _playState = Get.find();
 
    @override
@@ -860,7 +858,6 @@ class _GroovePageState extends State<GroovePage> {
                // enable beats
                groove.reset();
                _bluetoothBLEService.enableBeat();
-//                       _bluetoothBLEService.enableTestMode();
                Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
              } else {
                Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
@@ -905,6 +902,7 @@ class _GroovePageState extends State<GroovePage> {
                        setState(() {
                          _beatsPerMeasure = value.toInt();
                          groove.resize(_beatsPerMeasure, _numberOfMeasures, 1);
+                         dropdownValue = groove.getInitials();
                          _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                        });
                      }, // setState, onChanged
@@ -923,6 +921,7 @@ class _GroovePageState extends State<GroovePage> {
                        setState(() {
                          _numberOfMeasures = value.toInt();
                          groove.resize(_beatsPerMeasure, _numberOfMeasures, 1);
+                         dropdownValue = groove.getInitials();
                          _totalBeats = _beatsPerMeasure * _numberOfMeasures;
                        });
                      }, // setState, onChanged
@@ -952,14 +951,15 @@ class _GroovePageState extends State<GroovePage> {
                      );
                    }).toList(),
                  ),
-                 // print a list of tones in the selected scale
-                 Text('Scale tones: ' + scaleTones(_key),
-                   style: Theme.of(context).textTheme.caption,), // Text
                ]),
                ]), // Column
 
+               // print a list of tones in the selected scale
+               Text('Tones: ' + scaleTones(_key),
+                 style: Theme.of(context).textTheme.caption,), // Text
+
                // beat grid
-               Text(' Choose "-" for no note, or Roman numerals I through VII for scale tones ',
+               Text(' Choose "-" for no note, or Roman numerals I through VII plus flats for tones ',
                  style: Theme.of(context).textTheme.caption,), // Text
 
                GridView.count(
@@ -986,7 +986,8 @@ class _GroovePageState extends State<GroovePage> {
                                dropdownValue[index] = newValue;
                              });
                            },
-                           items: <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].map<DropdownMenuItem<String>>((String value) {
+//                           items: <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].map<DropdownMenuItem<String>>((String value) {
+                             items: <String>['-', 'I', 'bII', 'II', 'bIII', 'III', 'IV', 'bV','V', 'bVI', 'VI', 'bVII', 'VII'].map<DropdownMenuItem<String>>((String value) {
                              return DropdownMenuItem<String>(
                                value: value,
                                child: Text(value)
