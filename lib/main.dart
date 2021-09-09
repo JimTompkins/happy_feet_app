@@ -78,6 +78,14 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+class MyBool {
+   bool x = false;
+
+   MyBool(bool val) {
+     x = val;
+   }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   String note1 = 'Bass drum';
   int index1 = 0;
@@ -86,7 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int sequenceCount = 0;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
-  bool _playState = false;
+//  bool _playState = false;
+  MyBool _playState = Get.put(MyBool(false));
   static BluetoothBLEService _bluetoothBLEService = Get.put(BluetoothBLEService());
 
   Future<void> _checkPermission() async {
@@ -145,6 +154,36 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
+        floatingActionButton: FloatingActionButton(
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          elevation: 25,
+          onPressed: (){
+            if (_playState.x) {
+              // disable beats
+              _bluetoothBLEService.disableBeat();
+              Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
+            } else {
+              if (_bluetoothBLEService.isBleConnected()) {
+                // enable beats
+                groove.reset();
+                _bluetoothBLEService.enableBeat();
+//                       _bluetoothBLEService.enableTestMode();
+                Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
+              } else {
+                Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
+              }
+            }
+            setState((){
+              if (_bluetoothBLEService.isBleConnected()) {
+                _playState.x = !_playState.x;
+              }
+            });
+          },   //onPressed
+          tooltip: 'Enable beats',
+          child: _playState.x?
+          new Icon(Icons.pause, size: 50, color: Theme.of(context).primaryColor):
+          new Icon(Icons.music_note_outlined, size: 50, color: Theme.of(context).primaryColor),
+        ),
       body:
           ListView(children: <Widget>[
         Column(children: <Widget>[
@@ -204,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (_bluetoothBLEService.isBleConnected()) {
                     Get.snackbar('Status', 'disconnecting Bluetooth', snackPosition: SnackPosition.BOTTOM);
                     _bluetoothBLEService.disconnectFromDevice();
-                    _playState = false;
+                    _playState.x = false;
                   } else {
                     Get.snackbar('Error', 'not connected', snackPosition: SnackPosition.BOTTOM);
                   }
@@ -435,48 +474,27 @@ class _MyHomePageState extends State<MyHomePage> {
           ]),
         ]),
 
-        // Play/pause button
-        Wrap(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(5),
-              alignment: Alignment.center,
-              child: FloatingActionButton(
-                foregroundColor: Theme.of(context).colorScheme.secondary,
-                elevation: 25,
-                onPressed: (){
-                   if (_playState) {
-                     // disable beats
-                     _bluetoothBLEService.disableBeat();
-                     Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
-                   } else {
-                     if (_bluetoothBLEService.isBleConnected()) {
-                       // enable beats
-                       groove.reset();
-                       _bluetoothBLEService.enableBeat();
-//                       _bluetoothBLEService.enableTestMode();
-                       Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
-                     } else {
-                       Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
-                     }
-                    }
-                   setState((){
-                     if (_bluetoothBLEService.isBleConnected()) {
-                       _playState = !_playState;
-                     }
-                   });
-                },   //onPressed
-                tooltip: 'Enable beats',
-                child: _playState?
-                   new Icon(Icons.pause, size: 50, color: Theme.of(context).primaryColor):
-                   new Icon(Icons.music_note_outlined, size: 50, color: Theme.of(context).primaryColor),
-                ),
-              ),
-          ],
-        ),
       ]),
+
     ]),
-    );
+
+      bottomNavigationBar: BottomAppBar(
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text('120.0'),
+            Text('1'),
+//            Obx(()=> Text('120.0')),
+//            Obx(()=> Text('1')),
+          ],
+
+        ),
+        shape: CircularNotchedRectangle(),
+        color: Colors.blue[400],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      );
   } // widget
 
  } // class
@@ -497,6 +515,9 @@ class _GroovePageState extends State<GroovePage> {
   int _voices = groove.voices;
   bool _interpolate = groove.interpolate;
   var dropdownValue = groove.getInitials();
+  static BluetoothBLEService _bluetoothBLEService = Get.find();
+//  static bool _playState = Get.find();
+  MyBool _playState = Get.find();
 
   @override
   initState() {
@@ -552,6 +573,36 @@ class _GroovePageState extends State<GroovePage> {
       appBar: AppBar(
         title: Text("Happy Feet - Grooves"),
       ),
+        floatingActionButton: FloatingActionButton(
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          elevation: 25,
+          onPressed: (){
+            if (_playState.x) {
+              // disable beats
+              _bluetoothBLEService.disableBeat();
+              Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
+            } else {
+              if (_bluetoothBLEService.isBleConnected()) {
+                // enable beats
+                groove.reset();
+                _bluetoothBLEService.enableBeat();
+//                       _bluetoothBLEService.enableTestMode();
+                Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
+              } else {
+                Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
+              }
+            }
+            setState((){
+              if (_bluetoothBLEService.isBleConnected()) {
+                _playState.x = !_playState.x;
+              }
+            });
+          },   //onPressed
+          tooltip: 'Enable beats',
+          child: _playState.x?
+          new Icon(Icons.pause, size: 50, color: Theme.of(context).primaryColor):
+          new Icon(Icons.music_note_outlined, size: 50, color: Theme.of(context).primaryColor),
+        ),
       body: Center(
          child: ListView(
         children: <Widget>[
@@ -729,7 +780,26 @@ class _GroovePageState extends State<GroovePage> {
           ]),  // Widget, wrap
         ],  // Widget
       ), // Listview
-    ));
+    ),
+
+      bottomNavigationBar: BottomAppBar(
+    child: new Row(
+    mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text('120.0'),
+        Text('1'),
+//        Obx(()=> Text('120.0')),
+//        Obx(()=> Text('1')),
+      ],
+
+    ),
+    shape: CircularNotchedRectangle(),
+    color: Colors.blue[400],
+    ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+    );
   }
 } // class
 
@@ -748,6 +818,9 @@ class _GroovePageState extends State<GroovePage> {
    int _totalBeats = groove.bpm * groove.numMeasures;
    String _key = groove.key;
    List<String> dropdownValue = groove.getInitials();
+   static BluetoothBLEService _bluetoothBLEService = Get.find();
+//   static bool _playState = Get.find();
+   MyBool _playState = Get.find();
 
    @override
    initState() {
@@ -774,6 +847,36 @@ class _GroovePageState extends State<GroovePage> {
          appBar: AppBar(
            title: Text("Happy Feet - Bass"),
          ),
+       floatingActionButton: FloatingActionButton(
+         foregroundColor: Theme.of(context).colorScheme.secondary,
+         elevation: 25,
+         onPressed: (){
+           if (_playState.x) {
+             // disable beats
+             _bluetoothBLEService.disableBeat();
+             Get.snackbar('Status', 'beats disabled', snackPosition: SnackPosition.BOTTOM);
+           } else {
+             if (_bluetoothBLEService.isBleConnected()) {
+               // enable beats
+               groove.reset();
+               _bluetoothBLEService.enableBeat();
+//                       _bluetoothBLEService.enableTestMode();
+               Get.snackbar('Status', 'beats enabled', snackPosition: SnackPosition.BOTTOM);
+             } else {
+               Get.snackbar('Error', 'connect to Bluetooth first', snackPosition: SnackPosition.BOTTOM);
+             }
+           }
+           setState((){
+             if (_bluetoothBLEService.isBleConnected()) {
+               _playState.x = !_playState.x;
+             }
+           });
+         },   //onPressed
+         tooltip: 'Enable beats',
+         child: _playState.x?
+         new Icon(Icons.pause, size: 50, color: Theme.of(context).primaryColor):
+         new Icon(Icons.music_note_outlined, size: 50, color: Theme.of(context).primaryColor),
+       ),
          body: Center(
            child: ListView(
              children: <Widget>[
@@ -920,7 +1023,26 @@ class _GroovePageState extends State<GroovePage> {
                ]),  // Widget, wrap
              ],  // Widget
            ), // Listview
-         ));
+         ),
+
+       bottomNavigationBar: BottomAppBar(
+         child: new Row(
+           mainAxisSize: MainAxisSize.max,
+           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+           children: <Widget>[
+             Text('120.0'),
+             Text('1'),
+//             Obx(()=> Text('120.0')),
+//             Obx(()=> Text('1')),
+           ],
+
+         ),
+         shape: CircularNotchedRectangle(),
+         color: Colors.blue[400],
+       ),
+       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+     );
    }
  } // class
 

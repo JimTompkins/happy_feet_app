@@ -55,6 +55,8 @@ class Groove {
   String key = 'E';
   GrooveType type = GrooveType.percussion;
   String description = '';
+  var bpmString = '-';
+  var indexString = '1';
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
@@ -516,8 +518,8 @@ class Groove {
     //     index is even i.e. not a back beat
     if (!groove.interpolate ||
         (groove.interpolate && (groove.leadInCount == 0)) && (groove.index.isEven)) {
-      var n1 = this.notes[this.index].oggIndex;
-      var n2 = this.notes2[this.index].oggIndex;
+//      var n1 = this.notes[this.index].oggIndex;
+//      var n2 = this.notes2[this.index].oggIndex;
 //      print('HF: call to oggpiano.play, n1 = $n1, n2 = $n2');
       oggpiano.play(this.voices, this.notes[this.index].oggIndex,
           this.notes[this.index].oggNote,
@@ -578,6 +580,10 @@ class Groove {
           this.index = (this.index + 1) % (this.bpm * this.numMeasures);
         });
     }
+
+  // update the BPM and index info on the bottom app bar
+  bpmString = sysFilteredBPM.toStringAsFixed(1);
+  indexString = this.index.toString();
 
   }
 
