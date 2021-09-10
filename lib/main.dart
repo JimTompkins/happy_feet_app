@@ -306,6 +306,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         break;
                       case 'Groove':
                         {
+                          groove.reset();
                           if (playMode != Mode.groove) {
                             groove.clearNotes();
                           }
@@ -316,6 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       case 'Bass':
                         {
                           groove.voices = 1;
+                          groove.reset();
                           if (playMode != Mode.bass) {
                             groove.clearNotes();
                           }

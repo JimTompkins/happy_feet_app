@@ -113,6 +113,8 @@ class Groove {
     this.notes[0].oggNote = 0;
     this.notes[0].name = name;
     this.notes[0].initial = initialMap[name];
+
+    this.reset();
   }
 
   // initialize the groove in alternating note mode
@@ -128,6 +130,8 @@ class Groove {
     this.notes[1].oggNote = 0;
     this.notes[1].name = name2;
     this.notes[1].initial = initialMap[name2];
+
+    this.reset();
   }
 
   // initialize the groove in dual note mode
@@ -143,11 +147,14 @@ class Groove {
     this.notes2[0].oggNote = 0;
     this.notes2[0].name = name2;
     this.notes2[0].initial = initialMap[name2];
+
+    this.reset();
   }
 
   reset() {
     this.index = 0;
     this.lastSequenceBit = -1;
+    this.leadInCount = 4;
   }
 
   // retain the bpm and numMeasures but set all notes to -
@@ -494,6 +501,8 @@ class Groove {
     }
     // print out the resized grooveq
     this.printGroove();
+
+    this.reset();
   }
 
   // play the next note in the groove
@@ -603,6 +612,7 @@ class Groove {
   // restart by setting index to 0
   void restart() {
     this.index = 0;
+    this.leadInCount = 4;
   }
 
   // Grooves are saved to and loaded from comma separated variable (CSV) files with
