@@ -1,44 +1,63 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_blue (0.0.1):
+  - flutter_ogg_piano (0.0.1):
     - Flutter
-    - flutter_blue/Protos (= 0.0.1)
-  - flutter_blue/Protos (0.0.1):
-    - Flutter
-    - Protobuf (~> 3.11.4)
-  - flutter_midi (0.0.1):
+  - package_info_plus (0.4.5):
     - Flutter
   - path_provider (0.0.1):
     - Flutter
-  - Protobuf (3.11.4)
+  - "permission_handler (5.1.0+2)":
+    - Flutter
+  - Protobuf (3.17.0)
+  - reactive_ble_mobile (0.0.1):
+    - Flutter
+    - Protobuf (~> 3.5)
+    - SwiftProtobuf (~> 1.0)
+  - SwiftProtobuf (1.17.0)
+  - url_launcher (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_blue (from `.symlinks/plugins/flutter_blue/ios`)
-  - flutter_midi (from `.symlinks/plugins/flutter_midi/ios`)
+  - flutter_ogg_piano (from `.symlinks/plugins/flutter_ogg_piano/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
+  - reactive_ble_mobile (from `.symlinks/plugins/reactive_ble_mobile/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
   trunk:
     - Protobuf
+    - SwiftProtobuf
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_blue:
-    :path: ".symlinks/plugins/flutter_blue/ios"
-  flutter_midi:
-    :path: ".symlinks/plugins/flutter_midi/ios"
+  flutter_ogg_piano:
+    :path: ".symlinks/plugins/flutter_ogg_piano/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
+  reactive_ble_mobile:
+    :path: ".symlinks/plugins/reactive_ble_mobile/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
   Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
-  flutter_blue: eeb381dc4727a0954dede73515f683865494b370
-  flutter_midi: 4fe7280cf156c668fe92445f384b1bc440473cdb
+  flutter_ogg_piano: 449dbef983488bf0af18f8cfee53d1f5cbb65ef9
+  package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
-  Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
+  Protobuf: 7327d4444215b5f18e560a97f879ff5503c4581c
+  reactive_ble_mobile: 9ce6723d37ccf701dbffd202d487f23f5de03b4c
+  SwiftProtobuf: 9c85136c6ba74b0a1b84279dbf0f6db8efb714e0
+  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
-PODFILE CHECKSUM: d1b084bad3acda6e8de2f919b77e8ff312f707c4
+PODFILE CHECKSUM: 9f5ae8bbf0a02883b1b9840864e24cc6b9f9df75
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.0
