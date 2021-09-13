@@ -533,14 +533,14 @@ class Groove {
     // first, calculate this beat interval
     Duration beatInterval = now.difference(lastBeatTime);
     var beatPeriod = beatInterval.inMilliseconds.toDouble();  // convert period to ms
-    mean2 = sum2 / sysTimeBuffer.length;  // calculate previous mean
-    double instVariation = (beatPeriod - mean2) / mean2;  // calculate instantaneous variation
-    if (instVariation < -0.4) {
-      print('HF: spurious beat detected.  It will be ignored');
-      print('    beatPeriod = $beatPeriod, mean2 = $mean2, instVariation = $instVariation');
+//    mean2 = sum2 / sysTimeBuffer.length;  // calculate previous mean
+//    double instVariation = (beatPeriod - mean2) / mean2;  // calculate instantaneous variation
+//    if (instVariation < -0.4) {
+//      print('HF: spurious beat detected.  It will be ignored');
+//      print('    now = $now, beatPeriod = $beatPeriod, mean2 = $mean2, instVariation = $instVariation');
       // return without updating index, leadInCount, sysTimeBuffer, etc.
-      return;
-    }
+//      return;
+//   }
 
     // play the next note in the groove in these cases:
     // i) not in interpolate mode
@@ -569,7 +569,7 @@ class Groove {
     mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
     double sysLatestBPM = (60000.0 / beatPeriod);
     double sysFilteredBPM = (60000.0 / mean2);
-    double variation = (sysLatestBPM - sysFilteredBPM).abs() / sysFilteredBPM * 100.0;
+    double variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
     print('HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
     lastBeatTime = now;
 
@@ -587,7 +587,7 @@ class Groove {
         // schedule the note at the expected mid-point of the beat.
         var halfPeriodInMs = mean2.toInt() ~/ 2;
         Timer(Duration(milliseconds: halfPeriodInMs), () {
-          if (variation <= 20.0) {  // only play the note if the beat is stable i.e. variation < 20%
+          if (variation.abs() <= 20.0) {  // only play the note if the beat is stable i.e. variation < 20%
             oggpiano.play(this.voices, this.notes[this.index].oggIndex,
                 this.notes[this.index].oggNote,
                 this.notes2[this.index].oggIndex,

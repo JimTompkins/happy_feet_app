@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
@@ -60,6 +61,15 @@ class BluetoothBLEService {
 //  var _hardwareRev;
 //  var _softwareRev;
 //  var _manufacturerName;
+
+//  Map<Uuid, List<Uuid>> serviceMap = {Uuid.parse(HF_SERVICE_UUID),
+//    [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
+//      Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+//      Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]} as Map<Uuid, List<Uuid>>;
+//  Map<Uuid, List<Uuid>> serviceMap = {HF_SERVICE_UUID,
+//    [CHAR2_CHARACTERISTIC_UUID,
+//      CHAR4_CHARACTERISTIC_UUID,
+//      CHAR6_CHARACTERISTIC_UUID]} as Map<Uuid, List<Uuid>>;
 
   StreamSubscription<List<int>>? _beatSubscription;
 
@@ -178,6 +188,10 @@ class BluetoothBLEService {
     try {
       _connection = _ble.connectToDevice(
         id: targetDevice!.id,
+//        servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID),
+//          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
+//            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+//            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
         connectionTimeout: const Duration(seconds:  30),
       ).listen((connectionState) async {
         if (connectionState.connectionState == DeviceConnectionState.connected) {
@@ -206,12 +220,23 @@ class BluetoothBLEService {
     }
   }
 
-  void getCharacteristics() {
+  void getCharacteristics() async {
     print('HF: getCharacteristics');
     if (targetDevice == null) {
       print('HF:    error: targetDevice is null!');
       return;
     }
+
+    if (Platform.isIOS) {
+      print('HF: start discovering services...');
+      try {
+        await _ble.discoverServices(targetDevice!.id);
+      } on Exception catch (e) {
+        print('HF: error during service discovery: $e');
+      }
+      print('HF: ...done discovering services');
+    }
+
 //     _char1 = QualifiedCharacteristic(
 //        serviceId: Uuid.parse(HF_SERVICE_UUID),
 //        characteristicId: Uuid.parse(CHAR1_CHARACTERISTIC_UUID),
