@@ -1,4 +1,4 @@
-import 'oggPiano.dart';
+import 'audio.dart';
 import 'dart:async';
 import 'bass.dart';
 import 'package:circular_buffer/circular_buffer.dart';
@@ -551,8 +551,8 @@ class Groove {
         (groove.interpolate && (groove.leadInCount == 0)) && (groove.index.isEven)) {
 //      var n1 = this.notes[this.index].oggIndex;
 //      var n2 = this.notes2[this.index].oggIndex;
-//      print('HF: call to oggpiano.play, n1 = $n1, n2 = $n2');
-      oggpiano.play(this.voices, this.notes[this.index].oggIndex,
+//      print('HF: call to hfaudio.play, n1 = $n1, n2 = $n2');
+      hfaudio.play(this.voices, this.notes[this.index].oggIndex,
           this.notes[this.index].oggNote,
           this.notes2[this.index].oggIndex, this.notes2[this.index].oggNote);
       // increment pointer to the next note
@@ -588,7 +588,7 @@ class Groove {
         var halfPeriodInMs = mean2.toInt() ~/ 2;
         Timer(Duration(milliseconds: halfPeriodInMs), () {
           if (variation.abs() <= 20.0) {  // only play the note if the beat is stable i.e. variation < 20%
-            oggpiano.play(this.voices, this.notes[this.index].oggIndex,
+            hfaudio.play(this.voices, this.notes[this.index].oggIndex,
                 this.notes[this.index].oggNote,
                 this.notes2[this.index].oggIndex,
                 this.notes2[this.index].oggNote);

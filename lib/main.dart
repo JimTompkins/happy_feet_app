@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'ble.dart';
-import 'oggPiano.dart';
+import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
 import 'saveAndLoad.dart';
@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   initState() {
-     oggpiano.init();
+     hfaudio.init();
 
      groove.initSingle(note1);
 
