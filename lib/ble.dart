@@ -62,23 +62,10 @@ class BluetoothBLEService {
 //  var _softwareRev;
 //  var _manufacturerName;
 
-//  Map<Uuid, List<Uuid>> serviceMap = {Uuid.parse(HF_SERVICE_UUID),
-//    [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
-//      Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-//      Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]} as Map<Uuid, List<Uuid>>;
-//  Map<Uuid, List<Uuid>> serviceMap = {HF_SERVICE_UUID,
-//    [CHAR2_CHARACTERISTIC_UUID,
-//      CHAR4_CHARACTERISTIC_UUID,
-//      CHAR6_CHARACTERISTIC_UUID]} as Map<Uuid, List<Uuid>>;
-
   StreamSubscription<List<int>>? _beatSubscription;
 
-//  final _connectionStateSubject =
-//  BehaviorSubject<BluetoothConnectionStateDTO>();
-//  Stream<BluetoothConnectionStateDTO> get connectionStateStream =>
-//      _connectionStateSubject.stream;
-
   bool isReady = false;
+  bool serviceDiscoveryComplete = true;
   final isConnected=false.obs;
 
   StreamSubscription? _subscription;
@@ -213,7 +200,10 @@ class BluetoothBLEService {
           isConnected(false);
         }
       },
-      onError: (Object e) => print('HF: connect to device fails with error: $e'),
+      onError: (Object e) {
+        print('HF: connect to device fails with error: $e');
+        Get.snackbar('Bluetooth status', 'Connection failed with with error $e!', snackPosition: SnackPosition.BOTTOM);
+      }
       );
     } catch (err) {
       print('HF: device already connected');
@@ -228,49 +218,57 @@ class BluetoothBLEService {
     }
 
     if (Platform.isIOS) {
+      serviceDiscoveryComplete = false;
       print('HF: start discovering services...');
       try {
         await _ble.discoverServices(targetDevice!.id);
+        serviceDiscoveryComplete = true;
+        getCharacteristics2();
       } on Exception catch (e) {
         print('HF: error during service discovery: $e');
       }
       print('HF: ...done discovering services');
+    } else {
+      getCharacteristics2();
     }
+  }
 
+  getCharacteristics2() {
+    if (serviceDiscoveryComplete) {
 //     _char1 = QualifiedCharacteristic(
 //        serviceId: Uuid.parse(HF_SERVICE_UUID),
 //        characteristicId: Uuid.parse(CHAR1_CHARACTERISTIC_UUID),
 //        deviceId: targetDevice!.id);
-    _char2 = QualifiedCharacteristic(
-        serviceId: Uuid.parse(HF_SERVICE_UUID),
-        characteristicId: Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
+      _char2 = QualifiedCharacteristic(
+          serviceId: Uuid.parse(HF_SERVICE_UUID),
+          characteristicId: Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
+          deviceId: targetDevice!.id);
 //    _char3 = QualifiedCharacteristic(
 //        serviceId: Uuid.parse(HF_SERVICE_UUID),
 //        characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
 //        deviceId: targetDevice!.id);
-    _char4 = QualifiedCharacteristic(
-        serviceId: Uuid.parse(HF_SERVICE_UUID),
-        characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
+      _char4 = QualifiedCharacteristic(
+          serviceId: Uuid.parse(HF_SERVICE_UUID),
+          characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+          deviceId: targetDevice!.id);
 //    _char5 = QualifiedCharacteristic(
 //       serviceId: Uuid.parse(HF_SERVICE_UUID),
 //        characteristicId: Uuid.parse(CHAR5_CHARACTERISTIC_UUID),
 //        deviceId: targetDevice!.id);
-    _char6 = QualifiedCharacteristic(
-        serviceId: Uuid.parse(HF_SERVICE_UUID),
-        characteristicId: Uuid.parse(CHAR6_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
-    _modelNumber = QualifiedCharacteristic(
-        serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
-        characteristicId: Uuid.parse(MODEL_NUMBER_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
-    if (_char6 == null) {
-      print('HF: error adding characteristic 6');
-    } else {
-      print('HF: added characteristics: $_char6.characteristicId');
+      _char6 = QualifiedCharacteristic(
+          serviceId: Uuid.parse(HF_SERVICE_UUID),
+          characteristicId: Uuid.parse(CHAR6_CHARACTERISTIC_UUID),
+          deviceId: targetDevice!.id);
+      _modelNumber = QualifiedCharacteristic(
+          serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
+          characteristicId: Uuid.parse(MODEL_NUMBER_CHARACTERISTIC_UUID),
+          deviceId: targetDevice!.id);
+      if (_char6 == null) {
+        print('HF: error adding characteristic 6');
+      } else {
+        print('HF: added characteristics: $_char6.characteristicId');
+      }
     }
-    return;
   }
 
   Future<void> stopScan() async {
