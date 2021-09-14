@@ -111,6 +111,16 @@ flutter:
     - assets/sounds/sidestick.ogg
     - assets/sounds/shaker.ogg
     - assets/sounds/woodblock1.ogg
+    - assets/sounds/bass_drum_fade.mp3
+    - assets/sounds/kick_drum.mp3
+    - assets/sounds/snare_drum.mp3
+    - assets/sounds/high_hat.mp3
+    - assets/sounds/cowbell.mp3
+    - assets/sounds/tambourine.mp3
+    - assets/sounds/fingersnap.mp3
+    - assets/sounds/sidestick.mp3
+    - assets/sounds/shaker.mp3
+    - assets/sounds/woodblock.mp3
 #    - assets/sounds/Bass74MapleJazzA1.ogg
 #    - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope.ogg
     - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg

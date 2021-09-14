@@ -54,13 +54,11 @@ var initialMap = <String, String>{
   'Shaker':'A',
   'Woodblock':'W',
 };
-//String prefix = 'assets/sounds/';
-String prefix = '';
 
 class HfAudio {
 
   final fop = FlutterOggPiano();
-  final AudioCache ac = new AudioCache(prefix: 'assets/sounds');
+  final AudioCache ac = new AudioCache(prefix: 'assets/sounds/');
   //AudioPlayer ac = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
 
   void init() {
@@ -137,17 +135,17 @@ class HfAudio {
       print('HF: loadCount = $loadCount');
     } else if (Platform.isIOS) {
         print('HF: loading mp3 files...');
-        ac.loadAll([prefix + 'bass_drum_fade.mp3',
-          prefix + 'kick_drum.mp3',
-          prefix + 'snare_drum.mp3',
-          prefix + 'high_hat.mp3',
-          prefix + 'cowbell.mp3',
-          prefix + 'tambourine.mp3',
-          prefix + 'Bass74MapleJazzA1_5sTrimEnvelope2dB',
-          prefix + 'fingersnap.mp3',
-          prefix + 'sidestick.mp3',
-          prefix + 'shaker.mp3',
-          prefix + 'woodblock.mp3']);
+        ac.loadAll(['bass_drum_fade.mp3',
+          'kick_drum.mp3',
+          'snare_drum.mp3',
+          'high_hat.mp3',
+          'cowbell.mp3',
+          'tambourine.mp3',
+//          'Bass74MapleJazzA1_5sTrimEnvelope2dB',
+          'fingersnap.mp3',
+          'sidestick.mp3',
+          'shaker.mp3',
+          'woodblock.mp3']);
         print('HF:   ...done loading mp3 files');
     }
   }
