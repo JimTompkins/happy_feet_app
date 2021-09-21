@@ -298,7 +298,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: disabling beats');
-      await _ble.writeCharacteristicWithoutResponse(
+      _ble.writeCharacteristicWithoutResponse(
           _char6, value: [0x00]);
     }
   }
@@ -308,7 +308,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: enabling beats');
-      await _ble.writeCharacteristicWithoutResponse(
+      _ble.writeCharacteristicWithoutResponse(
           _char6, value: [0x01]);
     }
   }
@@ -319,7 +319,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: enabling test mode: HF will send beats at a fixed rate');
-      await _ble.writeCharacteristicWithoutResponse(
+      _ble.writeCharacteristicWithoutResponse(
           _char6, value: [0x80]);
     }
   }
@@ -332,7 +332,7 @@ class BluetoothBLEService {
     } else {
       int value = ((threshold & 0x3F) << 1) | 0x01;
       print('HF: writeThreshold: threshold = $threshold, value = $value');
-      await _ble.writeCharacteristicWithoutResponse(
+      _ble.writeCharacteristicWithoutResponse(
           _char6, value: [value]);
     }
   }
