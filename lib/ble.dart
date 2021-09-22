@@ -191,10 +191,6 @@ class BluetoothBLEService {
           print('HF: device connected');
           Get.snackbar('Bluetooth status', 'Connected!', snackPosition: SnackPosition.BOTTOM);
           getCharacteristics();
-          print("HF: enable processing notifications on char4...");
-          // they should not actually be sent yet because of the call
-          // to disableBeat above.
-          processBeats();
 
          } else {
           isConnected(false);
@@ -269,6 +265,10 @@ class BluetoothBLEService {
         print('HF: added characteristics: $_char6.characteristicId');
       }
     }
+    print("HF: enable processing notifications on char4...");
+    // they should not actually be sent yet because of the call
+    // to disableBeat above.
+    processBeats();
   }
 
   Future<void> stopScan() async {
@@ -298,7 +298,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: disabling beats');
-      _ble.writeCharacteristicWithoutResponse(
+      await _ble.writeCharacteristicWithResponse(
           _char6, value: [0x00]);
     }
   }
@@ -308,7 +308,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: enabling beats');
-      _ble.writeCharacteristicWithoutResponse(
+      await _ble.writeCharacteristicWithResponse(
           _char6, value: [0x01]);
     }
   }
@@ -319,7 +319,7 @@ class BluetoothBLEService {
       // error
     } else {
       print('HF: enabling test mode: HF will send beats at a fixed rate');
-      _ble.writeCharacteristicWithoutResponse(
+      await _ble.writeCharacteristicWithResponse(
           _char6, value: [0x80]);
     }
   }
@@ -332,7 +332,7 @@ class BluetoothBLEService {
     } else {
       int value = ((threshold & 0x3F) << 1) | 0x01;
       print('HF: writeThreshold: threshold = $threshold, value = $value');
-      _ble.writeCharacteristicWithoutResponse(
+      await _ble.writeCharacteristicWithResponse(
           _char6, value: [value]);
     }
   }
