@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:developer';
+//import 'dart:developer';
 import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -179,7 +179,7 @@ class BluetoothBLEService {
 //          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
 //            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
 //            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
-        connectionTimeout: const Duration(seconds:  30),
+        connectionTimeout: const Duration(seconds:  10),
       ).listen((connectionState) async {
         if (connectionState.connectionState == DeviceConnectionState.connected) {
           isConnected(true);
@@ -259,6 +259,11 @@ class BluetoothBLEService {
           serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
           characteristicId: Uuid.parse(MODEL_NUMBER_CHARACTERISTIC_UUID),
           deviceId: targetDevice!.id);
+      if (_char4 == null) {
+        print('HF: error adding characteristic 4');
+      } else {
+        print('HF: added characteristics: $_char4.characteristicId');
+      }
       if (_char6 == null) {
         print('HF: error adding characteristic 6');
       } else {
@@ -339,6 +344,10 @@ class BluetoothBLEService {
 
   // method to process beats received as notifications on char4
   processBeats() async {
+    _char4 = QualifiedCharacteristic(
+        serviceId: Uuid.parse(HF_SERVICE_UUID),
+        characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+        deviceId: targetDevice!.id);
     if (_char4 == null) {
       print("HF: processBeats: _char4 is null");
       return;
@@ -352,18 +361,19 @@ class BluetoothBLEService {
 //            var time = DateTime.now();   // get system time
 //            print('HF:   notify received at time: $time');
             if ((data[0] & 0xFF) == 0xFF) {
-//              print("HF: heartbeat notify received");
-              Timeline.timeSync("HF: heartbeat received", () {});
+              print("HF: heartbeat notify received");
+//              Timeline.timeSync("HF: heartbeat received", () {});
             } else {
+              print('HF: beat received');
               // play the next note in the groove
-              //groove.play(data[0]);
-              Timeline.timeSync("HF: play note", () {
-                groove.play(data[0]);
-              });
+              groove.play(data[0]);
+//              Timeline.timeSync("HF: play note", () {
+//                groove.play(data[0]);
+//              });
             }
           }
         }, onError: (dynamic e) {
-              print('HF: error on chr4 subscription: $e');
+              print('HF: error on char4 subscription: $e');
         });
     }
 

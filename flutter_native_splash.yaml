@@ -21,7 +21,8 @@ flutter_native_splash:
   # png file and should be sized for 4x pixel density.
 #  image: assets/images/splash.png
 #  image: assets/images/Logo_v7.png
-  image: assets/images/Logo_v8.png
+#  image: assets/images/Logo_v8.png
+  image: assets/images/Logo_v14.png
 
   # The color_dark, background_image_dark, and image_dark are parameters that set the background
   # and image when the device is in dark mode. If they are not specified, the app will use the

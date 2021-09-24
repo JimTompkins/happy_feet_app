@@ -11,8 +11,7 @@ import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
 import 'saveAndLoad.dart';
-
-
+import 'localization.g.dart';
 
  _launchURL() async {
    const url = 'https://happyfeet-music.com';
@@ -67,6 +66,9 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.normal),
       ),),
       home: MyHomePage(),
+      locale: Get.deviceLocale,
+      fallbackLocale: Locale('en', 'US'),
+      translations: Localization(),
     );
   }
 }
@@ -178,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }
             });
           },   //onPressed
-          tooltip: 'Enable beats',
+          tooltip: 'Enable beats'.tr,
           child: _playState.x?
           new Icon(Icons.pause, size: 50, color: Theme.of(context).primaryColor):
           new Icon(Icons.music_note_outlined, size: 50, color: Theme.of(context).primaryColor),
@@ -191,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
               padding: EdgeInsets.all(10),
               alignment: Alignment.centerLeft,
-              child: Text('BLUETOOTH',
+              child: Text('BLUETOOTH'.tr,
                   style: Theme.of(context).textTheme.headline1,
               )),
         ]),
@@ -214,15 +216,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                     // Start scanning and make connection
                     if (_bluetoothBLEService.isBleConnected()) {
-                      Get.snackbar('Error', 'already connected', snackPosition: SnackPosition.BOTTOM);
+                      Get.snackbar('Error'.tr, 'already connected'.tr, snackPosition: SnackPosition.BOTTOM);
                     } else {
-                      Get.snackbar('Status', 'connecting to Bluetooth', snackPosition: SnackPosition.BOTTOM);
+                      Get.snackbar('Status'.tr, 'connecting to Bluetooth'.tr, snackPosition: SnackPosition.BOTTOM);
                       _bluetoothBLEService.startConnection();
                     }
                   }),
                   ),
             ),
-            Text('Connect',
+            Text('Connect'.tr,
               style: Theme.of(context).textTheme.caption,)
           ]),
           Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
@@ -1187,6 +1189,10 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   int _detectionThreshold = 128;
   static BluetoothBLEService _bluetoothBLEService = Get.find();
+  String lang = 'English';
+  var locale = Get.deviceLocale!;
+//  var locale = Locale('en', 'US');
+//  var locale: Get.deviceLocale;
 
   @override
   initState() {
@@ -1231,6 +1237,55 @@ class _MenuPageState extends State<MenuPage> {
                 child: new Text('Reset threshold to default'),
               ),
             ]),// Row
+            Row(children: <Widget>[
+              Text('Change language'.tr,
+                style: Theme.of(context).textTheme.caption,),
+              DropdownButton<String>(
+                value: lang,
+                icon: const Icon(Icons.arrow_downward),
+                iconSize: 24,
+                elevation: 24,
+                style: Theme.of(context).textTheme.headline4,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    switch (newValue) {
+                      case 'English':
+                        locale = Locale('en', 'US');
+                        break;
+                      case 'Français':
+                        locale = Locale('fr', 'FR');
+                        break;
+                      case 'Deutsch':
+                        locale = Locale('de', 'DE');
+                        break;
+                      case 'Español':
+                        locale = Locale('es', 'ES');
+                        break;
+                      case 'Italiano':
+                        locale = Locale('it', 'IT');
+                        break;
+                      case 'Português':
+                        locale = Locale('pt', 'PT');
+                        break;
+                      default:
+                        locale = Locale('en', 'US');
+                        break;
+                    }
+                    lang = newValue!;
+                    Get.updateLocale(locale);
+                    print("HF: language changed to $newValue");
+                  });
+                },
+                items: <String>['English','Français','Deutsch','Español','Italiano','Português']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+              // Text
+            ])
           ]), // Column
         ]),
         ),
