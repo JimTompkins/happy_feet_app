@@ -271,21 +271,18 @@ class BluetoothBLEService {
       }
     }
     print("HF: enable processing notifications on char4...");
-    // they should not actually be sent yet because of the call
-    // to disableBeat above.
-    processBeats();
-  }
+    }
 
   Future<void> stopScan() async {
     print('HF: stopping BLE scan');
-//    await _subscription?.cancel();
-//    _subscription = null;
+    await _subscription?.cancel();
+    _subscription = null;
   }
 
   // disconnect from HappyFeet
   Future<void> disconnectFromDevice() async {
     isConnected(false);
-    _subscription?.cancel();
+    await _subscription?.cancel();
     try {
       print('HF: disconnecting from device');
       if (_connection != null) {
@@ -298,6 +295,7 @@ class BluetoothBLEService {
   }
 
   Future<void> disableBeat() async {
+    stopProcessingBeats();
     if (_char6 == null) {
       print('HF: disableBeat: error: null characteristic');
       // error
@@ -307,7 +305,9 @@ class BluetoothBLEService {
           _char6, value: [0x00]);
     }
   }
+  
   Future<void> enableBeat() async {
+    processBeats();
     if (_char6 == null) {
       print('HF: enableBeat: error: null characteristic');
       // error
@@ -377,6 +377,10 @@ class BluetoothBLEService {
         });
     }
 
+void stopProcessingBeats() async {
+  await _beatSubscription?.cancel();
+  _beatSubscription = null;
+}
 
   // read the accelerometer's whoAmI register reading from char2
   // the value should be 0x44
