@@ -1087,14 +1087,14 @@ class _InfoPageState extends State<InfoPage> {
   Widget _infoTile(String title, String subtitle) {
    return ListTile(
      title: Text(title),
-     subtitle: Text(subtitle.isEmpty ? 'Not set' : subtitle),
+     subtitle: Text(subtitle.isEmpty ? '??' : subtitle),
    );
  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-        title: Text("Happy Feet - Info Menu"),
+        title: Text('Happy Feet - Info Menu'.tr),
     ),
     body: Center(
       child: ListView(
@@ -1107,7 +1107,7 @@ class _InfoPageState extends State<InfoPage> {
 //              _infoTile('Build number', _packageInfo.buildNumber),
             Row(children: <Widget>[
 //              ElevatedButton(
-                Text('Model number:'),
+                Text('Model number:'.tr),
 //                onPressed: () {
 //                  modelNumber = _bluetoothBLEService.readModelNumber();
 //                }
@@ -1125,7 +1125,7 @@ class _InfoPageState extends State<InfoPage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
-                        child: Text('Result: ${snapshot.data}'),
+                        child: Text('Result: ${snapshot.data}'.tr),
                       )
                     ];
                   } else if (snapshot.hasError) {
@@ -1165,7 +1165,7 @@ class _InfoPageState extends State<InfoPage> {
            Row(children: <Widget>[
              ElevatedButton(
                onPressed: _launchURL,
-               child: new Text('Show HappyFeet homepage'),
+               child: new Text('Show HappyFeet homepage'.tr),
              ),
            ],)
           ],
@@ -1203,14 +1203,14 @@ class _MenuPageState extends State<MenuPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Happy Feet - Config Menu"),
+        title: Text('Happy Feet - Config Menu'.tr),
       ),
       body: Center(
         child: ListView(
           children: <Widget>[
           Column(children: <Widget>[
             Row(children: <Widget>[
-              Text('Detection threshold',
+              Text('Detection threshold'.tr,
                 style: Theme.of(context).textTheme.caption,), // Text
               Slider(
                 value: _detectionThreshold.toDouble(),
@@ -1234,7 +1234,7 @@ class _MenuPageState extends State<MenuPage> {
                     _bluetoothBLEService.writeThreshold(_detectionThreshold & 0xFF);
                   });
                   },
-                child: new Text('Reset threshold to default'),
+                child: new Text('Reset threshold to default'.tr),
               ),
             ]),// Row
             Row(children: <Widget>[

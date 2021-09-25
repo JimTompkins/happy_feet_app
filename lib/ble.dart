@@ -278,8 +278,8 @@ class BluetoothBLEService {
 
   Future<void> stopScan() async {
     print('HF: stopping BLE scan');
-    await _subscription?.cancel();
-    _subscription = null;
+//    await _subscription?.cancel();
+//    _subscription = null;
   }
 
   // disconnect from HappyFeet
