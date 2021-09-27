@@ -62,7 +62,7 @@ class BluetoothBLEService {
 //  var _softwareRev;
 //  var _manufacturerName;
 
-  StreamSubscription<List<int>>? _beatSubscription;
+//  StreamSubscription<List<int>>? _beatSubscription;
 
   bool isReady = false;
   bool serviceDiscoveryComplete = true;
@@ -422,8 +422,8 @@ class BluetoothBLEService {
     }
 
 void stopProcessingBeats() async {
-  await _beatSubscription?.cancel();
-  _beatSubscription = null;
+//  await _beatSubscription?.cancel();
+//  _beatSubscription = null;
 }
 
   // read the accelerometer's whoAmI register reading from char2
