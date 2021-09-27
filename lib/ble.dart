@@ -384,7 +384,7 @@ class BluetoothBLEService {
   // method to process beats received as notifications on char4
   processBeats() async {
 
-    _beatSubscription?.cancel();
+//    _beatSubscription?.cancel();
     try {
       _char4 = QualifiedCharacteristic(
           serviceId: Uuid.parse(HF_SERVICE_UUID),
@@ -396,7 +396,8 @@ class BluetoothBLEService {
       }
 
       print("HF: process beats");
-      _beatSubscription = _ble.subscribeToCharacteristic(_char4).listen((data) {
+//      _beatSubscription = _ble.subscribeToCharacteristic(_char4).listen((data) {
+      _ble.subscribeToCharacteristic(_char4).listen((data) {
         var time = DateTime.now();   // get system time
         print('HF:   notify received at time: $time with data: $data');
         if (data.isNotEmpty) {
