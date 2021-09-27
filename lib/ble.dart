@@ -282,10 +282,10 @@ class BluetoothBLEService {
 //        serviceId: Uuid.parse(HF_SERVICE_UUID),
 //        characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
 //        deviceId: targetDevice!.id);
-      _char4 = QualifiedCharacteristic(
-          serviceId: Uuid.parse(HF_SERVICE_UUID),
-          characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-          deviceId: targetDevice!.id);
+//      _char4 = QualifiedCharacteristic(
+//          serviceId: Uuid.parse(HF_SERVICE_UUID),
+//          characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+//          deviceId: targetDevice!.id);
 //    _char5 = QualifiedCharacteristic(
 //       serviceId: Uuid.parse(HF_SERVICE_UUID),
 //        characteristicId: Uuid.parse(CHAR5_CHARACTERISTIC_UUID),
@@ -383,37 +383,41 @@ class BluetoothBLEService {
 
   // method to process beats received as notifications on char4
   processBeats() async {
-    _char4 = QualifiedCharacteristic(
-        serviceId: Uuid.parse(HF_SERVICE_UUID),
-        characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-        deviceId: targetDevice!.id);
-    if (_char4 == null) {
-      print("HF: processBeats: _char4 is null");
-      return;
-    }
-
-    print("HF: process beats");
 
     _beatSubscription?.cancel();
-    _beatSubscription = _ble.subscribeToCharacteristic(_char4).listen((data) {
-          if (data.isNotEmpty) {
-//            var time = DateTime.now();   // get system time
-//            print('HF:   notify received at time: $time');
-            if ((data[0] & 0xFF) == 0xFF) {
-              print("HF: heartbeat notify received");
+    try {
+      _char4 = QualifiedCharacteristic(
+          serviceId: Uuid.parse(HF_SERVICE_UUID),
+          characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+          deviceId: targetDevice!.id);
+      if (_char4 == null) {
+        print("HF: processBeats: _char4 is null");
+        return;
+      }
+
+      print("HF: process beats");
+      _beatSubscription = _ble.subscribeToCharacteristic(_char4).listen((data) {
+        var time = DateTime.now();   // get system time
+        print('HF:   notify received at time: $time with data: $data');
+        if (data.isNotEmpty) {
+          if ((data[0] & 0xFF) == 0xFF) {
+            print("HF: heartbeat notify received");
 //              Timeline.timeSync("HF: heartbeat received", () {});
-            } else {
-              print('HF: beat received');
-              // play the next note in the groove
-              groove.play(data[0]);
+          } else {
+            print('HF: beat received');
+            // play the next note in the groove
+            groove.play(data[0]);
 //              Timeline.timeSync("HF: play note", () {
 //                groove.play(data[0]);
 //              });
-            }
           }
-        }, onError: (dynamic e) {
-              print('HF: error on char4 subscription: $e');
-        });
+        } else {print('HF:  data is empty');}
+      }, onError: (dynamic err) {
+        print('HF: error on char4 subscription: $err');
+      });
+    } catch (err) {
+      print('HF:  beat subscription error: $err');
+    }
     }
 
 void stopProcessingBeats() async {
