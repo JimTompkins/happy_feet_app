@@ -62,7 +62,7 @@ class BluetoothBLEService {
 //  var _softwareRev;
 //  var _manufacturerName;
 
-//  StreamSubscription<List<int>>? _beatSubscription;
+  StreamSubscription<List<int>>? _beatSubscription;
 
   bool isReady = false;
   bool serviceDiscoveryComplete = true;
@@ -187,10 +187,6 @@ class BluetoothBLEService {
           if (connectionState.connectionState ==
               DeviceConnectionState.connected) {
             isConnected(true);
-            // for HappyFeet, set the MTU as small as possible
-//          final mtu = await _ble.requestMtu(
-//              deviceId: targetDevice!.id, mtu: 20);
-//          print("HF: MTU size: $mtu");
             await Future.delayed(Duration(milliseconds: 1000));
             print('HF: device connected');
             Get.snackbar('Bluetooth status', 'Connected!',
@@ -219,10 +215,6 @@ class BluetoothBLEService {
           if (connectionState.connectionState ==
               DeviceConnectionState.connected) {
             isConnected(true);
-            // for HappyFeet, set the MTU as small as possible
-//          final mtu = await _ble.requestMtu(
-//              deviceId: targetDevice!.id, mtu: 20);
-//          print("HF: MTU size: $mtu");
             await Future.delayed(Duration(milliseconds: 1000));
             print('HF: device connected');
             Get.snackbar('Bluetooth status', 'Connected!',
@@ -252,20 +244,22 @@ class BluetoothBLEService {
       return;
     }
 
-    if (Platform.isIOS) {
-      serviceDiscoveryComplete = false;
-      print('HF: start discovering services...');
-      try {
-        await _ble.discoverServices(targetDevice!.id);
-        serviceDiscoveryComplete = true;
-        getCharacteristics2();
-      } on Exception catch (e) {
-        print('HF: error during service discovery: $e');
-      }
-      print('HF: ...done discovering services');
-    } else {
-      getCharacteristics2();
-    }
+//    if (Platform.isIOS) {
+//      serviceDiscoveryComplete = false;
+//      print('HF: start discovering services...');
+//      try {
+//        await _ble.discoverServices(targetDevice!.id);
+//        serviceDiscoveryComplete = true;
+//        getCharacteristics2();
+//      } on Exception catch (e) {
+//        print('HF: error during service discovery: $e');
+//      }
+//      print('HF: ...done discovering services');
+//    } else {
+//      getCharacteristics2();
+//    }
+    serviceDiscoveryComplete = true;
+    getCharacteristics2();
   }
 
   getCharacteristics2() {
@@ -298,11 +292,11 @@ class BluetoothBLEService {
           serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
           characteristicId: Uuid.parse(MODEL_NUMBER_CHARACTERISTIC_UUID),
           deviceId: targetDevice!.id);
-      if (_char4 == null) {
-        print('HF: error adding characteristic 4');
-      } else {
-        print('HF: added characteristics: $_char4.characteristicId');
-      }
+ //     if (_char4 == null) {
+ //       print('HF: error adding characteristic 4');
+ //     } else {
+ //       print('HF: added characteristics: $_char4.characteristicId');
+ //     }
       if (_char6 == null) {
         print('HF: error adding characteristic 6');
       } else {
@@ -320,7 +314,7 @@ class BluetoothBLEService {
   // disconnect from HappyFeet
   Future<void> disconnectFromDevice() async {
     isConnected(false);
-    await _subscription?.cancel();
+    stopProcessingBeats();
     try {
       print('HF: disconnecting from device');
       if (_connection != null) {
@@ -384,7 +378,7 @@ class BluetoothBLEService {
   // method to process beats received as notifications on char4
   processBeats() async {
 
-//    _beatSubscription?.cancel();
+    _beatSubscription?.cancel();
     try {
       _char4 = QualifiedCharacteristic(
           serviceId: Uuid.parse(HF_SERVICE_UUID),
@@ -396,8 +390,7 @@ class BluetoothBLEService {
       }
 
       print("HF: process beats");
-//      _beatSubscription = _ble.subscribeToCharacteristic(_char4).listen((data) {
-      _ble.subscribeToCharacteristic(_char4).listen((data) {
+      _beatSubscription = _ble.subscribeToCharacteristic(_char4).listen((data) {
         var time = DateTime.now();   // get system time
         print('HF:   notify received at time: $time with data: $data');
         if (data.isNotEmpty) {
@@ -422,8 +415,8 @@ class BluetoothBLEService {
     }
 
 void stopProcessingBeats() async {
-//  await _beatSubscription?.cancel();
-//  _beatSubscription = null;
+  await _beatSubscription?.cancel();
+  _beatSubscription = null;
 }
 
   // read the accelerometer's whoAmI register reading from char2
@@ -458,15 +451,16 @@ void stopProcessingBeats() async {
         return String.fromCharCodes(value);
       } catch (e) {
         print("HF: error readModelNumber $e");
+        return('ERROR');
       }
     }
   }
 
   // read char6 to see if beat sending is enabled or not
-  Future readBeatEnable() async {
+  Future<bool>? readBeatEnable() async {
     if (_char6 == null) {
       print('HF: readBeatEnable: _char6 is null');
-      return;
+      return(false);
     } else {
       try {
         List<int> value = await _ble.readCharacteristic(_char6!);
@@ -480,11 +474,9 @@ void stopProcessingBeats() async {
       } catch (err) {
         print("HF: error readBeatEnable");
         print(err);
+        return(false);
       }
     }
   }
-
-
-
 
 }
