@@ -173,34 +173,73 @@ class BluetoothBLEService {
     }
 
     try {
-      _connection = _ble.connectToDevice(
-        id: targetDevice!.id,
-//        servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID),
-//          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
-//            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-//            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
-        connectionTimeout: const Duration(seconds:  10),
-      ).listen((connectionState) async {
-        if (connectionState.connectionState == DeviceConnectionState.connected) {
-          isConnected(true);
-          // for HappyFeet, set the MTU as small as possible
+      if (Platform.isAndroid) {
+        _connection = _ble.connectToAdvertisingDevice(
+          id: targetDevice!.id,
+        servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID):
+          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
+            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
+          withServices: [Uuid.parse(HF_SERVICE_UUID)],
+          prescanDuration: const Duration(seconds: 5),
+          connectionTimeout: const Duration(seconds: 10),
+        ).listen((connectionState) async {
+          if (connectionState.connectionState ==
+              DeviceConnectionState.connected) {
+            isConnected(true);
+            // for HappyFeet, set the MTU as small as possible
 //          final mtu = await _ble.requestMtu(
 //              deviceId: targetDevice!.id, mtu: 20);
 //          print("HF: MTU size: $mtu");
-          await Future.delayed(Duration(milliseconds: 1000));
-          print('HF: device connected');
-          Get.snackbar('Bluetooth status', 'Connected!', snackPosition: SnackPosition.BOTTOM);
-          getCharacteristics();
-
-         } else {
-          isConnected(false);
-        }
-      },
-      onError: (Object e) {
-        print('HF: connect to device fails with error: $e');
-        Get.snackbar('Bluetooth status', 'Connection failed with with error $e!', snackPosition: SnackPosition.BOTTOM);
+            await Future.delayed(Duration(milliseconds: 1000));
+            print('HF: device connected');
+            Get.snackbar('Bluetooth status', 'Connected!',
+                snackPosition: SnackPosition.BOTTOM);
+            getCharacteristics();
+          } else {
+            isConnected(false);
+          }
+        },
+            onError: (Object e) {
+              print('HF: connect to device fails with error: $e');
+              Get.snackbar(
+                  'Bluetooth status', 'Connection failed with with error $e!',
+                  snackPosition: SnackPosition.BOTTOM);
+            }
+        );
+      } else {   //iOS
+        _connection = _ble.connectToDevice(
+          id: targetDevice!.id,
+        servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID):
+          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
+            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
+          connectionTimeout: const Duration(seconds: 10),
+        ).listen((connectionState) async {
+          if (connectionState.connectionState ==
+              DeviceConnectionState.connected) {
+            isConnected(true);
+            // for HappyFeet, set the MTU as small as possible
+//          final mtu = await _ble.requestMtu(
+//              deviceId: targetDevice!.id, mtu: 20);
+//          print("HF: MTU size: $mtu");
+            await Future.delayed(Duration(milliseconds: 1000));
+            print('HF: device connected');
+            Get.snackbar('Bluetooth status', 'Connected!',
+                snackPosition: SnackPosition.BOTTOM);
+            getCharacteristics();
+          } else {
+            isConnected(false);
+          }
+        },
+            onError: (Object e) {
+              print('HF: connect to device fails with error: $e');
+              Get.snackbar(
+                  'Bluetooth status', 'Connection failed with with error $e!',
+                  snackPosition: SnackPosition.BOTTOM);
+            }
+        );
       }
-      );
     } catch (err) {
       print('HF: device already connected');
     }
@@ -270,7 +309,6 @@ class BluetoothBLEService {
         print('HF: added characteristics: $_char6.characteristicId');
       }
     }
-    print("HF: enable processing notifications on char4...");
     }
 
   Future<void> stopScan() async {
@@ -305,8 +343,9 @@ class BluetoothBLEService {
           _char6, value: [0x00]);
     }
   }
-  
+
   Future<void> enableBeat() async {
+    print("HF: enable processing notifications on char4...");
     processBeats();
     if (_char6 == null) {
       print('HF: enableBeat: error: null characteristic');
