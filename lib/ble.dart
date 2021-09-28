@@ -378,7 +378,7 @@ class BluetoothBLEService {
   // method to process beats received as notifications on char4
   processBeats() async {
 
-    _beatSubscription?.cancel();
+    await _beatSubscription?.cancel();
     try {
       _char4 = QualifiedCharacteristic(
           serviceId: Uuid.parse(HF_SERVICE_UUID),
