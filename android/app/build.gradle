@@ -43,8 +43,8 @@ android {
             applicationId "com.happyfeetmusic.happy_feet_app"
             minSdkVersion 21
             targetSdkVersion 30
-            versionCode 14
-            versionName "0.14"
+            versionCode 15
+            versionName "0.15"
         }
 
     signingConfigs {

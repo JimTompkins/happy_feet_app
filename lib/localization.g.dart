@@ -76,6 +76,7 @@ class Localization extends Translations {
 'Connection failed with with error': 'Connection failed with with error',
 'Disconnecting': 'Disconnecting',
 'Change language': 'Change language',
+'Firmware revision:': 'Firmware revision:',
 },
 'fr': {
 'Happy Feet': 'Happy Feet',
@@ -150,6 +151,7 @@ class Localization extends Translations {
 'Connection failed with with error': 'La connexion a échoué avec une erreur',
 'Disconnecting': 'Déconnexion',
 'Change language': 'Changer de langue',
+'Firmware revision:': 'Révision du micrologiciel:',
 },
 'de': {
 'Happy Feet': 'Happy Feet',
@@ -224,6 +226,7 @@ class Localization extends Translations {
 'Connection failed with with error': 'Verbindung ist mit Fehler fehlgeschlagen',
 'Disconnecting': 'Trennen',
 'Change language': 'Sprache ändern',
+'Firmware revision:': 'Firmware-Revision:',
 },
 'es': {
 'Happy Feet': 'Happy Feet',
@@ -268,7 +271,7 @@ class Localization extends Translations {
 'Saved grooves:': 'Grooves guardados:',
 'Loaded groove': 'Groove cargado',
 'Load status': 'Estado de carga',
-'Missing or invalid file name:': 'Nombre de archivo faltante o no válido:',
+'Missing or invalid file name:': 'Falta o nombre de archivo no válido:',
 'Notice': 'Aviso',
 'Status': 'Estado',
 'already connected': 'ya conectado',
@@ -298,6 +301,7 @@ class Localization extends Translations {
 'Connection failed with with error': 'La conexión falló con el error',
 'Disconnecting': 'Desconexión',
 'Change language': 'Cambiar idioma',
+'Firmware revision:': 'Revisión de firmware:',
 },
 'it': {
 'Happy Feet': 'Happy Feet',
@@ -372,6 +376,7 @@ class Localization extends Translations {
 'Connection failed with with error': 'Connessione non riuscita con l\'errore',
 'Disconnecting': 'Disconnessione',
 'Change language': 'Cambia lingua',
+'Firmware revision:': 'Revisione del firmware:',
 },
 'pt': {
 'Happy Feet': 'Happy Feet',
@@ -446,6 +451,7 @@ class Localization extends Translations {
 'Connection failed with with error': 'Conexão falhou com erro',
 'Disconnecting': 'Desconectar',
 'Change language': 'Mudar idioma',
+'Firmware revision:': 'Revisão de firmware:',
 },
         };
       }

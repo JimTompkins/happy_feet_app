@@ -182,7 +182,7 @@ class BluetoothBLEService {
             Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
           withServices: [Uuid.parse(HF_SERVICE_UUID)],
           prescanDuration: const Duration(seconds: 5),
-          connectionTimeout: const Duration(seconds: 10),
+          connectionTimeout: const Duration(seconds: 20),
         ).listen((connectionState) async {
           if (connectionState.connectionState ==
               DeviceConnectionState.connected) {
@@ -210,7 +210,7 @@ class BluetoothBLEService {
           [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
             Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
             Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
-          connectionTimeout: const Duration(seconds: 10),
+          connectionTimeout: const Duration(seconds: 20),
         ).listen((connectionState) async {
           if (connectionState.connectionState ==
               DeviceConnectionState.connected) {
