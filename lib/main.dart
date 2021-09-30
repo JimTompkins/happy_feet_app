@@ -1067,13 +1067,15 @@ class _InfoPageState extends State<InfoPage> {
     buildNumber: 'Unknown',
   );
   static BluetoothBLEService _bluetoothBLEService = Get.find();
-  Future<String>? modelNumber;
+  Future<String>? _modelNumber;
+  Future<String>? _firmwareRevision;
 
   @override
   initState() {
     super.initState();
     _initPackageInfo();
-    modelNumber = _bluetoothBLEService.readModelNumber();
+    _modelNumber = _bluetoothBLEService.readModelNumber();
+    _firmwareRevision = _bluetoothBLEService.readFirmwareRevision();
   }
 
   Future<void> _initPackageInfo() async {
@@ -1105,14 +1107,9 @@ class _InfoPageState extends State<InfoPage> {
               _infoTile('App version'.tr, _packageInfo.version),
 //              _infoTile('Build number', _packageInfo.buildNumber),
             Row(children: <Widget>[
-//              ElevatedButton(
                 Text('Model number:'.tr),
-//                onPressed: () {
-//                  modelNumber = _bluetoothBLEService.readModelNumber();
-//                }
-//              ),
               FutureBuilder<String>(
-                future: modelNumber,
+                future: _modelNumber,
                 builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                   List<Widget> children;
                   if (snapshot.hasData) {
@@ -1148,7 +1145,7 @@ class _InfoPageState extends State<InfoPage> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 16),
-                        child: Text('Awaiting result'),
+                        child: Text('...'),   // can't translate a string here...
                       )
                     ];
                   }
@@ -1161,6 +1158,58 @@ class _InfoPageState extends State<InfoPage> {
                   );
                 })
             ]),
+              Row(children: <Widget>[
+                Text('Firmware revision'.tr),
+                FutureBuilder<String>(
+                    future: _firmwareRevision,
+                    builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      List<Widget> children;
+                      if (snapshot.hasData) {
+                        children = <Widget>[
+                          const Icon(
+                            Icons.check_circle_outline,
+                            color: Colors.green,
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Result: ${snapshot.data}'.tr),
+                          )
+                        ];
+                      } else if (snapshot.hasError) {
+                        children = <Widget>[
+                          const Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Error: ${snapshot.error}'.tr),
+                          )
+                        ];
+                      } else {
+                        children = const <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(),
+                            width: 60,
+                            height: 60,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text('...'),
+                          )
+                        ];
+                      }
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: children,
+                        ),
+                      );
+                    })
+              ]),
            Row(children: <Widget>[
              ElevatedButton(
                onPressed: _launchURL,
@@ -1186,7 +1235,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  int _detectionThreshold = 128;
+  int _detectionThreshold = 29;
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   String lang = 'English';
   var locale = Get.deviceLocale!;
@@ -1213,11 +1262,16 @@ class _MenuPageState extends State<MenuPage> {
                 style: Theme.of(context).textTheme.caption,), // Text
               Slider(
                 value: _detectionThreshold.toDouble(),
-                min: 1,
-                max: 255,
-                divisions: 255,
+                min: 20,
+                max: 50,
+                divisions: 29,
                 label: _detectionThreshold.round().toString(),
                 onChanged: (double value) {
+                  setState(() {
+                    _detectionThreshold = value.toInt();
+                  });
+                },
+                onChangeEnd: (double value) {
                   setState(() {
                     _detectionThreshold = value.toInt();
                     _bluetoothBLEService.writeThreshold(_detectionThreshold & 0xFF);
@@ -1229,7 +1283,7 @@ class _MenuPageState extends State<MenuPage> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _detectionThreshold = 128;
+                    _detectionThreshold = 29;
                     _bluetoothBLEService.writeThreshold(_detectionThreshold & 0xFF);
                   });
                   },

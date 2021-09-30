@@ -243,14 +243,14 @@
         <entry key="package_info_plus">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus-1.0.1/lib" />
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus-1.0.6/lib" />
             </list>
           </value>
         </entry>
         <entry key="package_info_plus_linux">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_linux-1.0.2/lib" />
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_linux-1.0.3/lib" />
             </list>
           </value>
         </entry>
@@ -264,21 +264,21 @@
         <entry key="package_info_plus_platform_interface">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_platform_interface-1.0.1/lib" />
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_platform_interface-1.0.2/lib" />
             </list>
           </value>
         </entry>
         <entry key="package_info_plus_web">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_web-1.0.1/lib" />
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_web-1.0.4/lib" />
             </list>
           </value>
         </entry>
         <entry key="package_info_plus_windows">
           <value>
             <list>
-              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_windows-1.0.1/lib" />
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_windows-1.0.3/lib" />
             </list>
           </value>
         </entry>
@@ -596,12 +596,12 @@
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.11/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/meta-1.7.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/nested-1.0.0/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus-1.0.1/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_linux-1.0.2/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus-1.0.6/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_linux-1.0.3/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_macos-1.1.1/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_platform_interface-1.0.1/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_web-1.0.1/lib" />
-      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_windows-1.0.1/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_platform_interface-1.0.2/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_web-1.0.4/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/package_info_plus_windows-1.0.3/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/path-1.8.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-2.0.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-2.0.0/lib" />

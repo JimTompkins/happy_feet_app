@@ -31,7 +31,7 @@ class BluetoothBLEService {
   // 6 characteristics:
   //    1 = read
   //    2 = read
-  //    3 = write
+  //    3 = write       --> threshold setting
   //    4 = notify      --> beat detection
   //    5 = read
   //    6 = write, read --> beat enable
@@ -50,14 +50,14 @@ class BluetoothBLEService {
 
 //  var _char1;
   var _char2;
-//  var _char3;
+  var _char3;
   var _char4;
 //  var _char5;
   var _char6;
 
   var _modelNumber;
 //  var _serialNumber;
-//  var _firmwareRev;
+  var _firmwareRev;
 //  var _hardwareRev;
 //  var _softwareRev;
 //  var _manufacturerName;
@@ -272,10 +272,10 @@ class BluetoothBLEService {
           serviceId: Uuid.parse(HF_SERVICE_UUID),
           characteristicId: Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
           deviceId: targetDevice!.id);
-//    _char3 = QualifiedCharacteristic(
-//        serviceId: Uuid.parse(HF_SERVICE_UUID),
-//        characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
-//        deviceId: targetDevice!.id);
+    _char3 = QualifiedCharacteristic(
+        serviceId: Uuid.parse(HF_SERVICE_UUID),
+        characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
+        deviceId: targetDevice!.id);
 //      _char4 = QualifiedCharacteristic(
 //          serviceId: Uuid.parse(HF_SERVICE_UUID),
 //          characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
@@ -291,6 +291,10 @@ class BluetoothBLEService {
       _modelNumber = QualifiedCharacteristic(
           serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
           characteristicId: Uuid.parse(MODEL_NUMBER_CHARACTERISTIC_UUID),
+          deviceId: targetDevice!.id);
+      _firmwareRev = QualifiedCharacteristic(
+          serviceId: Uuid.parse(DEVINFO_SERVICE_UUID),
+          characteristicId: Uuid.parse(FIRMWARE_REV_CHARACTERISTIC_UUID),
           deviceId: targetDevice!.id);
  //     if (_char4 == null) {
  //       print('HF: error adding characteristic 4');
@@ -364,14 +368,14 @@ class BluetoothBLEService {
 
 
   Future<void> writeThreshold(int threshold) async {
-    if (_char6 == null) {
+    if (_char3 == null) {
       print('HF: writeThreshold: error: null characteristic');
       // error
     } else {
-      int value = ((threshold & 0x3F) << 1) | 0x01;
+      int value = threshold & 0xFF;
       print('HF: writeThreshold: threshold = $threshold, value = $value');
       await _ble.writeCharacteristicWithResponse(
-          _char6, value: [value]);
+          _char3, value: [value]);
     }
   }
 
@@ -438,20 +442,52 @@ void stopProcessingBeats() async {
 
   // read the model number
   Future<String>? readModelNumber() async {
-    String result = "ERROR";
-    if (_modelNumber == null) {
-      print('HF: readModelNumber: _modelNumber is null');
+    String result = 'Error'.tr;
+    if (!isBleConnected()) {
+      // not connected
+      result = 'not connected'.tr;
       return result;
-    } else {
-      try {
-        List<int> value = await _ble.readCharacteristic(_modelNumber!);
-        // convert list of character codes to string
-        var valString = String.fromCharCodes(value);
-        print('HF: readModelNumber: read result = $valString');
-        return String.fromCharCodes(value);
-      } catch (e) {
-        print("HF: error readModelNumber $e");
-        return('ERROR');
+    } else {  // connected
+      if (_modelNumber == null) {
+        print('HF: readModelNumber: _modelNumber is null');
+        return result;
+      } else {
+        try {
+          List<int> value = await _ble.readCharacteristic(_modelNumber!);
+          // convert list of character codes to string
+          var valString = String.fromCharCodes(value);
+          print('HF: readModelNumber: read result = $valString');
+          return String.fromCharCodes(value);
+        } catch (e) {
+          print("HF: error readModelNumber $e");
+          return ('Error'.tr);
+        }
+      }
+    }
+  }
+
+  // read the model number
+  Future<String>? readFirmwareRevision() async {
+    String result = 'Error'.tr;
+    if (!isBleConnected()) {
+      // not connected
+      result = 'not connected'.tr;
+      return result;
+    } else {  // connected
+      if (_firmwareRev == null) {
+        print('HF: readFirmwareRevision: _firmwareRev is null');
+        return result;
+      } else {
+        try {
+          List<int> value = await _ble.readCharacteristic(_firmwareRev!);
+          // convert list of character codes to string
+          var valString = String.fromCharCodes(value);
+          print('HF: readFirmwareRev: read result = $valString');
+          return String.fromCharCodes(value);
+        } catch (e) {
+          print("HF: error readFirmwareRev $e");
+          return ('Error'.tr);
+        }
       }
     }
   }
