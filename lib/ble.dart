@@ -85,22 +85,22 @@ class BluetoothBLEService {
           break;
         case BleStatus.unsupported:
           print('HF: BLE status unsupported');
-          Get.snackbar('Bluetooth status', 'This device does not support Bluetooth', snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Bluetooth status'.tr, 'This device does not support Bluetooth'.tr, snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BleStatus.unauthorized:
           print('HF: BLE status unauthorized');
-          Get.snackbar('Bluetooth status', 'Authorize the HappyFeet app to use Bluetooth and location', snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Bluetooth status'.tr, 'Authorize the HappyFeet app to use Bluetooth and location'.tr, snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BleStatus.poweredOff:
           print('HF: BLE status powered off');
-          Get.snackbar('Bluetooth status', 'Bluetooth is turned off.  Please turn it on', snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Bluetooth status'.tr, 'Bluetooth is turned off.  Please turn it on'.tr, snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BleStatus.locationServicesDisabled:
           print('HF: BLE status powered off');
-          Get.snackbar('Bluetooth status', 'Enable location services', snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar('Bluetooth status'.tr, 'Enable location services'.tr, snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BleStatus.ready:
@@ -140,7 +140,7 @@ class BluetoothBLEService {
            print('HF: RSSI = $rssi');
            stopScan();
            targetDevice = device;
-           Get.snackbar('Bluetooth status', 'Found Happy Feet!  Connecting...', snackPosition: SnackPosition.BOTTOM);
+           Get.snackbar('Bluetooth status'.tr, 'Found Happy Feet!  Connecting...'.tr, snackPosition: SnackPosition.BOTTOM);
            connectToDevice();
            }
         },
@@ -152,7 +152,7 @@ class BluetoothBLEService {
   _onDoneScan() {
     stopScan();
     if (targetDevice == null) {
-      Get.snackbar('Bluetooth status', 'Can\'t find Happy Feet!  Do you own one?  Is it nearby?  Is it charged?', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Bluetooth status'.tr, 'Can\'t find Happy Feet!  Do you own one?  Is it nearby?  Is it charged?'.tr, snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -176,10 +176,11 @@ class BluetoothBLEService {
       if (Platform.isAndroid) {
         _connection = _ble.connectToAdvertisingDevice(
           id: targetDevice!.id,
-        servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID):
-          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
-            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
+// servicesWithCharacteristicsToDiscover is ignored on Android
+//        servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID):
+//          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
+//            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+//            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
           withServices: [Uuid.parse(HF_SERVICE_UUID)],
           prescanDuration: const Duration(seconds: 5),
           connectionTimeout: const Duration(seconds: 20),
@@ -189,7 +190,7 @@ class BluetoothBLEService {
             isConnected(true);
             await Future.delayed(Duration(milliseconds: 1000));
             print('HF: device connected');
-            Get.snackbar('Bluetooth status', 'Connected!',
+            Get.snackbar('Bluetooth status'.tr, 'Connected!'.tr,
                 snackPosition: SnackPosition.BOTTOM);
             getCharacteristics();
           } else {
@@ -199,17 +200,19 @@ class BluetoothBLEService {
             onError: (Object e) {
               print('HF: connect to device fails with error: $e');
               Get.snackbar(
-                  'Bluetooth status', 'Connection failed with with error $e!',
+                  'Bluetooth status'.tr, 'Connection failed with with error $e!'.tr,
                   snackPosition: SnackPosition.BOTTOM);
             }
         );
       } else {   //iOS
         _connection = _ble.connectToDevice(
           id: targetDevice!.id,
-        servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID):
-          [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
-            Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
-            Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
+        // if servicesWithCharacteristicsToDiscover is not used, all services/chars will be discovered
+ //       servicesWithCharacteristicsToDiscover: {Uuid.parse(HF_SERVICE_UUID):
+ //         [Uuid.parse(CHAR2_CHARACTERISTIC_UUID),
+ //           Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
+ //           Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
+ //           Uuid.parse(CHAR6_CHARACTERISTIC_UUID)]},
           connectionTimeout: const Duration(seconds: 20),
         ).listen((connectionState) async {
           if (connectionState.connectionState ==
@@ -217,7 +220,7 @@ class BluetoothBLEService {
             isConnected(true);
             await Future.delayed(Duration(milliseconds: 1000));
             print('HF: device connected');
-            Get.snackbar('Bluetooth status', 'Connected!',
+            Get.snackbar('Bluetooth status'.tr, 'Connected!'.tr,
                 snackPosition: SnackPosition.BOTTOM);
             getCharacteristics();
           } else {
@@ -227,7 +230,7 @@ class BluetoothBLEService {
             onError: (Object e) {
               print('HF: connect to device fails with error: $e');
               Get.snackbar(
-                  'Bluetooth status', 'Connection failed with with error $e!',
+                  'Bluetooth status'.tr, 'Connection failed with with error $e!'.tr,
                   snackPosition: SnackPosition.BOTTOM);
             }
         );
@@ -276,6 +279,7 @@ class BluetoothBLEService {
         serviceId: Uuid.parse(HF_SERVICE_UUID),
         characteristicId: Uuid.parse(CHAR3_CHARACTERISTIC_UUID),
         deviceId: targetDevice!.id);
+// char4 is commented out here since it is found in processBeats() below
 //      _char4 = QualifiedCharacteristic(
 //          serviceId: Uuid.parse(HF_SERVICE_UUID),
 //          characteristicId: Uuid.parse(CHAR4_CHARACTERISTIC_UUID),
@@ -323,7 +327,7 @@ class BluetoothBLEService {
       print('HF: disconnecting from device');
       if (_connection != null) {
         await _connection?.cancel();
-        Get.snackbar('Bluetooth status', 'Disconnecting', snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar('Bluetooth status'.tr, 'Disconnecting'.tr, snackPosition: SnackPosition.BOTTOM);
       }
     } on Exception catch (e, _) {
       print('HF: Error disconnecting: $e');

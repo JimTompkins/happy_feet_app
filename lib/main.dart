@@ -1258,8 +1258,9 @@ class _MenuPageState extends State<MenuPage> {
           children: <Widget>[
           Column(children: <Widget>[
             Row(children: <Widget>[
-              Text('Detection threshold'.tr,
+              Text('Sensitivity'.tr,
                 style: Theme.of(context).textTheme.caption,), // Text
+              Text('Less'.tr,), // Text
               Slider(
                 value: _detectionThreshold.toDouble(),
                 min: 20,
@@ -1277,7 +1278,8 @@ class _MenuPageState extends State<MenuPage> {
                     _bluetoothBLEService.writeThreshold(_detectionThreshold & 0xFF);
                   });
                 }, // setState, onChanged
-              ), // Slider
+              ),
+              Text('More'.tr,), // Text// Slider
             ]),
             Row(children: <Widget>[
               ElevatedButton(
@@ -1287,7 +1289,7 @@ class _MenuPageState extends State<MenuPage> {
                     _bluetoothBLEService.writeThreshold(_detectionThreshold & 0xFF);
                   });
                   },
-                child: new Text('Reset threshold to default'.tr),
+                child: new Text('Reset sensitivity to default'.tr),
               ),
             ]),// Row
             Row(children: <Widget>[
