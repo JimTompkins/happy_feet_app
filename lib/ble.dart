@@ -457,6 +457,7 @@ void stopProcessingBeats() async {
         return result;
       } else {
         try {
+          print('HF: reading model number...');
           List<int> value = await _ble.readCharacteristic(_modelNumber!);
           // convert list of character codes to string
           var valString = String.fromCharCodes(value);
@@ -470,7 +471,7 @@ void stopProcessingBeats() async {
     }
   }
 
-  // read the model number
+  // read the firmware revision
   Future<String>? readFirmwareRevision() async {
     String result = 'Error'.tr;
     if (!isBleConnected()) {
@@ -483,6 +484,7 @@ void stopProcessingBeats() async {
         return result;
       } else {
         try {
+          print('HF: reading firmware revision...');
           List<int> value = await _ble.readCharacteristic(_firmwareRev!);
           // convert list of character codes to string
           var valString = String.fromCharCodes(value);
