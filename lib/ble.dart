@@ -67,6 +67,7 @@ class BluetoothBLEService {
   bool isReady = false;
   bool serviceDiscoveryComplete = true;
   final isConnected=false.obs;
+  int heartbeatCount = 0;
 
   StreamSubscription? _subscription;
   StreamSubscription<ConnectionStateUpdate>? _connection;
@@ -193,6 +194,7 @@ class BluetoothBLEService {
             Get.snackbar('Bluetooth status'.tr, 'Connected!'.tr,
                 snackPosition: SnackPosition.BOTTOM);
             getCharacteristics();
+            heartbeatCount = 0;
           } else {
             isConnected(false);
           }
@@ -404,9 +406,16 @@ class BluetoothBLEService {
         if (data.isNotEmpty) {
           if ((data[0] & 0xFF) == 0xFF) {
             print("HF: heartbeat notify received");
+            heartbeatCount++;
+            if (heartbeatCount >= 360) {
+              print('HF: timeout error.  No beat received for 30min');
+              Get.snackbar('Bluetooth status'.tr, 'Disconnecting since no beats detected for 30 minutes'.tr, snackPosition: SnackPosition.BOTTOM);
+              disconnectFromDevice();
+            }
 //              Timeline.timeSync("HF: heartbeat received", () {});
           } else {
             print('HF: beat received');
+            heartbeatCount = 0;
             // play the next note in the groove
             groove.play(data[0]);
 //              Timeline.timeSync("HF: play note", () {

@@ -79,6 +79,7 @@ class Localization extends Translations {
 'Disconnecting': 'Disconnecting',
 'Change language': 'Change language',
 'Firmware revision:': 'Firmware revision:',
+'Disconnecting since no beats detected for 30 minutes': 'Disconnecting since no beats detected for 30 minutes',
 },
 'fr': {
 'Happy Feet': 'Happy Feet',
@@ -156,6 +157,7 @@ class Localization extends Translations {
 'Disconnecting': 'Déconnexion',
 'Change language': 'Changer de langue',
 'Firmware revision:': 'Révision du micrologiciel:',
+'Disconnecting since no beats detected for 30 minutes': 'Déconnexion depuis aucun battement détecté pendant 30 minutes',
 },
 'de': {
 'Happy Feet': 'Happy Feet',
@@ -233,6 +235,7 @@ class Localization extends Translations {
 'Disconnecting': 'Trennen',
 'Change language': 'Sprache ändern',
 'Firmware revision:': 'Firmware-Revision:',
+'Disconnecting since no beats detected for 30 minutes': 'Trennen der Verbindung, da keine Beats für 30 Minuten erkannt werden',
 },
 'es': {
 'Happy Feet': 'Happy Feet',
@@ -310,6 +313,7 @@ class Localization extends Translations {
 'Disconnecting': 'Desconexión',
 'Change language': 'Cambiar idioma',
 'Firmware revision:': 'Revisión de firmware:',
+'Disconnecting since no beats detected for 30 minutes': 'Desconexión ya que no se detectan ritmos durante 30 minutos.',
 },
 'it': {
 'Happy Feet': 'Happy Feet',
@@ -387,6 +391,7 @@ class Localization extends Translations {
 'Disconnecting': 'Disconnessione',
 'Change language': 'Cambia lingua',
 'Firmware revision:': 'Revisione del firmware:',
+'Disconnecting since no beats detected for 30 minutes': 'Disconnessione poiché nessun battito rilevato per 30 minuti',
 },
 'pt': {
 'Happy Feet': 'Happy Feet',
@@ -441,7 +446,7 @@ class Localization extends Translations {
 'beats disabled': 'batidas desativadas',
 'beats enabled': 'batidas habilitadas',
 'connect to Bluetooth first': 'Conecte-se ao Bluetooth primeiro',
-'connecting to Bluetooth': 'Conectando-se a Bluetooth.',
+'connecting to Bluetooth': 'Conectando-se a Bluetooth',
 'disconnecting Bluetooth': 'Desconectando Bluetooth.',
 'groove saved': 'Groove salvo',
 'not connected': 'não conectado',
@@ -464,6 +469,7 @@ class Localization extends Translations {
 'Disconnecting': 'Desconectar',
 'Change language': 'Mudar idioma',
 'Firmware revision:': 'Revisão de firmware:',
+'Disconnecting since no beats detected for 30 minutes': 'Desconectar desde que não há batidas detectadas por 30 minutos',
 },
         };
       }
