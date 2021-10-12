@@ -1,6 +1,7 @@
 import 'audio.dart';
 import 'dart:async';
 import 'bass.dart';
+import 'package:flutter/material.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
 
@@ -50,12 +51,14 @@ class Groove {
   double beatsPerMinute = 0.0;
   double sum = 0;
   double sum2 = 0;
+  double variation = 0.0;
   List notes = <Note>[]; // list of notes
   List notes2 = <Note>[]; // list of notes
   String key = 'E';
   GrooveType type = GrooveType.percussion;
   String description = '';
   var bpmString = '---'.obs;
+  var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
 
   // constructor with list of notes
@@ -505,6 +508,21 @@ class Groove {
     this.reset();
   }
 
+  // set the color of the BeatsPerMinute indicator on the bottom app bar based on the
+  // beat timing variation.
+  // found that the colors were visually distracting to stayed with white in the end...
+  void variationToColor() {
+    if ((variation > -10.0) && (variation < 10.0)) {
+      bpmColor = Colors.white;
+    } else if (variation >= 10.0) {
+      bpmColor = Colors.red[100]!;
+    } else if (variation <= -10.0) {
+      bpmColor = Colors.lime[100]!;
+    }
+    bpmColor = Colors.white;
+    return;
+  }
+
   // play the next note in the groove
   void play(int data) {
     int sequenceBit;
@@ -569,7 +587,7 @@ class Groove {
     mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
     double sysLatestBPM = (60000.0 / beatPeriod);
     double sysFilteredBPM = (60000.0 / mean2);
-    double variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
+    variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
     print('HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
     lastBeatTime = now;
 
@@ -604,13 +622,13 @@ class Groove {
 
     // update the BPM and index info on the bottom app bar
     // if variation is high, or BPM is non-sensical i.e. < 0 or > 320, then show '---'
-    if ((variation < 50.0) && ((sysFilteredBPM > 20.0) && (sysFilteredBPM < 320.0))) {
+    if ((variation.abs() < 50.0) && ((sysFilteredBPM > 20.0) && (sysFilteredBPM < 320.0))) {
       bpmString.value = sysFilteredBPM.toStringAsFixed(1);
     } else {
       bpmString.value = '---';
     }
     indexString.value = 'beat '+ (this.index+1).toString();
-
+    variationToColor();
   }
 
   // restart by setting index to 0

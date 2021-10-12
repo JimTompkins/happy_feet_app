@@ -486,7 +486,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Obx(()=> Text(groove.bpmString.value,
-                style: TextStyle(color: Colors.white, fontSize: 40))),
+                style: TextStyle(color: groove.bpmColor, fontSize: 40))),
             Obx(()=> Text(groove.indexString.value,
                 style: TextStyle(color: Colors.white, fontSize: 40))),
           ],
@@ -790,7 +790,7 @@ class _GroovePageState extends State<GroovePage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Obx(()=> Text(groove.bpmString.value,
-            style: TextStyle(color: Colors.white, fontSize: 40))),
+            style: TextStyle(color: groove.bpmColor, fontSize: 40))),
         Obx(()=> Text(groove.indexString.value,
             style: TextStyle(color: Colors.white, fontSize: 40))),
       ],
@@ -1035,7 +1035,7 @@ class _GroovePageState extends State<GroovePage> {
            mainAxisAlignment: MainAxisAlignment.spaceBetween,
            children: <Widget>[
              Obx(()=> Text(groove.bpmString.value,
-                 style: TextStyle(color: Colors.white, fontSize: 40))),
+                 style: TextStyle(color: groove.bpmColor, fontSize: 40))),
              Obx(()=> Text(groove.indexString.value,
                  style: TextStyle(color: Colors.white, fontSize: 40))),
            ],
