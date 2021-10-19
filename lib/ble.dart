@@ -367,6 +367,7 @@ class BluetoothBLEService {
   Future<void> enableBeat() async {
     print("HF: enable processing notifications on char4...");
     processBeats();
+    await Future.delayed(Duration(milliseconds: 1000));
     if (_char6 == null) {
       print('HF: enableBeat: error: null characteristic');
       // error
