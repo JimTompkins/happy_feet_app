@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:get/get.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+//import 'package:flutter_blue/flutter_blue.dart';
 
 import 'groove.dart';
 
@@ -79,7 +80,7 @@ class BluetoothBLEService {
     isConnected(false);
     _ble.logLevel = LogLevel.verbose;  // change to none for release version
     _ble.statusStream.listen((status) {
-      switch (_ble.status) {
+      switch (status) {
         case BleStatus.unknown:
           print('HF: BLE status unknown');
           isReady = false;
@@ -324,7 +325,7 @@ class BluetoothBLEService {
   // disconnect from HappyFeet
   Future<void> disconnectFromDevice() async {
     isConnected(false);
-    stopProcessingBeats();
+ //   setDisconnectFlag();
     try {
       print('HF: disconnecting from device');
       if (_connection != null) {
@@ -336,6 +337,20 @@ class BluetoothBLEService {
     }
   }
 
+
+  Future<void> setDisconnectFlag() async {
+    stopProcessingBeats();
+    if (_char6 == null) {
+      print('HF: setDisconnectFlag: error: null characteristic');
+      // error
+    } else {
+      print('HF: set disconnect flag');
+      await _ble.writeCharacteristicWithResponse(
+          _char6, value: [0x40]);
+    }
+  }
+
+  // clear bit 0 of char6, the beat enable flag
   Future<void> disableBeat() async {
     stopProcessingBeats();
     if (_char6 == null) {
@@ -348,6 +363,7 @@ class BluetoothBLEService {
     }
   }
 
+  // set bit 0 of char6, the beat enable flag
   Future<void> enableBeat() async {
     print("HF: enable processing notifications on char4...");
     processBeats();
@@ -361,6 +377,7 @@ class BluetoothBLEService {
     }
   }
 
+  // set bit 7 of char6, the beat enable flag
   Future<void> enableTestMode() async {
     if (_char6 == null) {
       print('HF: enableTestMode: error: null characteristic');

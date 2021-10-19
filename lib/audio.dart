@@ -70,7 +70,7 @@ class HfAudio {
       // load the sound sample files
       rootBundle.load('assets/sounds/bass_drum_fade.ogg').then((ogg0) {
         fop.load(
-            src: ogg0, name: 'bass_drum_fade.ogg', index: 0, forceLoad: true, replace: false);
+            src: ogg0, name: 'bass_drum_fade.ogg' , index: 0, forceLoad: true, replace: false);
         print('HF: finished loading ogg file 0');
         loadCount++;
       });

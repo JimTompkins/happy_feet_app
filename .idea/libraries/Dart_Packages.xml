@@ -79,6 +79,13 @@
             </list>
           </value>
         </entry>
+        <entry key="convert">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/convert-3.0.1/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="crypto">
           <value>
             <list>
@@ -125,6 +132,13 @@
           <value>
             <list>
               <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/packages/flutter/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_blue">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/git/flutter_blue-f6bf99be778bdbeac9a41fbb0eb36597325109ac/lib" />
             </list>
           </value>
         </entry>
@@ -443,6 +457,13 @@
             </list>
           </value>
         </entry>
+        <entry key="synchronized">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/synchronized-3.0.0/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="term_glyph">
           <value>
             <list>
@@ -565,6 +586,7 @@
       </option>
     </properties>
     <CLASSES>
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/git/flutter_blue-f6bf99be778bdbeac9a41fbb0eb36597325109ac/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/archive-3.1.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/args-2.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.8.2/lib" />
@@ -576,6 +598,7 @@
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/circular_buffer-0.9.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/clock-1.1.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/collection-1.15.0/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/convert-3.0.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/crypto-3.0.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0/lib" />
@@ -624,6 +647,7 @@
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.10.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.1.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.1.0/lib" />
+      <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/synchronized-3.0.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/test_api-0.4.3/lib" />
       <root url="file://$PROJECT_DIR$/../../../src/flutter_windows_2.0.1-stable/flutter/.pub-cache/hosted/pub.dartlang.org/tonic-0.2.3/lib" />

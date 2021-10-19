@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'ble.dart';
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart';   // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -75,6 +76,11 @@ class MyApp extends StatelessWidget {
 
 enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
 
+// flag used to enable a test mode where the play button is used to play sounds
+// rather than BLE notifies.  This is used to separate the testing of the
+// audio from the BLE interface.
+const bool audioTestMode = false;
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -93,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int index1 = 0;
   String note2 = 'none';
   int index2 = -1;
-  int sequenceCount = 0;
+  int _testModeData = 0x00;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
   MyBool _playState = Get.put(MyBool(false));
@@ -118,11 +124,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
      groove.initSingle(note1);
 
-     // request needed permissions
-     _checkPermission();
+     if (!audioTestMode) {
+       // request needed permissions
+       _checkPermission();
 
-     // initialize BLE
-    _bluetoothBLEService.init();
+       // initialize BLE
+       _bluetoothBLEService.init();
+     }
 
     super.initState();
   }
@@ -159,19 +167,27 @@ class _MyHomePageState extends State<MyHomePage> {
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: (){
-            if (_playState.x) {
-              // disable beats
-              _bluetoothBLEService.disableBeat();
-              Get.snackbar('Status'.tr, 'beats disabled'.tr, snackPosition: SnackPosition.BOTTOM);
+            if (audioTestMode) {
+              groove.play(_testModeData);
+              _testModeData ^= 0x40;  // toggle bit 6, the sequence bit
             } else {
-              if (_bluetoothBLEService.isBleConnected()) {
-                // enable beats
-                groove.reset();
-                _bluetoothBLEService.enableBeat();
-//                       _bluetoothBLEService.enableTestMode();
-                Get.snackbar('Status'.tr, 'beats enabled'.tr, snackPosition: SnackPosition.BOTTOM);
+              if (_playState.x) {
+                // disable beats
+                _bluetoothBLEService.disableBeat();
+                Get.snackbar('Status'.tr, 'beats disabled'.tr,
+                    snackPosition: SnackPosition.BOTTOM);
               } else {
-                Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr, snackPosition: SnackPosition.BOTTOM);
+                if (_bluetoothBLEService.isBleConnected()) {
+                  // enable beats
+                  groove.reset();
+                  _bluetoothBLEService.enableBeat();
+//                       _bluetoothBLEService.enableTestMode();
+                  Get.snackbar('Status'.tr, 'beats enabled'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                } else {
+                  Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                }
               }
             }
             setState((){
@@ -515,6 +531,7 @@ class _GroovePageState extends State<GroovePage> {
   int _numberOfMeasures = groove.numMeasures;
   int _totalBeats = groove.bpm * groove.numMeasures;
   int _voices = groove.voices;
+  int _testModeData = 0x00;
   bool _interpolate = groove.interpolate;
   var dropdownValue = groove.getInitials();
   static BluetoothBLEService _bluetoothBLEService = Get.find();
@@ -579,26 +596,34 @@ class _GroovePageState extends State<GroovePage> {
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: (){
-            if (_playState.x) {
-              // disable beats
-              _bluetoothBLEService.disableBeat();
-              Get.snackbar('Status'.tr, 'beats disabled'.tr, snackPosition: SnackPosition.BOTTOM);
-            } else {
-              if (_bluetoothBLEService.isBleConnected()) {
-                // enable beats
-                groove.reset();
-                _bluetoothBLEService.enableBeat();
+             if (audioTestMode) {
+               groove.play(_testModeData);
+               _testModeData ^= 0x40;  // toggle bit 6, the sequence bit
+             } else {
+               if (_playState.x) {
+                 // disable beats
+                 _bluetoothBLEService.disableBeat();
+                 Get.snackbar('Status'.tr, 'beats disabled'.tr,
+                     snackPosition: SnackPosition.BOTTOM);
+               } else {
+                 if (_bluetoothBLEService.isBleConnected()) {
+                   // enable beats
+                   groove.reset();
+                   _bluetoothBLEService.enableBeat();
 //                       _bluetoothBLEService.enableTestMode();
-                Get.snackbar('Status'.tr, 'beats enabled'.tr, snackPosition: SnackPosition.BOTTOM);
-              } else {
-                Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr, snackPosition: SnackPosition.BOTTOM);
-              }
-            }
-            setState((){
-              if (_bluetoothBLEService.isBleConnected()) {
-                _playState.x = !_playState.x;
-              }
-            });
+                   Get.snackbar('Status'.tr, 'beats enabled'.tr,
+                       snackPosition: SnackPosition.BOTTOM);
+                 } else {
+                   Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                       snackPosition: SnackPosition.BOTTOM);
+                 }
+               }
+               setState(() {
+                 if (_bluetoothBLEService.isBleConnected()) {
+                   _playState.x = !_playState.x;
+                 }
+               });
+             }
           },   //onPressed
           tooltip: 'Enable beats',
           child: _playState.x?
@@ -818,6 +843,7 @@ class _GroovePageState extends State<GroovePage> {
    int _beatsPerMeasure = groove.bpm;
    int _numberOfMeasures = groove.numMeasures;
    int _totalBeats = groove.bpm * groove.numMeasures;
+   int _testModeData = 0x00;
    String _key = groove.key;
    List<String> dropdownValue = groove.getInitials();
    static BluetoothBLEService _bluetoothBLEService = Get.find();
@@ -852,25 +878,33 @@ class _GroovePageState extends State<GroovePage> {
          foregroundColor: Theme.of(context).colorScheme.secondary,
          elevation: 25,
          onPressed: (){
-           if (_playState.x) {
-             // disable beats
-             _bluetoothBLEService.disableBeat();
-             Get.snackbar('Status'.tr, 'beats disabled'.tr, snackPosition: SnackPosition.BOTTOM);
-           } else {
-             if (_bluetoothBLEService.isBleConnected()) {
-               // enable beats
-               groove.reset();
-               _bluetoothBLEService.enableBeat();
-               Get.snackbar('Status'.tr, 'beats enabled'.tr, snackPosition: SnackPosition.BOTTOM);
+           if (audioTestMode) {
+             groove.play(_testModeData);
+             _testModeData ^= 0x40;  // toggle bit 6, the sequence bit
              } else {
-               Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr, snackPosition: SnackPosition.BOTTOM);
+             if (_playState.x) {
+               // disable beats
+               _bluetoothBLEService.disableBeat();
+               Get.snackbar('Status'.tr, 'beats disabled'.tr,
+                   snackPosition: SnackPosition.BOTTOM);
+             } else {
+               if (_bluetoothBLEService.isBleConnected()) {
+                 // enable beats
+                 groove.reset();
+                 _bluetoothBLEService.enableBeat();
+                 Get.snackbar('Status'.tr, 'beats enabled'.tr,
+                     snackPosition: SnackPosition.BOTTOM);
+               } else {
+                 Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                     snackPosition: SnackPosition.BOTTOM);
+               }
              }
-           }
-           setState((){
-             if (_bluetoothBLEService.isBleConnected()) {
-               _playState.x = !_playState.x;
-             }
-           });
+             setState(() {
+               if (_bluetoothBLEService.isBleConnected()) {
+                 _playState.x = !_playState.x;
+               }
+             });
+           }  // else
          },   //onPressed
          tooltip: 'Enable beats',
          child: _playState.x?
