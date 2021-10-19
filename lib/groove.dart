@@ -4,6 +4,7 @@ import 'bass.dart';
 import 'package:flutter/material.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
+import 'dart:io' show Platform;
 
 Note note = new Note(0, "Bass drum");
 Groove groove = new Groove.empty(1,1,GrooveType.percussion);
@@ -348,12 +349,23 @@ class Groove {
 
       this.notes[index].oggIndex = 6;  // the bass sample
 
-      // create the oggNote by adding the following:
-      //   the MIDI code for E1
-      //   the key (starting from E)
-      //   the roman numeral offset from the tonic
-      // and subtracting the MIDI code for the sample file
-      this.notes[index].oggNote = E1midi + keyIndex + offset - A1midi;
+      if (Platform.isAndroid) {
+        // create the oggNote by adding the following:
+        //   the MIDI code for E1
+        //   the key (starting from E)
+        //   the roman numeral offset from the tonic
+        // and subtracting the MIDI code for the sample file
+        this.notes[index].oggNote = E1midi + keyIndex + offset - A1midi;
+      } else if (Platform.isIOS) {
+        // create the oggNote by adding the following:
+        //   the key (starting from E)
+        //   the roman numeral offset from the tonic
+        //   the starting mp3 index in mp3Map in audio.dart
+        int _temp = keyIndex + offset + E1mp3;
+        assert(_temp < E1mp3);
+        assert(_temp > (E1mp3 + 23));
+        this.notes[index].oggNote = _temp;
+      }
     }
   }
 

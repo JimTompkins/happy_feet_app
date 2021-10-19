@@ -35,6 +35,30 @@ var mp3Map = <int, String>{
   8:'sidestick.mp3',
   9:'shaker.mp3',
   10:'woodblock.mp3',
+  11:'00.mp3',
+  12:'01.mp3',
+  13:'02.mp3',
+  14:'03.mp3',
+  15:'04.mp3',
+  16:'05.mp3',
+  17:'06.mp3',
+  18:'07.mp3',
+  19:'08.mp3',
+  20:'09.mp3',
+  21:'10.mp3',
+  22:'11.mp3',
+  23:'12.mp3',
+  24:'13.mp3',
+  25:'14.mp3',
+  26:'15.mp3',
+  27:'16.mp3',
+  28:'17.mp3',
+  29:'18.mp3',
+  30:'19.mp3',
+  31:'20.mp3',
+  32:'21.mp3',
+  33:'22.mp3',
+  34:'23.mp3',
 };
 
 // Mapping from note name to single character reference.  Note
@@ -105,9 +129,6 @@ class HfAudio {
             name: 'Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg',
             index: 6,
             forceLoad: true, replace: false);
-//      fop.load(src: ogg6, name: 'Bass74MapleJazzA1_1sTrim.ogg', index: 6, forceLoad: true);
-//      fop.load(src: ogg6, name: 'Yamaha-TG-77-Acoustic-Bass-C4.ogg.ogg', index: 6, forceLoad: true);
-//      fop.load(src: ogg6, name: 'Yamaha-TG55-Jazz-Man-C2.ogg.ogg', index: 6, forceLoad: true);
         print('HF: finished loading ogg file 6');
         loadCount++;
       });

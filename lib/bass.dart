@@ -62,3 +62,5 @@ const int E2midi = E1midi + 12;
 const int A1midi = 33;
 const int C2midi = 48;
 const int C4midi = 72;
+
+const int E1mp3 = 11;  // the starting index for bass note mp3 files in mp3Map in audio.dart
