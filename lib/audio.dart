@@ -86,7 +86,8 @@ var initialMap = <String, String>{
 class HfAudio {
   final fop = FlutterOggPiano();
 //  final AudioCache ac = new AudioCache(prefix: 'assets/sounds/');
-  final Soundpool pool = Soundpool(streamType: StreamType.music);
+  Soundpool pool = Soundpool.fromOptions(
+      options: SoundpoolOptions(streamType: StreamType.music));
 
   void init() {
     if (Platform.isAndroid) {
@@ -99,89 +100,79 @@ class HfAudio {
 
   // initialize iOS audio engine using soundpool for percussion sounds
   void initIOSSoundpoolPercussion() async {
-    print('HF: loading percussion mp3files into soundpool');
+    //   print('HF: loading percussion mp3files into soundpool');
     String _path = "assets/sounds/";
     String _filename;
 
     int _len = soundIdMap.length;
-    print('HF: initIOSSoundpoolPercussion : soundIdMap lengh = $_len.toString()');
+//    print('HF: initIOSSoundpoolPercussion : soundIdMap length = $_len');
 
     // release previously loaded sounds
     pool.release();
     soundIdMap.clear();
 
-    _filename = "bass_drum_fade.mp3";
-    rootBundle.load(_path + _filename).then((_asset0) {
-      pool.load(_asset0).then((_soundId0) {
-        soundIdMap[0] = _soundId0;
-      });
-    });
+    _filename = _path + "bass_drum_fade.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset0 = await rootBundle.load(_filename);
+    int id0 = await pool.load(asset0);
+    soundIdMap[0] = id0;
 
-    _filename = "kick_drum.mp3";
-    rootBundle.load(_path + _filename).then((_asset1) {
-      pool.load(_asset1).then((_soundId1) {
-        soundIdMap[1] = _soundId1;
-      });
-    });
+    _filename = _path + "kick_drum.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset1 = await rootBundle.load(_filename);
+    int id1 = await pool.load(asset1);
+    soundIdMap[1] = id1;
 
-    _filename = "snare_drum.mp3";
-    rootBundle.load(_path + _filename).then((_asset2) {
-      pool.load(_asset2).then((_soundId2) {
-        soundIdMap[2] = _soundId2;
-      });
-    });
+    _filename = _path + "snare_drum.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset2 = await rootBundle.load(_filename);
+    int id2 = await pool.load(asset2);
+    soundIdMap[2] = id2;
 
-    _filename = "high_hat.mp3";
-    rootBundle.load(_path + _filename).then((_asset3) {
-      pool.load(_asset3).then((_soundId3) {
-        soundIdMap[3] = _soundId3;
-      });
-    });
+    _filename = _path + "high_hat.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset3 = await rootBundle.load(_filename);
+    int id3 = await pool.load(asset3);
+    soundIdMap[3] = id3;
 
-    _filename = "cowbell.mp3";
-    rootBundle.load(_path + _filename).then((_asset4) {
-      pool.load(_asset4).then((_soundId4) {
-        soundIdMap[4] = _soundId4;
-      });
-    });
+    _filename = _path + "cowbell.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset4 = await rootBundle.load(_filename);
+    int id4 = await pool.load(asset4);
+    soundIdMap[4] = id4;
 
-    _filename = "tambourine.mp3";
-    rootBundle.load(_path + _filename).then((_asset5) {
-      pool.load(_asset5).then((_soundId5) {
-        soundIdMap[5] = _soundId5;
-      });
-    });
+    _filename = _path + "tambourine.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset5 = await rootBundle.load(_filename);
+    int id5 = await pool.load(asset5);
+    soundIdMap[5] = id5;
 
-    _filename = "fingersnap.mp3";
-    rootBundle.load(_path + _filename).then((_asset6) {
-      pool.load(_asset6).then((_soundId6) {
-        soundIdMap[7] = _soundId6;
-      });
-    });
+    _filename = _path + "fingersnap.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset7 = await rootBundle.load(_filename);
+    int id7 = await pool.load(asset7);
+    soundIdMap[7] = id7;
 
-    _filename = "sidestick.mp3";
-    rootBundle.load(_path + _filename).then((_asset7) {
-      pool.load(_asset7).then((_soundId7) {
-        soundIdMap[8] = _soundId7;
-      });
-    });
+    _filename = _path + "sidestick.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset8 = await rootBundle.load(_filename);
+    int id8 = await pool.load(asset8);
+    soundIdMap[8] = id8;
 
-    _filename = "shaker.mp3";
-    rootBundle.load(_path + _filename).then((_asset8) {
-      pool.load(_asset8).then((_soundId8) {
-        soundIdMap[9] = _soundId8;
-      });
-    });
+    _filename = _path + "shaker.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset9 = await rootBundle.load(_filename);
+    int id9 = await pool.load(asset9);
+    soundIdMap[9] = id9;
 
-    _filename = "woodblock.mp3";
-    rootBundle.load(_path + _filename).then((_asset9) {
-      pool.load(_asset9).then((_soundId9) {
-        soundIdMap[10] = _soundId9;
-      });
-    });
+    _filename = _path + "woodblock.mp3";
+//    print('HF: initIOSSoundpoolPercussion: filename = $_filename');
+    var asset10 = await rootBundle.load(_filename);
+    int id10 = await pool.load(asset10);
+    soundIdMap[10] = id10;
 
     _len = soundIdMap.length;
-    print('HF: initIOSSoundpoolPercussion : soundIdMap length = $_len.toString()');
+//    print('HF: initIOSSoundpoolPercussion : soundIdMap length = $_len');
   }
 
   // initialize iOS audio engine using soundpool for bass sounds
@@ -191,28 +182,26 @@ class HfAudio {
     String _filename;
 
     int _len = soundIdMap.length;
-    print(
-        'HF: initIOSSoundpoolBass : soundIdMap lengh = $_len.toString()');
+    print('HF: initIOSSoundpoolBass : soundIdMap lengh = $_len.toString()');
 
     // release previously loaded sounds
     pool.release();
     soundIdMap.clear();
 
-    for(int i = 0; i<23; i++) {
-      _filename = sprintf("%2d",i) + ".mp3";
-      rootBundle.load(_path + _filename).then((_asset) {
-        pool.load(_asset).then((_soundId) {
-          soundIdMap[i] = _soundId;
-        });
-      });
-      }
+    for (int i = 0; i < 23; i++) {
+      _filename = _path + sprintf("%02d", i) + ".mp3";
+      print('HF: initIOSSoundpoolBass: filename = $_filename');
+      var asset = await rootBundle.load(_filename);
+      int id = await pool.load(asset);
+      soundIdMap[i] = id;
+    }
 
     _len = soundIdMap.length;
-    print('HF: initIOSSoundpoolPercussion : soundIdMap length = $_len.toString()');
-
+    print(
+        'HF: initIOSSoundpoolPercussion : soundIdMap length = $_len.toString()');
   }
 
-    // initialize iOS audio engine using Audiocache...
+  // initialize iOS audio engine using Audiocache...
   // TODO: remove once lower latency solution is working
   /*
   void initIOSAudiocache() {
@@ -382,6 +371,7 @@ class HfAudio {
   // play a single sound from the index i sample loaded earlier, transposed
   // by n semitones
   void play(int voices, int note1, int transpose1, int note2, int transpose2) {
+    print('HF: audio.play: voices = $voices, note1 = $note1');
     if (Platform.isAndroid) {
 //    print('HF: oggPiano.play voices: $voices, note1: $note1, transpose1: $transpose1, note2:$note2, transpose2: $transpose2');
 
@@ -435,10 +425,12 @@ class HfAudio {
       }
     } else if (Platform.isIOS) {
       // inset iOS code here
+      print('HF: audio.play: iOS platform');
       if (voices == 1) {
         if (note1 != -1) {
           print('HF:   1 voice, note = $note1');
 //          ac.play(mp3Map[note1]!);
+          print('HF: audio.play: voices = 1, note1 = $note1');
           pool.play(soundIdMap[note1]!);
           return;
         }

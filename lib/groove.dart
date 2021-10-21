@@ -12,9 +12,7 @@ Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
 enum GrooveType {
   percussion,
   bass,
-  guitarNotes,
   guitarChords,
-  pianoNotes,
   pianoChords
 }
 
