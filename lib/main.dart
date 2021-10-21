@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 //import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
-//import 'ble.dart';   // flutter_reactive_ble version
-import 'ble2.dart'; // flutter_blue version
+import 'ble.dart';   // flutter_reactive_ble version
+//import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -108,15 +109,19 @@ class _MyHomePageState extends State<MyHomePage> {
       Get.put(BluetoothBLEService());
 
   Future<void> _checkPermission() async {
-    final status = await Permission.locationWhenInUse.request();
-    if (status == PermissionStatus.granted) {
-      print('HF: Permission granted');
-    } else if (status == PermissionStatus.denied) {
-      print(
-          'HF: Permission denied. Show a dialog and again ask for the permission');
-    } else if (status == PermissionStatus.permanentlyDenied) {
-      print('HF: Take the user to the settings page.');
-      await openAppSettings();
+    if (Platform.isAndroid) {
+      final status = await Permission.locationWhenInUse.request();
+      if (status == PermissionStatus.granted) {
+        print('HF: Permission granted');
+      } else if (status == PermissionStatus.denied) {
+        print(
+            'HF: Permission denied. Show a dialog and again ask for the permission');
+      } else if (status == PermissionStatus.permanentlyDenied) {
+        print('HF: Take the user to the settings page.');
+        await openAppSettings();
+      }
+    } else if (Platform.isIOS) {
+      // insert permission checks for iOS here
     }
   }
 
