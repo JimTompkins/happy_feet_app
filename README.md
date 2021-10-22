@@ -6,11 +6,16 @@ See the [Happy Feet webpage](https://happyfeet-music.com) for more details.
 
 This page gives an overview of the construction of the app.
 
-## Packages Used
+## Main Packages Used
 | Purpose  | Android package used | iOS package used |
 |----------|----------------------|------------------|
-| BLE interface | flutter_reactive_ble | flutter_blue |
-| audio player  | flutter_ogg_piano | soundpool |
+| BLE interface | flutter_reactive_ble | flutter_blue <sup>1</sup> |
+| audio player  | flutter_ogg_piano | soundpool <sup>2</sup> |
+
+### Notes
+1. flutter_reactive_ble did not work on iOS.  It would scan, connect and do writes but notifies did not work.
+2. flutter_ogg_piano did not work for iOS.  Also tried audioplayers/audiocache for iOS but the latency was too long.  Even with soundpool,
+   the latency is 70ms (on iPhone 6).
 
 ## BLE Interface
 
