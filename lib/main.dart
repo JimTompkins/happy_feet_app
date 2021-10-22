@@ -102,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String note2 = 'none';
   int index2 = -1;
   int _testModeData = 0x00;
+  bool _audioInitNeeded = false;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
   MyBool _playState = Get.put(MyBool(false));
@@ -321,9 +322,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: Theme.of(context).textTheme.headline4,
                   onChanged: (String? newValue) {
                     setState(() {
+                      print('HF: changed playmode to $newValue');
                       playModeString = newValue;
-                      // if changing back from bass mode to another other mode...
-                      if (newValue != 'Bass' && playMode == Mode.bass) {}
+                      /*
+                      // if changing from bass mode to another mode...
+                      if (newValue != 'Bass' && playMode == Mode.bass) {
+                        _audioInitNeeded = true;
+                        print(
+                            'HF: audio init needed... changing from bass mode');
+                        // or if changing to bass mode from another mode
+                      } else if (newValue == 'Bass' && playMode != Mode.bass) {
+                        _audioInitNeeded = true;
+                        print('HF: audio init needed... changing to bass mode');
+                      } else {
+                        _audioInitNeeded = false;
+                      }
+                      */
                       switch (newValue) {
                         case 'Single Note':
                           {
@@ -369,6 +383,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             playMode = Mode.unknown;
                           }
                       }
+                      /*
+                      if (_audioInitNeeded) {
+                        hfaudio.init();
+                        _audioInitNeeded = false;
+                      } */
                       String text = groove.toCSV('after changing play mode');
                       print("HF: $text");
                     });
@@ -1596,6 +1615,8 @@ class _SaveGroovePageState extends State<SaveGroovePage> {
                   Get.snackbar('Status:'.tr, 'groove saved'.tr,
                       snackPosition: SnackPosition.BOTTOM);
                   // go back to previous screen
+                  Get.back(closeOverlays: true);
+                  /*
                   switch (groove.type) {
                     case GrooveType.percussion:
                       {
@@ -1613,6 +1634,7 @@ class _SaveGroovePageState extends State<SaveGroovePage> {
                         break;
                       }
                   }
+                  */
                 }),
           ]),
         ]),
@@ -1667,6 +1689,8 @@ class _LoadGroovePageState extends State<LoadGroovePage> {
                                 'Load status'.tr, 'Loaded groove '.tr + name,
                                 snackPosition: SnackPosition.BOTTOM);
                             // go back to previous screen
+                            Get.back(closeOverlays: true);
+                            /*
                             switch (groove.type) {
                               case GrooveType.percussion:
                                 {
@@ -1684,6 +1708,7 @@ class _LoadGroovePageState extends State<LoadGroovePage> {
                                   break;
                                 }
                             }
+                            */
                           });
                     })),
           ],

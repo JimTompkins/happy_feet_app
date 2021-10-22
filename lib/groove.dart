@@ -9,12 +9,7 @@ import 'dart:io' show Platform;
 Note note = new Note(0, "Bass drum");
 Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
 
-enum GrooveType {
-  percussion,
-  bass,
-  guitarChords,
-  pianoChords
-}
+enum GrooveType { percussion, bass, guitarChords, pianoChords }
 
 class Note {
   int? oggIndex; // the index of the ogg file sample
@@ -433,11 +428,13 @@ class Groove {
       this.type = GrooveType.percussion;
       print('HF: checkType: changing type to percussion');
       this.clearNotes();
+      hfaudio.init();
     }
     if ((type == 'bass') && (this.type != GrooveType.bass)) {
       this.type = GrooveType.bass;
       print('HF: checkType: changing type to bass');
       this.clearNotes();
+      hfaudio.init();
     }
   }
 

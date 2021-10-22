@@ -51,7 +51,7 @@ dependencies:
   intl: ^0.17.0
   permission_handler: ^8.1.4+2
   synchronized: ^3.0.0
-  sprintf: ^6.0.0
+#  sprintf: ^6.0.0
 #  firebase_auth: ^3.1.2
 #  cloud_firestore: ^2.5.3
 
@@ -134,6 +134,7 @@ flutter:
 #    - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope.ogg
     - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg
 #    - assets/sounds/Bass74MapleJazzA1_1sTrim.ogg
+# bass notes from E1 (00.mp3) through E3 (23.mp3)
     - assets/sounds/00.mp3
     - assets/sounds/01.mp3
     - assets/sounds/02.mp3
