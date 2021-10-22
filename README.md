@@ -38,3 +38,8 @@ The app interfaces to Happy Feet over Bluetooth Low Energy (BLE) using a service
   of the detection of actual beats.
 - the beat detection threshold is a...
 
+## Wishlist
+- cloud storage/sharing of grooves
+- OAD: over-air-download for HappyFeet firmware updates.  HappyFeet uses the Texas Instruments CC26xx family of BLE microcontrollers which do have
+  software libraries to support OAD.  There is currently no Flutter package for TI OAD, although there are Android apps that do it. Also Nordic          Semiconductor has a Flutter package to update their micros.
+  
