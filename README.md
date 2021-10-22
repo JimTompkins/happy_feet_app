@@ -1,16 +1,24 @@
 # happy_feet_app
 
-A new Flutter project.
+This is the companion app to work with Happy Feet, the foot-mounted Bluetooth drum machine thingy!
 
-## Getting Started
+See the [Happy Feet webpage](https://happyfeet-music.com) for more details.
 
-This project is a starting point for a Flutter application.
+This page gives an overview of the construction of the app.
 
-A few resources to get you started if this is your first Flutter project:
+## Packages Used
+| Purpose  | Android package used | iOS package used |
+|----------|----------------------|------------------|
+| BLE interface | flutter_reactive_ble | flutter_blue |
+| audio player  | flutter_ogg_piano | soundpool |
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## BLE Interface
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The app interfaces to Happy Feet over Bluetooth Low Energy (BLE) using a service called HappyFeet with these characteristics:
+
+| Characteristic | Properties | Size | Usage |
+|----------------|------------|------|-------|
+| char3 | write | 1 byte | used to set beat detection threshold |
+| char4 | notify | 1 byte | send beat information: sequence number (bit 6), heartbeat flag (bit 7) |
+| char6 | read, write | 1 byte | enable beats (bit 0), enable test mode (bit 7) |
+
