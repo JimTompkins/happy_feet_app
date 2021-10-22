@@ -1,8 +1,8 @@
 # happy_feet_app
 
-This is the companion app to work with Happy Feet, the foot-mounted Bluetooth drum machine thingy!
+This is the companion app to work with HappyFeet, the foot-mounted Bluetooth drum machine thingy!
 
-See the [Happy Feet webpage](https://happyfeet-music.com) for more details.
+See the [HappyFeet webpage](https://happyfeet-music.com) for more details.
 
 This page gives an overview of the construction of the app.
 
@@ -19,7 +19,7 @@ This page gives an overview of the construction of the app.
 
 ## BLE Interface
 
-The app interfaces to Happy Feet over Bluetooth Low Energy (BLE) using a service called HappyFeet with these characteristics:
+The app interfaces to HappyFeet over Bluetooth Low Energy (BLE) using a service called HappyFeet with these characteristics:
 
 | Characteristic | Properties | Size | Usage |
 |----------------|------------|------|-------|
