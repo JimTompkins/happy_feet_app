@@ -88,16 +88,15 @@ String scaleTones(String? key) {
 
 //Map<String, List> chordMap = Map.fromIterables(chordTypes, chordNotes);
 
-// MIDI code of the note E1 (the lowest note on an electric bass)
-// The range of MIDI notes in bass mode is from E1 to the VII of D2 = 53
-const int E1midi = 40;
+// index of the note E1 (the lowest note on an electric bass)
+//const int E1index = 40;
 // MIDI code of the note E2 (the lowest note on an acoustic guitar)
 // The range of MIDI notes in guitar mode is from E2 to the VII of D3 = 51
-const int E2midi = E1midi + 12;
+//const int E2midi = E1midi + 12;
 
-const int A1midi = 33;
-const int C2midi = 48;
-const int C4midi = 72;
+//const int A1midi = 33;
+//const int C2midi = 48;
+//const int C4midi = 72;
 
 const int E1mp3 =
-    0;  // the starting index for bass note mp3 files in mp3Map in audio.dart
+    40;  // the starting index for bass note mp3 files in mp3Map in audio.dart

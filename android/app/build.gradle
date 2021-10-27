@@ -43,8 +43,10 @@ android {
             applicationId "com.happyfeetmusic.happy_feet_app"
             minSdkVersion 26
             targetSdkVersion 31
-            versionCode 15
-            versionName "0.15"
+            //versionCode 15
+            //versionName "0.15"
+            versionCode flutterVersionCode.toInteger()
+            versionName flutterVersionName
         }
 
     signingConfigs {

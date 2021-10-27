@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
-//import 'ble.dart';   // flutter_reactive_ble version
-import 'ble2.dart'; // flutter_blue version
+import 'ble.dart';   // flutter_reactive_ble version
+//import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -81,7 +81,7 @@ enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
 // flag used to enable a test mode where the play button is used to play sounds
 // rather than BLE notifies.  This is used to separate the testing of the
 // audio from the BLE interface.
-const bool audioTestMode = false;
+bool audioTestMode = false;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -102,12 +102,12 @@ class _MyHomePageState extends State<MyHomePage> {
   String note2 = 'none';
   int index2 = -1;
   int _testModeData = 0x00;
-  bool _audioInitNeeded = false;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
   MyBool _playState = Get.put(MyBool(false));
   static BluetoothBLEService _bluetoothBLEService =
       Get.put(BluetoothBLEService());
+  bool _audioInitNeeded = false;
 
   Future<void> _checkPermission() async {
     if (Platform.isAndroid) {
@@ -128,9 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   initState() {
-    hfaudio.init();
-
     groove.initSingle(note1);
+
+    hfaudio.init();
 
     if (!audioTestMode) {
       // request needed permissions
@@ -324,7 +324,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     setState(() {
                       print('HF: changed playmode to $newValue');
                       playModeString = newValue;
-                      /*
                       // if changing from bass mode to another mode...
                       if (newValue != 'Bass' && playMode == Mode.bass) {
                         _audioInitNeeded = true;
@@ -337,7 +336,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         _audioInitNeeded = false;
                       }
-                      */
+
                       switch (newValue) {
                         case 'Single Note':
                           {
@@ -383,11 +382,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             playMode = Mode.unknown;
                           }
                       }
-                      /*
                       if (_audioInitNeeded) {
                         hfaudio.init();
                         _audioInitNeeded = false;
-                      } */
+                      }
                       String text = groove.toCSV('after changing play mode');
                       print("HF: $text");
                     });
@@ -1515,7 +1513,63 @@ class _MenuPageState extends State<MenuPage> {
                 }).toList(),
               ),
               // Text
-            ])
+            ]),
+            Row(children: <Widget>[
+              Text(
+              'Audio test mode'.tr,
+                style: Theme.of(context).textTheme.caption,
+              ),
+              Switch(
+                value: audioTestMode,
+                activeColor: Colors.deepOrange[400],
+                activeTrackColor: Colors.deepOrange[200],
+                inactiveThumbColor: Colors.grey[600],
+                inactiveTrackColor: Colors.grey[400],
+                onChanged: (value) {
+                  setState(() {
+                    if (_bluetoothBLEService.isConnected() && value) {
+                      // can't turn on audio test mode if BLE is connected
+                      Get.snackbar(
+                          'Error:'.tr,
+                           'You cannot use audio test mode if connected.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      audioTestMode = value;
+                      if (audioTestMode) {
+                        print('HF: audio test mode enabled');
+                        Get.snackbar(
+                            'Status'.tr,
+                            'Audio test mode enabled.'.tr,
+                            snackPosition: SnackPosition.BOTTOM);
+                      } else {
+                        print('HF: audio test mode disabled');
+                        Get.snackbar(
+                            'Status'.tr,
+                            'Audio test mode disabled.'.tr,
+                            snackPosition: SnackPosition.BOTTOM);
+                      }
+                    }
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.help,
+                  ),
+                iconSize: 30,
+                color: Colors.blue[400],
+                onPressed: () {
+                  Get.defaultDialog(
+                    title: 'Audio test mode'.tr,
+                    middleText: "In audio test mode, tap the music note button to play the next note.".tr,
+                    textConfirm: 'OK',
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
+                  },
+                ),
+          ]),
           ]), // Column
         ]),
       ),

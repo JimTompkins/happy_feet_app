@@ -4,7 +4,7 @@ import 'package:flutter_ogg_piano/flutter_ogg_piano.dart';
 //import 'package:audioplayers/audioplayers.dart';
 import 'package:soundpool/soundpool.dart';
 import 'dart:io' show Platform;
-//import 'package:sprintf/sprintf.dart' show sprintf;
+import 'package:get/get.dart';
 
 import 'groove.dart';
 
@@ -91,6 +91,11 @@ class HfAudio {
   Soundpool pool = Soundpool.fromOptions(
       options: SoundpoolOptions(streamType: StreamType.alarm, maxStreams: 10));
 
+  // flags used to indicate if the persussion or bass sounds have been loaded.
+  bool engineInitialized = false;
+  bool percussionLoaded = false;
+  bool bassLoaded = false;
+
   void init() {
     if (Platform.isAndroid) {
       initAndroid();
@@ -100,7 +105,39 @@ class HfAudio {
     }
   }
 
-  // initialize iOS audio engine.  Call a subfunction depending on the
+  // initialize Android audio engine.  Call a subfunction depending on the
+  // current groove type.
+  void initAndroid() async {
+    // initialize the audio engine
+    if(!engineInitialized) {
+      await fop.init(mode: MODE.LOW_LATENCY);
+      engineInitialized = true;
+    }
+
+    if (groove.type == GrooveType.percussion) {
+     if (!this.percussionLoaded) {
+       Get.snackbar(
+           'Status'.tr,
+           'Loading percussion sounds.'.tr,
+           snackPosition: SnackPosition.BOTTOM);
+       initAndroidPercussion();
+       this.percussionLoaded = true;
+      }
+    } else if (groove.type == GrooveType.bass) {
+      if (!this.bassLoaded) {
+        Get.snackbar(
+            'Status'.tr,
+            'Loading bass sounds.'.tr,
+            snackPosition: SnackPosition.BOTTOM);
+        initAndroidBass();
+        this.bassLoaded = true;
+      }
+    } else {
+      initAndroidPercussion();
+    }
+  }
+
+  // initialize Android audio engine.  Call a subfunction depending on the
   // current groove type.
   void initIOSSoundpool() {
     if (groove.type == GrooveType.percussion) {
@@ -115,8 +152,6 @@ class HfAudio {
     print('HF: loading percussion mp3files into soundpool');
     String _path = "assets/sounds/";
     String _filename;
-
-    int _len = soundIdMap.length;
 
     // release previously loaded sounds
     pool.release();
@@ -172,8 +207,6 @@ class HfAudio {
     int id10 = await pool.load(asset10);
     soundIdMap[10] = id10;
 
-    _len = soundIdMap.length;
-
 //TODO: play all sounds at zero volume to remove the large latency on the first
 // play of a sound
   }
@@ -184,7 +217,6 @@ class HfAudio {
     String _path = "assets/sounds/";
     String _filename;
     int _i = 0;
-    List<int> notes = List.generate(23, (i) => i);
 
     int _len = soundIdMap.length;
     print(
@@ -381,56 +413,11 @@ class HfAudio {
 // play of a sound
   }
 
-  // initialize iOS audio engine using Audiocache...
-  // TODO: remove once lower latency solution is working
-  /*
-  void initIOSAudiocache() {
-    print('HF: loading mp3 files into audiocache...');
-    ac.loadAll([
-      'bass_drum_fade.mp3',
-      'kick_drum.mp3',
-      'snare_drum.mp3',
-      'high_hat.mp3',
-      'cowbell.mp3',
-      'tambourine.mp3',
-//          'Bass74MapleJazzA1_5sTrimEnvelope2dB',
-      'fingersnap.mp3',
-      'sidestick.mp3',
-      'shaker.mp3',
-      'woodblock.mp3',
-      '00.mp3',
-      '01.mp3',
-      '02.mp3',
-      '03.mp3',
-      '04.mp3',
-      '05.mp3',
-      '06.mp3',
-      '07.mp3',
-      '08.mp3',
-      '09.mp3',
-      '10.mp3',
-      '11.mp3',
-      '12.mp3',
-      '13.mp3',
-      '14.mp3',
-      '15.mp3',
-      '16.mp3',
-      '17.mp3',
-      '18.mp3',
-      '19.mp3',
-      '20.mp3',
-      '21.mp3',
-      '22.mp3',
-      '23.mp3',
-    ]);
-    print('HF:   ...done loading mp3 files');
-  }
-*/
 
-  void initAndroid() {
-    // initialize the audio engine
-    fop.init(mode: MODE.LOW_LATENCY);
+  void initAndroidPercussion() async {
     int loadCount = 0;
+
+    print('HF: initAndroidPercussion...');
 
     // load the sound sample files
     rootBundle.load('assets/sounds/bass_drum_fade.ogg').then((ogg0) {
@@ -493,6 +480,8 @@ class HfAudio {
       print('HF: finished loading ogg file 5');
       loadCount++;
     });
+    /*  this is the previous method of playing bass sounds: with
+        one ogg file and transposing...
     rootBundle
         .load('assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg')
         .then((ogg6) {
@@ -504,7 +493,7 @@ class HfAudio {
           replace: false);
       print('HF: finished loading ogg file 6');
       loadCount++;
-    });
+    });  */
     rootBundle.load('assets/sounds/fingersnap.ogg').then((ogg7) {
       fop.load(
           src: ogg7,
@@ -545,7 +534,247 @@ class HfAudio {
       print('HF: finished loading ogg file 10');
       loadCount++;
     });
-    print('HF: loadCount = $loadCount');
+    print('HF: initAndroidPercussion: loadCount = $loadCount');
+  }
+
+  void initAndroidBass() async {
+     int loadCount = 0;
+
+    print('HF: initAndroidBass...');
+
+    // load the sound sample files
+    rootBundle.load('assets/sounds/00.ogg').then((ogg40) {
+      fop.load(
+          src: ogg40,
+          name: '00.ogg',
+          index: 40,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 0');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/01.ogg').then((ogg41) {
+      fop.load(
+          src: ogg41,
+          name: '01.ogg',
+          index: 41,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 1');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/02.ogg').then((ogg42) {
+      fop.load(
+          src: ogg42,
+          name: '02.ogg',
+          index: 42,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 2');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/03.ogg').then((ogg43) {
+      fop.load(
+          src: ogg43,
+          name: '03.ogg',
+          index: 43,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 3');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/04.ogg').then((ogg44) {
+      fop.load(
+          src: ogg44,
+          name: '04.ogg',
+          index: 44,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 4');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/05.ogg').then((ogg45) {
+      fop.load(
+          src: ogg45,
+          name: '05.ogg',
+          index: 45,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 5');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/06.ogg').then((ogg46) {
+      fop.load(
+          src: ogg46,
+          name: '06.ogg',
+          index: 46,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 6');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/07.ogg').then((ogg47) {
+      fop.load(
+          src: ogg47,
+          name: '07.ogg',
+          index: 47,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 7');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/08.ogg').then((ogg48) {
+      fop.load(
+          src: ogg48,
+          name: '08.ogg',
+          index: 48,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 8');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/09.ogg').then((ogg49) {
+      fop.load(
+          src: ogg49,
+          name: '09.ogg',
+          index: 49,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 9');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/10.ogg').then((ogg50) {
+      fop.load(
+          src: ogg50,
+          name: 'ogg10.ogg',
+          index: 50,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 10');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/11.ogg').then((ogg51) {
+      fop.load(
+          src: ogg51,
+          name: '11.ogg',
+          index: 51,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 11');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/12.ogg').then((ogg52) {
+      fop.load(
+          src: ogg52,
+          name: '12.ogg',
+          index: 52,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 12');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/13.ogg').then((ogg53) {
+      fop.load(
+          src: ogg53,
+          name: '13.ogg',
+          index: 53,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 13');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/14.ogg').then((ogg54) {
+      fop.load(
+          src: ogg54,
+          name: '14.ogg',
+          index: 54,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 14');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/15.ogg').then((ogg55) {
+      fop.load(
+          src: ogg55,
+          name: '15.ogg',
+          index: 55,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 15');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/16.ogg').then((ogg56) {
+      fop.load(
+          src: ogg56,
+          name: '16.ogg',
+          index: 56,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 16');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/17.ogg').then((ogg57) {
+      fop.load(
+          src: ogg57,
+          name: '17.ogg',
+          index: 57,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 17');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/18.ogg').then((ogg58) {
+      fop.load(
+          src: ogg58,
+          name: '18.ogg',
+          index: 58,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 18');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/19.ogg').then((ogg59) {
+      fop.load(
+          src: ogg59,
+          name: '19.ogg',
+          index: 59,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 19');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/20.ogg').then((ogg60) {
+      fop.load(
+          src: ogg60,
+          name: '20.ogg',
+          index: 60,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 20');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/21.ogg').then((ogg61) {
+      fop.load(
+          src: ogg61,
+          name: '21.ogg',
+          index: 61,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 21');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/22.ogg').then((ogg62) {
+      fop.load(
+          src: ogg62,
+          name: '22.ogg',
+          index: 62,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 22');
+      loadCount++;
+    });
+
+    print('HF: initAndroidBass: loadCount = $loadCount');
   }
 
   // play a single sound from the index i sample loaded earlier, transposed

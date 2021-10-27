@@ -369,13 +369,19 @@ class Groove {
       print('HF: addBassNote: offset = $offset');
 
       if (Platform.isAndroid) {
-        this.notes[index].oggIndex = 6;
+        //this.notes[index].oggIndex = 6;
+        this.notes[index].oggIndex = E1mp3 + keyIndex + offset;
+
         // create the oggNote by adding the following:
         //   the MIDI code for E1
         //   the key (starting from E)
         //   the roman numeral offset from the tonic
         // and subtracting the MIDI code for the sample file
-        this.notes[index].oggNote = E1midi + keyIndex + offset - A1midi;
+        //this.notes[index].oggNote = E1midi + keyIndex + offset - A1midi;
+
+        // in the current scheme, there is an individual ogg file for each bass
+        // note, so no transposing is needed.
+        this.notes[index].oggNote = 0;
       } else if (Platform.isIOS) {
         // create the oggNote by adding the following:
         //   the key (starting from E)
