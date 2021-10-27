@@ -7,8 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -1516,7 +1516,7 @@ class _MenuPageState extends State<MenuPage> {
             ]),
             Row(children: <Widget>[
               Text(
-              'Audio test mode'.tr,
+                'Audio test mode'.tr,
                 style: Theme.of(context).textTheme.caption,
               ),
               Switch(
@@ -1529,23 +1529,19 @@ class _MenuPageState extends State<MenuPage> {
                   setState(() {
                     if (_bluetoothBLEService.isConnected() && value) {
                       // can't turn on audio test mode if BLE is connected
-                      Get.snackbar(
-                          'Error:'.tr,
-                           'You cannot use audio test mode if connected.'.tr,
+                      Get.snackbar('Error:'.tr,
+                          'You cannot use audio test mode if connected.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
                       audioTestMode = value;
                       if (audioTestMode) {
                         print('HF: audio test mode enabled');
-                        Get.snackbar(
-                            'Status'.tr,
-                            'Audio test mode enabled.'.tr,
+                        Get.snackbar('Status'.tr, 'Audio test mode enabled.'.tr,
                             snackPosition: SnackPosition.BOTTOM);
                       } else {
                         print('HF: audio test mode disabled');
                         Get.snackbar(
-                            'Status'.tr,
-                            'Audio test mode disabled.'.tr,
+                            'Status'.tr, 'Audio test mode disabled.'.tr,
                             snackPosition: SnackPosition.BOTTOM);
                       }
                     }
@@ -1555,21 +1551,23 @@ class _MenuPageState extends State<MenuPage> {
               IconButton(
                 icon: Icon(
                   Icons.help,
-                  ),
+                ),
                 iconSize: 30,
                 color: Colors.blue[400],
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Audio test mode'.tr,
-                    middleText: "In audio test mode, tap the music note button to play the next note.".tr,
+                    middleText:
+                        "In audio test mode, tap the music note button to play the next note."
+                            .tr,
                     textConfirm: 'OK',
                     onConfirm: () {
                       Get.back();
                     },
                   );
-                  },
-                ),
-          ]),
+                },
+              ),
+            ]),
           ]), // Column
         ]),
       ),

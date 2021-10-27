@@ -370,7 +370,7 @@ class Groove {
 
       if (Platform.isAndroid) {
         //this.notes[index].oggIndex = 6;
-        this.notes[index].oggIndex = E1mp3 + keyIndex + offset;
+        this.notes[index].oggIndex = E1ogg + keyIndex + offset;
 
         // create the oggNote by adding the following:
         //   the MIDI code for E1
@@ -386,7 +386,7 @@ class Groove {
         // create the oggNote by adding the following:
         //   the key (starting from E)
         //   the roman numeral offset from the tonic
-        //   the starting mp3 index in mp3Map in audio.dart
+        //   the starting mp3 index in soundIdMap in audio.dart
         int _temp = keyIndex + offset + E1mp3;
         assert(_temp < E1mp3);
         assert(_temp > (E1mp3 + 23));

@@ -99,4 +99,7 @@ String scaleTones(String? key) {
 //const int C4midi = 72;
 
 const int E1mp3 =
-    40;  // the starting index for bass note mp3 files in mp3Map in audio.dart
+    40; // the starting index for bass note mp3 files in soundIdMap in audio.dart
+
+const int E1ogg =
+    40;  // the starting index for bass note .ogg files in audio.dart
