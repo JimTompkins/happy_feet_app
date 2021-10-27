@@ -25,7 +25,7 @@ The app interfaces to HappyFeet over Bluetooth Low Energy (BLE) using a service 
 |----------------|------------|------|-------|
 | char3 | write | 1 byte | used to set beat detection threshold |
 | char4 | notify | 1 byte | send beat information: sequence number (bit 6), heartbeat flag (bit 7) |
-| char6 | read, write | 1 byte | enable beats (bit 0), enable test mode (bit 7) |
+| char6 | read, write | 1 byte | enable beats (bit 0), disconnect (bit 6), enable test mode (bit 7) |
 
 ### Notes
 - the sequence number is a bit that toggles between 0 and 1 on each notify sent.  With this method, the app can tell if any notifies have been lost, 
@@ -34,7 +34,8 @@ The app interfaces to HappyFeet over Bluetooth Low Energy (BLE) using a service 
 - the heartbeat flag indicates that this notify is a regular heartbeat used to keep the BLE connection alive.  Heartbeats are sent every 5s
   if no beats are happening.
 - the enable beats flag turns on (1) and off (0) the sending of notifies.
-- the enable test mode flag turns on (1) and off (0) a test mode.  When test mode is enables, Happy Feet will send a notify every 500ms regardless
+- the disconnect bit causes a BLE disconnect when set to 1.  This is currently not used since it would not re-connect after disconnecting using this method.
+- the enable test mode flag turns on (1) and off (0) a test mode.  When test mode is enabled, Happy Feet will send a notify every 500ms regardless
   of the detection of actual beats.
 - the beat detection threshold is a...
 
