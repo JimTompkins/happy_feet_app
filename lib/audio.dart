@@ -176,7 +176,7 @@ class HfAudio {
     int id0 = await pool.load(asset0);
     soundIdMap[0] = id0;
 
-    _filename = _path + "kick_drum.mp3";
+    _filename = _path + "kick_drum2.mp3";
     var asset1 = await rootBundle.load(_filename);
     int id1 = await pool.load(asset1);
     soundIdMap[1] = id1;
@@ -443,10 +443,10 @@ class HfAudio {
       print('HF: finished loading ogg file 0');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/kick_drum.ogg').then((ogg1) {
+    rootBundle.load('assets/sounds/kick_drum2.ogg').then((ogg1) {
       fop.load(
           src: ogg1,
-          name: 'kick_drum.ogg',
+          name: 'kick_drum2.ogg',
           index: 1,
           forceLoad: true,
           replace: false);
