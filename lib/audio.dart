@@ -30,7 +30,7 @@ var oggMap = <String, num>{
 var mp3Map = <int, String>{
   -1: 'none',
   0: 'bass_drum_fade.mp3',
-  1: 'kick_drum.mp3',
+  1: 'kick_drum2.mp3',
   2: 'snare_drum.mp3',
   3: 'high_hat.mp3',
   4: 'cowbell.mp3',
