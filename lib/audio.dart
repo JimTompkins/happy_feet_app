@@ -793,25 +793,25 @@ class HfAudio {
   // play a single sound from the index i sample loaded earlier, transposed
   // by n semitones
   void play(int voices, int note1, int transpose1, int note2, int transpose2) {
-    print('HF: audio.play: voices = $voices, note1 = $note1');
+    print('HF: audio.play: voices = $voices, note1 = $note1, note2 = $note2');
     if (Platform.isAndroid) {
 //    print('HF: oggPiano.play voices: $voices, note1: $note1, transpose1: $transpose1, note2:$note2, transpose2: $transpose2');
 
       if (voices == 1) {
         if (note1 != -1) {
-//        print('HF:   1 voice');
+          print('HF:   1 voice, note1: $note1, transpose1: $transpose1');
           fop.play(index: note1, note: transpose1, pan: 0.0);
           return;
         }
       } else if (voices == 2) {
         if (note1 == -1 && note2 != -1) {
-//          print('HF:  2 voices, 1 note, note: $note2, transpose: $transpose2');
+           print('HF:  2 voices, 1 note, note2: $note2, transpose2: $transpose2');
           // play note 2 as a single note
           fop.play(index: note2, note: transpose2, pan: 0.0);
           return;
         }
         if (note2 == -1 && note1 != -1) {
-//          print('HF:  2 voices, 1 note, note: $note1, transpose: $transpose1');
+          print('HF:  2 voices, 1 note, note1: $note1, transpose1: $transpose1');
           // play note 1 as a single note
           fop.play(index: note1, note: transpose1, pan: 0.0);
           return;
@@ -821,7 +821,7 @@ class HfAudio {
           return;
         }
         if (note1 != -1 && note2 != -1) {
-//          print('HF:  2 voices, 2 notes');
+          print('HF:  2 voices, 2 notes, note1: $note1, note2: $note2, transpose1: $transpose1, transpose2: $transpose2');
           // play both notes at the same time
           Map<int, List<Float64List>> map = Map();
           List<Float64List> sounds1 = [];
@@ -829,13 +829,15 @@ class HfAudio {
           Float64List list1 = Float64List(3);
           Float64List list2 = Float64List(3);
 
-          list1[0] = transpose1.toDouble(); // pitch
+//          list1[0] = transpose1.toDouble(); // pitch
+          list1[0] = note1.toDouble(); // pitch
           list1[1] = 0.0; // pan
           list1[2] = 0.95; // scale
           sounds1.add(list1);
           map[note1] = sounds1;
 
-          list2[0] = transpose2.toDouble(); // pitch
+//          list2[0] = transpose2.toDouble(); // pitch
+          list2[0] = note2.toDouble(); // pitch
           list2[1] = 0.0; // pan
           list2[2] = 0.95; // scale
           sounds2.add(list2);

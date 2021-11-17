@@ -11,6 +11,10 @@ Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
 
 enum GrooveType { percussion, bass, guitarChords, pianoChords }
 
+// Latin rhythm types from:
+//    https://www.midwestclinic.org/user_files_1/pdfs/clinicianmaterials/2005/victor_lopez.pdf
+enum RhythmType { bossanova, salsa, mambo, songo, chachacha, merengue, bolero, samba }
+
 class Note {
   int? oggIndex; // the index of the ogg file sample
   int?
@@ -440,6 +444,7 @@ class Groove {
       this.type = GrooveType.bass;
       print('HF: checkType: changing type to bass');
       this.clearNotes();
+      this.interpolate = false; // turn off backbeat mode when change to bass
       hfaudio.init();
     }
   }
@@ -577,7 +582,10 @@ class Groove {
 //    double beatsPerMinute = 0.0;
     var now = DateTime.now(); // get system time
     print(
-        'HF:   Time: $now, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
+        'HF:   Time: $now, Name: ${this.notes[this.index]
+            .name}, groove index: ${this.index}, ogg index: ${this.notes[this
+            .index].oggIndex.toString()}, ogg transpose: ${this.notes[this
+            .index].oggNote.toString()}');
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
@@ -600,7 +608,7 @@ class Groove {
     // first, calculate this beat interval
     Duration beatInterval = now.difference(lastBeatTime);
     var beatPeriod =
-        beatInterval.inMilliseconds.toDouble(); // convert period to ms
+    beatInterval.inMilliseconds.toDouble(); // convert period to ms
 //    mean2 = sum2 / sysTimeBuffer.length;  // calculate previous mean
 //    double instVariation = (beatPeriod - mean2) / mean2;  // calculate instantaneous variation
 //    if (instVariation < -0.4) {
@@ -644,7 +652,19 @@ class Groove {
     double sysFilteredBPM = (60000.0 / mean2);
     variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
     print(
-        'HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
+        'HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(
+            0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(
+            1)}, mean period = ${mean2.toStringAsFixed(
+            0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(
+            1)}, variation = ${variation.toStringAsFixed(1)}%');
+    // print comma separated data for later analysis in Excel
+    //    latest beat period,latest BPM,mean beat period,mean BPM,variation
+    //    ms,BPM,ms,BPM,%
+    print('HF: groove.play.csv,${beatPeriod.toStringAsFixed(
+        0)},${sysLatestBPM.toStringAsFixed(
+        1)},${mean2.toStringAsFixed(
+        0)},${sysFilteredBPM.toStringAsFixed(
+        1)},${variation.toStringAsFixed(1)}%');
     lastBeatTime = now;
 
     // interpolate mode: schedule a note to be played at a future time if these conditions are met:
@@ -673,7 +693,9 @@ class Groove {
         }
         var _interpolateNow = DateTime.now(); // get system time
         print(
-            'HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this.index}, Name1: ${this.notes[this.index].name}, Name2: ${this.notes2[this.index].name}');
+            'HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this
+                .index}, Name1: ${this.notes[this.index].name}, Name2: ${this
+                .notes2[this.index].name}');
         // increment pointer to the next note
         this.index = (this.index + 1) % (this.bpm * this.numMeasures);
       });
@@ -687,8 +709,14 @@ class Groove {
     } else {
       bpmString.value = '---';
     }
-    indexString.value = 'beat ' + (this.index + 1).toString();
-    variationToColor();
+    if (this.numMeasures == 1) {
+      indexString.value = 'beat ' + (this.index + 1).toString();
+    } else {
+      int _beat = (this.index % this.bpm) + 1;
+      int _meas = (this.index  ~/ this.bpm) + 1;
+      indexString.value = _meas.toString() + ":" + _beat.toString();
+      }
+     variationToColor();
   }
 
   // restart by setting index to 0

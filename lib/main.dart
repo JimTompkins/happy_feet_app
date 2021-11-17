@@ -7,11 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'mybool.dart';
 import 'ble.dart';   // flutter_reactive_ble version
 //import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
+import 'latin.dart';
 import 'saveAndLoad.dart';
 import 'localization.g.dart';
 
@@ -88,13 +90,6 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class MyBool {
-  bool x = false;
-
-  MyBool(bool val) {
-    x = val;
-  }
-}
 
 class _MyHomePageState extends State<MyHomePage> {
   String note1 = 'Bass drum';
@@ -153,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Get.to(() => menuPage);
           },
           child: Icon(
-            Icons.menu, // add custom icons also
+            Icons.settings, // add custom icons also
           ),
         ),
         actions: <Widget>[
@@ -377,6 +372,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             Get.to(() => bassPage);
                           }
                           break;
+                        case 'Latin':
+                          {
+                            if (playMode != Mode.groove) {
+                              groove.clearNotes();
+                            }
+                            playMode = Mode.groove;
+                            Get.to(() => latinPage);
+                            break;
+                          }
                         default:
                           {
                             playMode = Mode.unknown;
@@ -395,7 +399,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     'Alternating Notes'.tr,
                     'Dual Notes'.tr,
                     'Groove'.tr,
-                    'Bass'.tr
+                    'Bass'.tr,
+                    'Latin'.tr,
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -579,7 +584,6 @@ class _GroovePageState extends State<GroovePage> {
   bool _interpolate = groove.interpolate;
   var dropdownValue = groove.getInitials();
   static BluetoothBLEService _bluetoothBLEService = Get.find();
-//  static bool _playState = Get.find();
   MyBool _playState = Get.find();
 
   @override
@@ -1409,7 +1413,7 @@ class _MenuPageState extends State<MenuPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Happy Feet - Config Menu'.tr),
+        title: Text('Happy Feet - Settings Menu'.tr),
       ),
       body: Center(
         child: ListView(children: <Widget>[
