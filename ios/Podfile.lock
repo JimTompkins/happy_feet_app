@@ -1,4 +1,6 @@
 PODS:
+  - device_display_brightness (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_blue (0.0.1):
     - Flutter
@@ -21,6 +23,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - device_display_brightness (from `.symlinks/plugins/device_display_brightness/ios`)
   - Flutter (from `Flutter`)
   - flutter_blue (from `.symlinks/plugins/flutter_blue/ios`)
   - flutter_ogg_piano (from `.symlinks/plugins/flutter_ogg_piano/ios`)
@@ -35,6 +38,8 @@ SPEC REPOS:
     - Protobuf
 
 EXTERNAL SOURCES:
+  device_display_brightness:
+    :path: ".symlinks/plugins/device_display_brightness/ios"
   Flutter:
     :path: Flutter
   flutter_blue:
@@ -53,6 +58,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher/ios"
 
 SPEC CHECKSUMS:
+  device_display_brightness: 1510e72c567a1f6ce6ffe393dcd9afd1426034f7
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_blue: f98d52ff2bb55351112d94fe9731e53f6aea391c
   flutter_ogg_piano: 449dbef983488bf0af18f8cfee53d1f5cbb65ef9
