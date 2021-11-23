@@ -31,27 +31,27 @@ class _LatinPageState extends State<LatinPage> {
   // create a groove with the specified rhythm
   createGroove(RhythmType type) {
     int i = 0;
-    switch(type) {
+    switch (type) {
       case RhythmType.bossanova:
         Get.snackbar('Status'.tr, 'Latin rhythm: Bossa Nova'.tr,
             snackPosition: SnackPosition.BOTTOM);
-        groove.resize(8,2,2);  // 8 beats per measure, 2 measures, 2 voices
+        groove.resize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
         //measure 1, voice 1: 0-7
         //measure 1, voice 2: 8-15
         //measure 2, voice 1: 16-23
         //measure 2, voice 2: 24-31
 
         // hi-hat all all 1/8 notes on voice 1
-        for(i=0; i<8; i++) {
-          groove.addInitialNote(i, 'F');  // changed from H to F for testing
+        for (i = 0; i < 8; i++) {
+          groove.addInitialNote(i, 'F'); // changed from H to F for testing
         }
-        for(i=16; i<24; i++) {
-          groove.addInitialNote(i, 'F');  // changed from H to F for testing
+        for (i = 16; i < 24; i++) {
+          groove.addInitialNote(i, 'F'); // changed from H to F for testing
         }
 
         // use voice 2 for bass drum and woodblock (clave)
-        groove.addInitialNote(8,  'B');
-        groove.addInitialNote(9,  '-');
+        groove.addInitialNote(8, 'B');
+        groove.addInitialNote(9, '-');
         groove.addInitialNote(10, '-');
         groove.addInitialNote(11, 'W');
         groove.addInitialNote(12, 'B');
@@ -102,22 +102,22 @@ class _LatinPageState extends State<LatinPage> {
         foregroundColor: Theme.of(context).colorScheme.secondary,
         elevation: 25,
         onPressed: () {
-            if (_playState.x) {
-              // disable beats
-              _bluetoothBLEService.disableBeat();
-              Get.snackbar('Status'.tr, 'beats disabled'.tr,
+          if (_playState.x) {
+            // disable beats
+            _bluetoothBLEService.disableBeat();
+            Get.snackbar('Status'.tr, 'beats disabled'.tr,
+                snackPosition: SnackPosition.BOTTOM);
+          } else {
+            if (_bluetoothBLEService.isBleConnected()) {
+              // enable beats
+              groove.reset();
+              _bluetoothBLEService.enableBeat();
+              Get.snackbar('Status'.tr, 'beats enabled'.tr,
                   snackPosition: SnackPosition.BOTTOM);
             } else {
-              if (_bluetoothBLEService.isBleConnected()) {
-                // enable beats
-                groove.reset();
-                _bluetoothBLEService.enableBeat();
-                Get.snackbar('Status'.tr, 'beats enabled'.tr,
-                    snackPosition: SnackPosition.BOTTOM);
-              } else {
-                Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
-                    snackPosition: SnackPosition.BOTTOM);
-              }
+              Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                  snackPosition: SnackPosition.BOTTOM);
+            }
           }
           setState(() {
             if (_bluetoothBLEService.isBleConnected()) {
@@ -128,9 +128,9 @@ class _LatinPageState extends State<LatinPage> {
         tooltip: 'Enable beats'.tr,
         child: _playState.x
             ? new Icon(Icons.pause,
-            size: 50, color: Theme.of(context).primaryColor)
+                size: 50, color: Theme.of(context).primaryColor)
             : new Icon(Icons.music_note_outlined,
-            size: 50, color: Theme.of(context).primaryColor),
+                size: 50, color: Theme.of(context).primaryColor),
       ),
       body: Center(
         child: ListView(children: <Widget>[
@@ -167,9 +167,8 @@ class _LatinPageState extends State<LatinPage> {
                   });
                   _rhythmName = newValue!;
                 },
-                items: <String>[
-                  'Bossa Nova', 'Samba', 'Salsa'
-                ].map<DropdownMenuItem<String>>((String value) {
+                items: <String>['Bossa Nova', 'Samba', 'Salsa']
+                    .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),

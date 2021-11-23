@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 //import 'package:flutter/foundation.dart';
+import 'package:device_display_brightness/device_display_brightness.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,7 +91,6 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-
 class _MyHomePageState extends State<MyHomePage> {
   String note1 = 'Bass drum';
   int index1 = 0;
@@ -124,6 +124,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     groove.initSingle(note1);
+
+    // prevent from going into sleep mode
+    DeviceDisplayBrightness.keepOn(enabled: true);
 
     hfaudio.init();
 
