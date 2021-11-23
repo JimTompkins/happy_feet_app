@@ -358,6 +358,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               groove.clearNotes();
                             }
                             playMode = Mode.groove;
+                            groove.latin = false;
                             Get.to(() => groovePage);
                           }
                           break;
@@ -369,6 +370,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               groove.clearNotes();
                             }
                             playMode = Mode.bass;
+                            groove.latin = false;
                             Get.to(() => bassPage);
                           }
                           break;
@@ -378,6 +380,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               groove.clearNotes();
                             }
                             playMode = Mode.groove;
+                            groove.latin = true;
                             Get.to(() => latinPage);
                             break;
                           }

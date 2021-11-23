@@ -47,6 +47,10 @@ class Groove {
       false; // a flag to control interpolation mode aka back beat
   // in interpolate mode, every 2nd note in the groove is played at a time
   // predicted from 1/2 of the period
+  bool latin = false;  // a flag to indicate lating rhythm mode where
+     // the first 4 foot taps are used as a lead-in and then there is
+     // only a foottap on the "1" beat.  All other beats are interpolated
+     // from the last beat period and set as timers.
   int index = 0; // pointer to next note to play
   int leadInCount =
       4; // number of beats to skip at the start in interpolate mode
@@ -69,6 +73,7 @@ class Groove {
   var bpmString = '---'.obs;
   var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
+  var leadInString = '0'.obs;
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
@@ -125,7 +130,7 @@ class Groove {
     this.notes[0].oggNote = 0;
     this.notes[0].name = name;
     this.notes[0].initial = initialMap[name];
-
+    this.latin = false;
     this.reset();
   }
 
@@ -143,6 +148,7 @@ class Groove {
     this.notes[1].name = name2;
     this.notes[1].initial = initialMap[name2];
 
+    this.latin = false;
     this.reset();
   }
 
@@ -160,6 +166,7 @@ class Groove {
     this.notes2[0].name = name2;
     this.notes2[0].initial = initialMap[name2];
 
+    this.latin = false;
     this.reset();
   }
 
@@ -167,6 +174,7 @@ class Groove {
     this.index = 0;
     this.lastSequenceBit = -1;
     this.leadInCount = 4;
+    this.leadInString.value = '4';
   }
 
   // retain the bpm and numMeasures but set all notes to -
@@ -579,7 +587,6 @@ class Groove {
   void play(int data) {
     int sequenceBit;
     double mean2;
-//    double beatsPerMinute = 0.0;
     var now = DateTime.now(); // get system time
     print(
         'HF:   Time: $now, Name: ${this.notes[this.index]
@@ -603,32 +610,19 @@ class Groove {
     }
     lastSequenceBit = sequenceBit;
 
-    // check if this is a spurious beat detected on an up-stroke.  An up-stroke
-    // beat would have roughly half of the average period.
-    // first, calculate this beat interval
+    // calculate this beat interval i.e. the time between this beat and the previous
     Duration beatInterval = now.difference(lastBeatTime);
     var beatPeriod =
     beatInterval.inMilliseconds.toDouble(); // convert period to ms
-//    mean2 = sum2 / sysTimeBuffer.length;  // calculate previous mean
-//    double instVariation = (beatPeriod - mean2) / mean2;  // calculate instantaneous variation
-//    if (instVariation < -0.4) {
-//      print('HF: spurious beat detected.  It will be ignored');
-//      print('    now = $now, beatPeriod = $beatPeriod, mean2 = $mean2, instVariation = $instVariation');
-    // return without updating index, leadInCount, sysTimeBuffer, etc.
-//      return;
-//   }
 
     // play the next note in the groove in these cases:
-    // i) not in interpolate mode
+    // i) not in interpolate or latin mode, or
     // ii) in interpolate mode, and
     //     past the lead-in as indicated by leadInCount == 0
     //     index is even i.e. not a back beat
-    if (!groove.interpolate ||
+    if ((!groove.interpolate && !groove.latin) ||
         (groove.interpolate && (groove.leadInCount == 0)) &&
             (groove.index.isEven)) {
-//      var n1 = this.notes[this.index].oggIndex;
-//      var n2 = this.notes2[this.index].oggIndex;
-//      print('HF: call to hfaudio.play, n1 = $n1, n2 = $n2');
       hfaudio.play(
           this.voices,
           this.notes[this.index].oggIndex,
@@ -638,8 +632,9 @@ class Groove {
       // increment pointer to the next note
       this.index = (this.index + 1) % (this.bpm * this.numMeasures);
     } else if (groove.interpolate && (groove.leadInCount > 0)) {
-      groove.leadInCount--;
-      print('HF:  lead-in count decremented to $groove.leadInCount');
+      this.leadInCount--;
+      this.leadInString.value = this.leadInCount.toString();
+      print('HF:  lead-in count decremented to $this.leadInCount');
     }
 
     // calculate Beats Per Minute using system time
@@ -699,6 +694,56 @@ class Groove {
         // increment pointer to the next note
         this.index = (this.index + 1) % (this.bpm * this.numMeasures);
       });
+    }
+
+    // latin mode: in latin mode, there is a 4 beat lead-in and then the user
+    // only taps their foot on the 1
+    if (this.latin) {
+      // check if we're in the count-in
+      if (this.leadInCount != 0) {
+        // update the lead-in count displayed on the screen
+        leadInCount--;
+        if (leadInCount > 0) {
+          leadInString.value = (5 - leadInCount).toString();
+        } else {
+          leadInString.value = "---";
+        }
+      } else {
+        // we should be at beat one (index = 0)
+        if (this.index%this.bpm != 0) {
+          print('HF: latin: error not at beat 1');
+        }
+        // play the beat one note
+        hfaudio.play(
+            this.voices,
+            this.notes[this.index].oggIndex,
+            this.notes[this.index].oggNote,
+            this.notes2[this.index].oggIndex,
+            this.notes2[this.index].oggNote);
+        print('HF: latin: playing beat 1');
+        // increment pointer to the next note
+        this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+
+        // calculate the duration between beats assuming that the lead-in
+        // was in 1/4 notes.
+        var beatSubdivisionInMs = beatPeriod / (4/this.bpm);
+        print('HF: latin: beat subdivision = $beatSubdivisionInMs ms');
+
+        // schedule the remaining notes to be played using timers
+        for(int i = 1; i<this.bpm; i++) {
+          Timer(Duration(milliseconds: (beatSubdivisionInMs * i).toInt()), () {
+            hfaudio.play(
+                  this.voices,
+                  this.notes[this.index].oggIndex,
+                  this.notes[this.index].oggNote,
+                  this.notes2[this.index].oggIndex,
+                  this.notes2[this.index].oggNote);
+            print('HF: latin mode: playing beat $i');
+          });
+          // increment pointer to the next note
+          this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        }
+      }
     }
 
     // update the BPM and index info on the bottom app bar

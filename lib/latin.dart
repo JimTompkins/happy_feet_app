@@ -71,6 +71,14 @@ class _LatinPageState extends State<LatinPage> {
       case RhythmType.samba:
         Get.snackbar('Status'.tr, 'Latin rhythm: samba'.tr,
             snackPosition: SnackPosition.BOTTOM);
+
+        // test groove: 4 beats per measure, 1 measure, 1 voice
+        groove.resize(4,1,1);
+        groove.addInitialNote(0,  'B');
+        groove.addInitialNote(1,  'K');
+        groove.addInitialNote(2,  'B');
+        groove.addInitialNote(3,  'S');
+
         break;
 
       case RhythmType.salsa:
@@ -169,6 +177,14 @@ class _LatinPageState extends State<LatinPage> {
                 }).toList(),
               ),
               // Text
+            ]),
+            Row(children: <Widget>[
+              Text(
+                'Lead-in count: '.tr,
+                style: TextStyle(color: Colors.white, fontSize: 40),
+              ),
+              Obx(() => Text(groove.leadInString.value,
+                  style: TextStyle(color: Colors.white, fontSize: 40))),
             ]),
           ]), // Column
         ]),
