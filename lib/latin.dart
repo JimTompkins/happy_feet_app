@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'mybool.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
 
 // Latin page
@@ -33,6 +33,7 @@ class _LatinPageState extends State<LatinPage> {
     int i = 0;
     switch (type) {
       case RhythmType.bossanova:
+        print('HF: latin: bossa nova groove');
         Get.snackbar('Status'.tr, 'Latin rhythm: Bossa Nova'.tr,
             snackPosition: SnackPosition.BOTTOM);
         groove.resize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
@@ -69,15 +70,16 @@ class _LatinPageState extends State<LatinPage> {
         break;
 
       case RhythmType.samba:
+        print('HF: latin: test groove');
         Get.snackbar('Status'.tr, 'Latin rhythm: samba'.tr,
             snackPosition: SnackPosition.BOTTOM);
 
         // test groove: 4 beats per measure, 1 measure, 1 voice
-        groove.resize(4,1,1);
-        groove.addInitialNote(0,  'B');
-        groove.addInitialNote(1,  'K');
-        groove.addInitialNote(2,  'B');
-        groove.addInitialNote(3,  'S');
+        groove.resize(4, 1, 1);
+        groove.addInitialNote(0, 'B');
+        groove.addInitialNote(1, 'K');
+        groove.addInitialNote(2, 'B');
+        groove.addInitialNote(3, 'S');
 
         break;
 
@@ -136,54 +138,69 @@ class _LatinPageState extends State<LatinPage> {
         child: ListView(children: <Widget>[
           Column(children: <Widget>[
             Row(children: <Widget>[
-              Text(
-                'Rhythm'.tr,
-                style: Theme.of(context).textTheme.caption,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Rhythm'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
               ),
-              DropdownButton<String>(
-                value: _rhythmName,
-                icon: const Icon(Icons.arrow_downward),
-                iconSize: 24,
-                elevation: 24,
-                style: Theme.of(context).textTheme.headline4,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    switch (newValue) {
-                      case 'Bossa Nova':
-                        type = RhythmType.bossanova;
-                        createGroove(RhythmType.bossanova);
-                        break;
-                      case 'Samba':
-                        type = RhythmType.samba;
-                        break;
-                      case 'Salsa':
-                        type = RhythmType.salsa;
-                        break;
-                      default:
-                        print('HF: unknown latin rhythm type');
-                        break;
-                    }
-                    print("HF: latin rhythm changed to $newValue");
-                  });
-                  _rhythmName = newValue!;
-                },
-                items: <String>['Bossa Nova', 'Samba', 'Salsa']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DropdownButton<String>(
+                  value: _rhythmName,
+                  icon: const Icon(Icons.arrow_downward),
+                  iconSize: 24,
+                  elevation: 24,
+                  style: Theme.of(context).textTheme.headline4,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      switch (newValue) {
+                        case 'Bossa Nova':
+                          type = RhythmType.bossanova;
+                          createGroove(type);
+                          break;
+                        case 'Samba':
+                          type = RhythmType.samba;
+                          createGroove(type);
+                          break;
+                        case 'Salsa':
+                          type = RhythmType.salsa;
+                          createGroove(type);
+                          break;
+                        default:
+                          print('HF: unknown latin rhythm type');
+                          break;
+                      }
+                      print("HF: latin rhythm changed to $newValue");
+                    });
+                    _rhythmName = newValue!;
+                  },
+                  items: <String>['Bossa Nova', 'Samba', 'Salsa']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
               ),
               // Text
             ]),
             Row(children: <Widget>[
-              Text(
-                'Lead-in count: '.tr,
-                style: TextStyle(color: Colors.white, fontSize: 40),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Lead-in count:'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
               ),
-              Obx(() => Text(groove.leadInString.value,
-                  style: TextStyle(color: Colors.white, fontSize: 40))),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Obx(() => Text(groove.leadInString.value,
+                    style: Theme.of(context).textTheme.caption),
+                ),
+              ),
             ]),
           ]), // Column
         ]),

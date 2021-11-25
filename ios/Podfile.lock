@@ -12,7 +12,7 @@ PODS:
     - Flutter
   - package_info_plus (0.4.5):
     - Flutter
-  - path_provider (0.0.1):
+  - path_provider_ios (0.0.1):
     - Flutter
   - "permission_handler (5.1.0+2)":
     - Flutter
@@ -28,7 +28,7 @@ DEPENDENCIES:
   - flutter_blue (from `.symlinks/plugins/flutter_blue/ios`)
   - flutter_ogg_piano (from `.symlinks/plugins/flutter_ogg_piano/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
-  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - soundpool (from `.symlinks/plugins/soundpool/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
@@ -48,8 +48,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_ogg_piano/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
-  path_provider:
-    :path: ".symlinks/plugins/path_provider/ios"
+  path_provider_ios:
+    :path: ".symlinks/plugins/path_provider_ios/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
   soundpool:
@@ -63,11 +63,11 @@ SPEC CHECKSUMS:
   flutter_blue: f98d52ff2bb55351112d94fe9731e53f6aea391c
   flutter_ogg_piano: 449dbef983488bf0af18f8cfee53d1f5cbb65ef9
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
-  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   Protobuf: e9b99dd5da72f665ec503b19191f245a22188b4d
   soundpool: c7f4422ca206e77f8900ed3c4ee6a6ff5a0e38a9
-  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
+  url_launcher: b6e016d912f04be9f5bf6e8e82dc599b7ba59649
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 

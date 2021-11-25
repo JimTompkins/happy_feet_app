@@ -13,7 +13,16 @@ enum GrooveType { percussion, bass, guitarChords, pianoChords }
 
 // Latin rhythm types from:
 //    https://www.midwestclinic.org/user_files_1/pdfs/clinicianmaterials/2005/victor_lopez.pdf
-enum RhythmType { bossanova, salsa, mambo, songo, chachacha, merengue, bolero, samba }
+enum RhythmType {
+  bossanova,
+  salsa,
+  mambo,
+  songo,
+  chachacha,
+  merengue,
+  bolero,
+  samba
+}
 
 class Note {
   int? oggIndex; // the index of the ogg file sample
@@ -47,10 +56,10 @@ class Groove {
       false; // a flag to control interpolation mode aka back beat
   // in interpolate mode, every 2nd note in the groove is played at a time
   // predicted from 1/2 of the period
-  bool latin = false;  // a flag to indicate lating rhythm mode where
-     // the first 4 foot taps are used as a lead-in and then there is
-     // only a foottap on the "1" beat.  All other beats are interpolated
-     // from the last beat period and set as timers.
+  bool latin = false; // a flag to indicate lating rhythm mode where
+  // the first 4 foot taps are used as a lead-in and then there is
+  // only a foottap on the "1" beat.  All other beats are interpolated
+  // from the last beat period and set as timers.
   int index = 0; // pointer to next note to play
   int leadInCount =
       4; // number of beats to skip at the start in interpolate mode
@@ -62,9 +71,11 @@ class Groove {
       4); // circular buffer of system timestamp deltas in ms
   DateTime lastBeatTime = DateTime.now(); // get system time
   double beatsPerMinute = 0.0;
+  double sysFilteredBPM = 0.0;
   double sum = 0;
   double sum2 = 0;
   double variation = 0.0;
+  double beatSubdivisionInMs = 0.0;
   List notes = <Note>[]; // list of notes
   List notes2 = <Note>[]; // list of notes
   String key = 'E';
@@ -74,6 +85,7 @@ class Groove {
   var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
   var leadInString = '0'.obs;
+  bool firstBeat = true;
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
@@ -175,6 +187,7 @@ class Groove {
     this.lastSequenceBit = -1;
     this.leadInCount = 4;
     this.leadInString.value = '4';
+    this.firstBeat = true;
   }
 
   // retain the bpm and numMeasures but set all notes to -
@@ -583,16 +596,33 @@ class Groove {
     return;
   }
 
+// update the BPM and measure:beat info for the Bottom App Bar
+  void updateBABInfo() {
+    // update the BPM and index info on the bottom app bar
+    // if variation is high, or BPM is non-sensical i.e. < 0 or > 320, then show '---'
+    if ((variation.abs() < 50.0) &&
+        ((sysFilteredBPM > 20.0) && (sysFilteredBPM < 320.0))) {
+      bpmString.value = sysFilteredBPM.toStringAsFixed(1);
+    } else {
+      bpmString.value = '---';
+    }
+    if (this.numMeasures == 1) {
+      indexString.value = 'beat ' + (this.index + 1).toString();
+    } else {
+      int _beat = (this.index % this.bpm) + 1;
+      int _meas = (this.index ~/ this.bpm) + 1;
+      indexString.value = _meas.toString() + ":" + _beat.toString();
+    }
+    variationToColor();
+  }
+
   // play the next note in the groove
   void play(int data) {
     int sequenceBit;
     double mean2;
     var now = DateTime.now(); // get system time
     print(
-        'HF:   Time: $now, Name: ${this.notes[this.index]
-            .name}, groove index: ${this.index}, ogg index: ${this.notes[this
-            .index].oggIndex.toString()}, ogg transpose: ${this.notes[this
-            .index].oggNote.toString()}');
+        'HF:   Time: $now, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
@@ -613,7 +643,7 @@ class Groove {
     // calculate this beat interval i.e. the time between this beat and the previous
     Duration beatInterval = now.difference(lastBeatTime);
     var beatPeriod =
-    beatInterval.inMilliseconds.toDouble(); // convert period to ms
+        beatInterval.inMilliseconds.toDouble(); // convert period to ms
 
     // play the next note in the groove in these cases:
     // i) not in interpolate or latin mode, or
@@ -644,22 +674,18 @@ class Groove {
     sum2 += sysTimeBuffer.last - first2; // update the running sum
     mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
     double sysLatestBPM = (60000.0 / beatPeriod);
-    double sysFilteredBPM = (60000.0 / mean2);
+    sysFilteredBPM = (60000.0 / mean2);
+    if (this.latin && !this.firstBeat) {
+      sysFilteredBPM = sysFilteredBPM * this.bpm;
+    }
     variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
     print(
-        'HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(
-            0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(
-            1)}, mean period = ${mean2.toStringAsFixed(
-            0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(
-            1)}, variation = ${variation.toStringAsFixed(1)}%');
+        'HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
     // print comma separated data for later analysis in Excel
     //    latest beat period,latest BPM,mean beat period,mean BPM,variation
     //    ms,BPM,ms,BPM,%
-    print('HF: groove.play.csv,${beatPeriod.toStringAsFixed(
-        0)},${sysLatestBPM.toStringAsFixed(
-        1)},${mean2.toStringAsFixed(
-        0)},${sysFilteredBPM.toStringAsFixed(
-        1)},${variation.toStringAsFixed(1)}%');
+    print(
+        'HF: groove.play.csv,${beatPeriod.toStringAsFixed(0)},${sysLatestBPM.toStringAsFixed(1)},${mean2.toStringAsFixed(0)},${sysFilteredBPM.toStringAsFixed(1)},${variation.toStringAsFixed(1)}%');
     lastBeatTime = now;
 
     // interpolate mode: schedule a note to be played at a future time if these conditions are met:
@@ -688,9 +714,7 @@ class Groove {
         }
         var _interpolateNow = DateTime.now(); // get system time
         print(
-            'HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this
-                .index}, Name1: ${this.notes[this.index].name}, Name2: ${this
-                .notes2[this.index].name}');
+            'HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this.index}, Name1: ${this.notes[this.index].name}, Name2: ${this.notes2[this.index].name}');
         // increment pointer to the next note
         this.index = (this.index + 1) % (this.bpm * this.numMeasures);
       });
@@ -699,18 +723,19 @@ class Groove {
     // latin mode: in latin mode, there is a 4 beat lead-in and then the user
     // only taps their foot on the 1
     if (this.latin) {
-      // check if we're in the count-in
+      // check if we're in the count-in as indicated by leadInCount > 0.
       if (this.leadInCount != 0) {
         // update the lead-in count displayed on the screen
-        leadInCount--;
         if (leadInCount > 0) {
+          // display 4..1 as the leadInCount decrements from 4 to 1
           leadInString.value = (5 - leadInCount).toString();
         } else {
           leadInString.value = "---";
         }
+        leadInCount--;
       } else {
         // we should be at beat one (index = 0)
-        if (this.index%this.bpm != 0) {
+        if (this.index % this.bpm != 0) {
           print('HF: latin: error not at beat 1');
         }
         // play the beat one note
@@ -720,25 +745,34 @@ class Groove {
             this.notes[this.index].oggNote,
             this.notes2[this.index].oggIndex,
             this.notes2[this.index].oggNote);
-        print('HF: latin: playing beat 1');
+        String _now = DateTime.now().toString();
+        print('HF: _now latin: playing beat 1');
         // increment pointer to the next note
         this.index = (this.index + 1) % (this.bpm * this.numMeasures);
 
         // calculate the duration between beats assuming that the lead-in
-        // was in 1/4 notes.
-        var beatSubdivisionInMs = beatPeriod / (4/this.bpm);
+        // was in 1/4 notes.  If this is the first beat of a latin groove, the
+        // beat period is in 1/4 notes from the lead-in.  If this is not the first
+        // beat, then the beat period is for the entire measure.
+        if (firstBeat) {
+          beatSubdivisionInMs = beatPeriod / (4 / this.bpm);
+          firstBeat = false;
+        } else {
+          beatSubdivisionInMs = beatPeriod / this.bpm;
+        }
         print('HF: latin: beat subdivision = $beatSubdivisionInMs ms');
 
         // schedule the remaining notes to be played using timers
-        for(int i = 1; i<this.bpm; i++) {
+        for (int i = 1; i < this.bpm; i++) {
           Timer(Duration(milliseconds: (beatSubdivisionInMs * i).toInt()), () {
             hfaudio.play(
-                  this.voices,
-                  this.notes[this.index].oggIndex,
-                  this.notes[this.index].oggNote,
-                  this.notes2[this.index].oggIndex,
-                  this.notes2[this.index].oggNote);
-            print('HF: latin mode: playing beat $i');
+                this.voices,
+                this.notes[this.index].oggIndex,
+                this.notes[this.index].oggNote,
+                this.notes2[this.index].oggIndex,
+                this.notes2[this.index].oggNote);
+            _now = DateTime.now().toString();
+            print('HF: $_now latin mode: playing beat $this.index');
           });
           // increment pointer to the next note
           this.index = (this.index + 1) % (this.bpm * this.numMeasures);
@@ -746,22 +780,9 @@ class Groove {
       }
     }
 
-    // update the BPM and index info on the bottom app bar
-    // if variation is high, or BPM is non-sensical i.e. < 0 or > 320, then show '---'
-    if ((variation.abs() < 50.0) &&
-        ((sysFilteredBPM > 20.0) && (sysFilteredBPM < 320.0))) {
-      bpmString.value = sysFilteredBPM.toStringAsFixed(1);
-    } else {
-      bpmString.value = '---';
+    if (!latin) {
+      updateBABInfo();
     }
-    if (this.numMeasures == 1) {
-      indexString.value = 'beat ' + (this.index + 1).toString();
-    } else {
-      int _beat = (this.index % this.bpm) + 1;
-      int _meas = (this.index  ~/ this.bpm) + 1;
-      indexString.value = _meas.toString() + ":" + _beat.toString();
-      }
-     variationToColor();
   }
 
   // restart by setting index to 0
