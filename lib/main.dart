@@ -14,7 +14,7 @@ import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
-import 'latin.dart';
+import 'onetap.dart';
 import 'saveAndLoad.dart';
 import 'localization.g.dart';
 
@@ -361,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               groove.clearNotes();
                             }
                             playMode = Mode.groove;
-                            groove.latin = false;
+                            groove.oneTap = false;
                             Get.to(() => groovePage);
                           }
                           break;
@@ -373,18 +373,18 @@ class _MyHomePageState extends State<MyHomePage> {
                               groove.clearNotes();
                             }
                             playMode = Mode.bass;
-                            groove.latin = false;
+                            groove.oneTap = false;
                             Get.to(() => bassPage);
                           }
                           break;
-                        case 'Latin':
+                        case '1-tap':
                           {
                             if (playMode != Mode.groove) {
                               groove.clearNotes();
                             }
                             playMode = Mode.groove;
-                            groove.latin = true;
-                            Get.to(() => latinPage);
+                            groove.oneTap = true;
+                            Get.to(() => oneTapPage);
                             break;
                           }
                         default:
@@ -406,7 +406,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     'Dual Notes'.tr,
                     'Groove'.tr,
                     'Bass'.tr,
-                    'Latin'.tr,
+                    '1-tap'.tr,
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,

@@ -11,7 +11,7 @@ Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
 
 enum GrooveType { percussion, bass, guitarChords, pianoChords }
 
-// Latin rhythm types from:
+// 1-tap rhythm types from:
 //    https://www.midwestclinic.org/user_files_1/pdfs/clinicianmaterials/2005/victor_lopez.pdf
 enum RhythmType {
   bossanova,
@@ -56,7 +56,7 @@ class Groove {
       false; // a flag to control interpolation mode aka back beat
   // in interpolate mode, every 2nd note in the groove is played at a time
   // predicted from 1/2 of the period
-  bool latin = false; // a flag to indicate lating rhythm mode where
+  bool oneTap = false; // a flag to indicate 1-tap rhythm mode where
   // the first 4 foot taps are used as a lead-in and then there is
   // only a foottap on the "1" beat.  All other beats are interpolated
   // from the last beat period and set as timers.
@@ -142,7 +142,7 @@ class Groove {
     this.notes[0].oggNote = 0;
     this.notes[0].name = name;
     this.notes[0].initial = initialMap[name];
-    this.latin = false;
+    this.oneTap = false;
     this.reset();
   }
 
@@ -160,7 +160,7 @@ class Groove {
     this.notes[1].name = name2;
     this.notes[1].initial = initialMap[name2];
 
-    this.latin = false;
+    this.oneTap = false;
     this.reset();
   }
 
@@ -178,7 +178,7 @@ class Groove {
     this.notes2[0].name = name2;
     this.notes2[0].initial = initialMap[name2];
 
-    this.latin = false;
+    this.oneTap = false;
     this.reset();
   }
 
@@ -646,11 +646,11 @@ class Groove {
         beatInterval.inMilliseconds.toDouble(); // convert period to ms
 
     // play the next note in the groove in these cases:
-    // i) not in interpolate or latin mode, or
+    // i) not in interpolate or 1-tap mode, or
     // ii) in interpolate mode, and
     //     past the lead-in as indicated by leadInCount == 0
     //     index is even i.e. not a back beat
-    if ((!groove.interpolate && !groove.latin) ||
+    if ((!groove.interpolate && !groove.oneTap) ||
         (groove.interpolate && (groove.leadInCount == 0)) &&
             (groove.index.isEven)) {
       hfaudio.play(
@@ -675,7 +675,7 @@ class Groove {
     mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
     double sysLatestBPM = (60000.0 / beatPeriod);
     sysFilteredBPM = (60000.0 / mean2);
-    if (this.latin && !this.firstBeat) {
+    if (this.oneTap && !this.firstBeat) {
       sysFilteredBPM = sysFilteredBPM * this.bpm;
     }
     variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
@@ -720,9 +720,9 @@ class Groove {
       });
     }
 
-    // latin mode: in latin mode, there is a 4 beat lead-in and then the user
+    // 1-tap mode: in 1-tap mode, there is a 4 beat lead-in and then the user
     // only taps their foot on the 1
-    if (this.latin) {
+    if (this.oneTap) {
       // check if we're in the count-in as indicated by leadInCount > 0.
       if (this.leadInCount != 0) {
         // update the lead-in count displayed on the screen
@@ -736,7 +736,7 @@ class Groove {
       } else {
         // we should be at beat one (index = 0)
         if (this.index % this.bpm != 0) {
-          print('HF: latin: error not at beat 1');
+          print('HF: 1-tap: error not at beat 1');
         }
         // play the beat one note
         hfaudio.play(
@@ -745,13 +745,14 @@ class Groove {
             this.notes[this.index].oggNote,
             this.notes2[this.index].oggIndex,
             this.notes2[this.index].oggNote);
+        updateBABInfo();
         String _now = DateTime.now().toString();
-        print('HF: _now latin: playing beat 1');
+        print('HF: $_now 1-tap: playing beat 1');
         // increment pointer to the next note
         this.index = (this.index + 1) % (this.bpm * this.numMeasures);
 
         // calculate the duration between beats assuming that the lead-in
-        // was in 1/4 notes.  If this is the first beat of a latin groove, the
+        // was in 1/4 notes.  If this is the first beat of a 1-tap groove, the
         // beat period is in 1/4 notes from the lead-in.  If this is not the first
         // beat, then the beat period is for the entire measure.
         if (firstBeat) {
@@ -760,7 +761,7 @@ class Groove {
         } else {
           beatSubdivisionInMs = beatPeriod / this.bpm;
         }
-        print('HF: latin: beat subdivision = $beatSubdivisionInMs ms');
+        print('HF: 1-tap: beat subdivision = $beatSubdivisionInMs ms');
 
         // schedule the remaining notes to be played using timers
         for (int i = 1; i < this.bpm; i++) {
@@ -771,8 +772,9 @@ class Groove {
                 this.notes[this.index].oggNote,
                 this.notes2[this.index].oggIndex,
                 this.notes2[this.index].oggNote);
+            updateBABInfo();
             _now = DateTime.now().toString();
-            print('HF: $_now latin mode: playing beat $this.index');
+            print('HF: $_now 1-tap mode: playing beat $this.index');
           });
           // increment pointer to the next note
           this.index = (this.index + 1) % (this.bpm * this.numMeasures);
@@ -780,7 +782,7 @@ class Groove {
       }
     }
 
-    if (!latin) {
+    if (!oneTap) {
       updateBABInfo();
     }
   }
