@@ -14,6 +14,9 @@ enum GrooveType { percussion, bass, guitarChords, pianoChords }
 // 1-tap rhythm types from:
 //    https://www.midwestclinic.org/user_files_1/pdfs/clinicianmaterials/2005/victor_lopez.pdf
 enum RhythmType {
+  rock1,
+  rock2,
+  jazz1,
   bossanova,
   salsa,
   mambo,
@@ -188,6 +191,13 @@ class Groove {
     this.leadInCount = 4;
     this.leadInString.value = '4';
     this.firstBeat = true;
+  }
+
+  // increment the index to the next note to be played
+  incrementIndex() {
+//    print('HF: incrementIndex: before ${this.index}');
+    this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+//    print('HF: incrementIndex: after ${this.index}');
   }
 
   // retain the bpm and numMeasures but set all notes to -
@@ -575,10 +585,30 @@ class Groove {
         }
       }
     }
-    // print out the resized grooveq
+    // print out the resized groove
     this.printGroove();
 
     this.reset();
+  }
+
+  // initialize the groove
+  void initialize(int beat, int measure, int voices) {
+    this.bpm = beat;
+    this.numMeasures = measure;
+    this.voices = voices;
+    this.index = 0;
+
+    // delete all existing notes
+    this.notes.clear();
+    this.notes2.clear();
+
+    // add in the number of notes that will be needed
+    for (int i = 0; i < this.bpm * this.numMeasures; i++) {
+      this.notes.add(Note(-1, '-'));
+      this.notes2.add(Note(-1, '-'));
+    }
+
+    return;
   }
 
   // set the color of the BeatsPerMinute indicator on the bottom app bar based on the
@@ -635,7 +665,7 @@ class Groove {
         print('HF: sequence error');
 
         // increment pointer to skip one note
-        this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        this.incrementIndex();
       }
     }
     lastSequenceBit = sequenceBit;
@@ -660,7 +690,7 @@ class Groove {
           this.notes2[this.index].oggIndex,
           this.notes2[this.index].oggNote);
       // increment pointer to the next note
-      this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+      this.incrementIndex();
     } else if (groove.interpolate && (groove.leadInCount > 0)) {
       this.leadInCount--;
       this.leadInString.value = this.leadInCount.toString();
@@ -677,6 +707,7 @@ class Groove {
     sysFilteredBPM = (60000.0 / mean2);
     if (this.oneTap && !this.firstBeat) {
       sysFilteredBPM = sysFilteredBPM * this.bpm;
+      sysLatestBPM = sysLatestBPM * this.bpm;
     }
     variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
     print(
@@ -697,7 +728,7 @@ class Groove {
       if (this.index.isEven) {
         print(
             'HF: ERROR: index should only be odd for backbeat!  Incrementing...');
-        this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        this.incrementIndex();
       }
       // schedule the next note using a timer.  1/2 of the mean beat interval will be used to
       // schedule the note at the expected mid-point of the beat.
@@ -716,12 +747,12 @@ class Groove {
         print(
             'HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this.index}, Name1: ${this.notes[this.index].name}, Name2: ${this.notes2[this.index].name}');
         // increment pointer to the next note
-        this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        this.incrementIndex();
       });
     }
 
     // 1-tap mode: in 1-tap mode, there is a 4 beat lead-in and then the user
-    // only taps their foot on the 1
+    // only taps their foot on the 1s
     if (this.oneTap) {
       // check if we're in the count-in as indicated by leadInCount > 0.
       if (this.leadInCount != 0) {
@@ -729,6 +760,8 @@ class Groove {
         if (leadInCount > 0) {
           // display 4..1 as the leadInCount decrements from 4 to 1
           leadInString.value = (5 - leadInCount).toString();
+          print(
+              'HF: oneTap play, lead-in-count = $leadInCount, index=${this.index}, ');
         } else {
           leadInString.value = "---";
         }
@@ -739,6 +772,9 @@ class Groove {
           print('HF: 1-tap: error not at beat 1');
         }
         // play the beat one note
+        String _now = DateTime.now().toString();
+        print(
+            'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
         hfaudio.play(
             this.voices,
             this.notes[this.index].oggIndex,
@@ -746,17 +782,15 @@ class Groove {
             this.notes2[this.index].oggIndex,
             this.notes2[this.index].oggNote);
         updateBABInfo();
-        String _now = DateTime.now().toString();
-        print('HF: $_now 1-tap: playing beat 1');
         // increment pointer to the next note
-        this.index = (this.index + 1) % (this.bpm * this.numMeasures);
+        this.incrementIndex();
 
         // calculate the duration between beats assuming that the lead-in
         // was in 1/4 notes.  If this is the first beat of a 1-tap groove, the
         // beat period is in 1/4 notes from the lead-in.  If this is not the first
         // beat, then the beat period is for the entire measure.
         if (firstBeat) {
-          beatSubdivisionInMs = beatPeriod / (4 / this.bpm);
+          beatSubdivisionInMs = beatPeriod / (this.bpm / 4);
           firstBeat = false;
         } else {
           beatSubdivisionInMs = beatPeriod / this.bpm;
@@ -774,10 +808,11 @@ class Groove {
                 this.notes2[this.index].oggNote);
             updateBABInfo();
             _now = DateTime.now().toString();
-            print('HF: $_now 1-tap mode: playing beat $this.index');
+            print(
+                'HF: $_now 1-tap: playing beat ${i + 1}, index=${this.index}');
+            // increment pointer to the next note
+            this.incrementIndex();
           });
-          // increment pointer to the next note
-          this.index = (this.index + 1) % (this.bpm * this.numMeasures);
         }
       }
     }
