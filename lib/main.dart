@@ -9,12 +9,12 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
-import 'latin.dart';
+import 'onetap.dart';
 import 'saveAndLoad.dart';
 import 'localization.g.dart';
 
@@ -361,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               groove.clearNotes();
                             }
                             playMode = Mode.groove;
-                            groove.latin = false;
+                            groove.oneTap = false;
                             Get.to(() => groovePage);
                           }
                           break;
@@ -373,18 +373,18 @@ class _MyHomePageState extends State<MyHomePage> {
                               groove.clearNotes();
                             }
                             playMode = Mode.bass;
-                            groove.latin = false;
+                            groove.oneTap = false;
                             Get.to(() => bassPage);
                           }
                           break;
-                        case 'Latin':
+                        case '1-tap':
                           {
                             if (playMode != Mode.groove) {
                               groove.clearNotes();
                             }
                             playMode = Mode.groove;
-                            groove.latin = true;
-                            Get.to(() => latinPage);
+                            groove.oneTap = true;
+                            Get.to(() => oneTapPage);
                             break;
                           }
                         default:
@@ -406,7 +406,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     'Dual Notes'.tr,
                     'Groove'.tr,
                     'Bass'.tr,
-                    'Latin'.tr,
+                    '1-tap'.tr,
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -472,7 +472,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 items: <String>[
                   'Bass drum'.tr,
-                  'Kick drum'.tr,
+                  'Bass echo'.tr,
+                  'Lo tom'.tr,
+                  'Hi tom'.tr,
                   'Snare drum'.tr,
                   'Hi-hat cymbal'.tr,
                   'Cowbell'.tr,
@@ -481,6 +483,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Rim shot'.tr,
                   'Shaker'.tr,
                   'Woodblock'.tr,
+                  'Brushes'.tr,
+                  'Quijada'.tr,
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -532,7 +536,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 items: <String>[
                   'none'.tr,
                   'Bass drum'.tr,
-                  'Kick drum'.tr,
+                  'Bass echo'.tr,
+                  'Lo tom'.tr,
+                  'Hi tom'.tr,
                   'Snare drum'.tr,
                   'Hi-hat cymbal'.tr,
                   'Cowbell'.tr,
@@ -541,7 +547,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Rim shot'.tr,
                   'Shaker'.tr,
                   'Woodblock'.tr,
-                ].map<DropdownMenuItem<String>>((String value) {
+                  'Brushes'.tr,
+                  'Quijada'.tr,
+                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -825,7 +833,7 @@ class _GroovePageState extends State<GroovePage> {
 
             // beat grid
             Text(
-              ' Choose "-" for no note, B for bass drum, K for kick drum, S for snare drum, H for hi-hat cymbal, T for tambourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock '
+              ' Choose "-" for no note, b for bass drum, B for bass echo, t for low tom, T for high tom, S for snare drum, H for hi-hat cymbal, M for taMbourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock, Q for quijada, U for brUshes '
                   .tr,
               style: Theme.of(context).textTheme.caption,
             ), // Text
@@ -857,16 +865,20 @@ class _GroovePageState extends State<GroovePage> {
                           },
                           items: <String>[
                             '-',
+                            'b',
                             'B',
-                            'K',
+                            't',
+                            'T',
                             'S',
                             'H',
-                            'T',
+                            'M',
                             'C',
                             'F',
                             'R',
                             'A',
-                            'W'
+                            'W',
+                            'Q',
+                            'U',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -1271,7 +1283,10 @@ class _InfoPageState extends State<InfoPage> {
               _infoTile('App version'.tr, _packageInfo.version),
 //              _infoTile('Build number', _packageInfo.buildNumber),
               Row(children: <Widget>[
-                Text('Model number:'.tr),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Model number:'.tr),
+                ),
                 FutureBuilder<String>(
                     future: _modelNumber,
                     builder:
@@ -1325,7 +1340,10 @@ class _InfoPageState extends State<InfoPage> {
                     })
               ]),
               Row(children: <Widget>[
-                Text('Firmware revision'.tr),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Firmware revision'.tr),
+                ),
                 FutureBuilder<String>(
                     future: _firmwareRevision,
                     builder:
@@ -1425,9 +1443,12 @@ class _MenuPageState extends State<MenuPage> {
         child: ListView(children: <Widget>[
           Column(children: <Widget>[
             Row(children: <Widget>[
-              Text(
-                'Sensitivity'.tr,
-                style: Theme.of(context).textTheme.caption,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Sensitivity'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
               ), // Text
               Text(
                 'Less'.tr,
@@ -1436,7 +1457,7 @@ class _MenuPageState extends State<MenuPage> {
                 value: _detectionThreshold.toDouble(),
                 min: 20,
                 max: 50,
-                divisions: 29,
+                divisions: 15,
                 label: _detectionThreshold.round().toString(),
                 onChanged: (double value) {
                   setState(() {
@@ -1468,66 +1489,75 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ]), // Row
             Row(children: <Widget>[
-              Text(
-                'Change language'.tr,
-                style: Theme.of(context).textTheme.caption,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Change language'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
               ),
-              DropdownButton<String>(
-                value: lang,
-                icon: const Icon(Icons.arrow_downward),
-                iconSize: 24,
-                elevation: 24,
-                style: Theme.of(context).textTheme.headline4,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    switch (newValue) {
-                      case 'English':
-                        locale = Locale('en', 'US');
-                        break;
-                      case 'Français':
-                        locale = Locale('fr', 'FR');
-                        break;
-                      case 'Deutsch':
-                        locale = Locale('de', 'DE');
-                        break;
-                      case 'Español':
-                        locale = Locale('es', 'ES');
-                        break;
-                      case 'Italiano':
-                        locale = Locale('it', 'IT');
-                        break;
-                      case 'Português':
-                        locale = Locale('pt', 'PT');
-                        break;
-                      default:
-                        locale = Locale('en', 'US');
-                        break;
-                    }
-                    lang = newValue!;
-                    Get.updateLocale(locale);
-                    print("HF: language changed to $newValue");
-                  });
-                },
-                items: <String>[
-                  'English',
-                  'Français',
-                  'Deutsch',
-                  'Español',
-                  'Italiano',
-                  'Português'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DropdownButton<String>(
+                  value: lang,
+                  icon: const Icon(Icons.arrow_downward),
+                  iconSize: 24,
+                  elevation: 24,
+                  style: Theme.of(context).textTheme.headline4,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      switch (newValue) {
+                        case 'English':
+                          locale = Locale('en', 'US');
+                          break;
+                        case 'Français':
+                          locale = Locale('fr', 'FR');
+                          break;
+                        case 'Deutsch':
+                          locale = Locale('de', 'DE');
+                          break;
+                        case 'Español':
+                          locale = Locale('es', 'ES');
+                          break;
+                        case 'Italiano':
+                          locale = Locale('it', 'IT');
+                          break;
+                        case 'Português':
+                          locale = Locale('pt', 'PT');
+                          break;
+                        default:
+                          locale = Locale('en', 'US');
+                          break;
+                      }
+                      lang = newValue!;
+                      Get.updateLocale(locale);
+                      print("HF: language changed to $newValue");
+                    });
+                  },
+                  items: <String>[
+                    'English',
+                    'Français',
+                    'Deutsch',
+                    'Español',
+                    'Italiano',
+                    'Português'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
               ),
               // Text
             ]),
             Row(children: <Widget>[
-              Text(
-                'Audio test mode'.tr,
-                style: Theme.of(context).textTheme.caption,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Audio test mode'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
               ),
               Switch(
                 value: audioTestMode,
