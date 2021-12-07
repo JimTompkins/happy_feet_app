@@ -113,8 +113,8 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
   assets:
-    - assets/sounds/bass_drum_fade.ogg
-    - assets/sounds/kick_drum.ogg
+ # percussion sounds as both .mp3 (for iOS version) and .ogg (for Android version_   
+    - assets/sounds/fatkick.ogg
     - assets/sounds/kick_drum2.ogg
     - assets/sounds/snare_drum.ogg
     - assets/sounds/high_hat.ogg
@@ -123,9 +123,12 @@ flutter:
     - assets/sounds/fingersnap.ogg
     - assets/sounds/sidestick.ogg
     - assets/sounds/shaker.ogg
-    - assets/sounds/woodblock1.ogg
-    - assets/sounds/bass_drum_fade.mp3
-    - assets/sounds/kick_drum.mp3
+    - assets/sounds/woodblock2.ogg
+    - assets/sounds/lodrytom.ogg
+    - assets/sounds/hidrytom.ogg
+    - assets/sounds/circlebrush.ogg
+    - assets/sounds/vibraslap.ogg
+    - assets/sounds/fatkick.mp3
     - assets/sounds/kick_drum2.mp3
     - assets/sounds/snare_drum.mp3
     - assets/sounds/high_hat.mp3
@@ -134,10 +137,14 @@ flutter:
     - assets/sounds/fingersnap.mp3
     - assets/sounds/sidestick.mp3
     - assets/sounds/shaker.mp3
-    - assets/sounds/woodblock.mp3
+    - assets/sounds/woodblock2.mp3
+    - assets/sounds/lodrytom.mp3
+    - assets/sounds/hidrytom.mp3
+    - assets/sounds/circlebrush.mp3
+    - assets/sounds/vibraslap.mp3
 #    - assets/sounds/Bass74MapleJazzA1.ogg
 #    - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope.ogg
-    - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg
+#    - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg
 #    - assets/sounds/Bass74MapleJazzA1_1sTrim.ogg
 # bass notes from E1 (00.mp3) through E3 (23.mp3)
     - assets/sounds/00.mp3

@@ -18,6 +18,7 @@ enum RhythmType {
   rock2,
   jazz1,
   bossanova,
+  afrocuban68,
   salsa,
   mambo,
   songo,
@@ -195,9 +196,19 @@ class Groove {
 
   // increment the index to the next note to be played
   incrementIndex() {
-//    print('HF: incrementIndex: before ${this.index}');
     this.index = (this.index + 1) % (this.bpm * this.numMeasures);
-//    print('HF: incrementIndex: after ${this.index}');
+  }
+
+  // go to the next beat 1
+  nextBeat1() {
+    if (this.numMeasures == 1) {
+      //  if there is only one measure, reset index to 0
+      this.index = 0;
+    } else {
+      // if there are more than one measure, set index to next beat 1
+      int measure = this.index ~/ this.bpm;
+      this.index = ((measure + 1) % this.numMeasures) * this.bpm;
+    }
   }
 
   // retain the bpm and numMeasures but set all notes to -
@@ -239,18 +250,18 @@ class Groove {
           _name = '-';
         }
         break;
-      case 'B':
+      case 'b':
         {
           _oggIndex = 0;
           _oggNote = 0;
           _name = 'Bass drum';
         }
         break;
-      case 'K':
+      case 'B':
         {
           _oggIndex = 1;
           _oggNote = 0;
-          _name = 'Kick drum';
+          _name = 'Bass echo';
         }
         break;
       case 'S':
@@ -274,7 +285,7 @@ class Groove {
           _name = 'Cowbell';
         }
         break;
-      case 'T':
+      case 'M':
         {
           _oggIndex = 5;
           _oggNote = 0;
@@ -307,6 +318,34 @@ class Groove {
           _oggIndex = 10;
           _oggNote = 0;
           _name = 'Woodblock';
+        }
+        break;
+      case 't':
+        {
+          _oggIndex = 11;
+          _oggNote = 0;
+          _name = 'Lo tom';
+        }
+        break;
+      case 'T':
+        {
+          _oggIndex = 12;
+          _oggNote = 0;
+          _name = 'Hi tom';
+        }
+        break;
+      case 'U':
+        {
+          _oggIndex = 13;
+          _oggNote = 0;
+          _name = 'Brushes';
+        }
+        break;
+      case 'Q':
+        {
+          _oggIndex = 14;
+          _oggNote = 0;
+          _name = 'Quijada';
         }
         break;
       default:
@@ -770,6 +809,8 @@ class Groove {
         // we should be at beat one (index = 0)
         if (this.index % this.bpm != 0) {
           print('HF: 1-tap: error not at beat 1');
+          // reset the index to the next beat 1
+          this.nextBeat1();
         }
         // play the beat one note
         String _now = DateTime.now().toString();

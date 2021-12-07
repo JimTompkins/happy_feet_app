@@ -69,15 +69,15 @@ class _OneTapPageState extends State<OneTapPage> {
         // rock groove1: 4 beats per measure, 1 measure, 1 voice
         groove.initialize(4, 1, 1);
         groove.reset();
-        groove.addInitialNote(0, 'B');
+        groove.addInitialNote(0, 'b');
         groove.addInitialNote(1, 'S');
-        groove.addInitialNote(2, 'B');
+        groove.addInitialNote(2, 'b');
         groove.addInitialNote(3, 'S');
         _tab.clear();
-        _tab.add(0, 'B|o---o---|');
+        _tab.add(0, 'b|o---o---|');
         _tab.add(1, 'S|--o---o-|');
         _tab.add(2, ' |1+2+3+4+|');
-        _tab.add(3, 'B=bass,S=snare');
+        _tab.add(3, 'b=bass,S=snare');
         break;
 
       case RhythmType.rock2:
@@ -96,17 +96,17 @@ class _OneTapPageState extends State<OneTapPage> {
           groove.addInitialNote(i, 'H');
         }
 
-        groove.addInitialNote(8, 'B');
+        groove.addInitialNote(8, 'b');
         groove.addInitialNote(10, 'S');
-        groove.addInitialNote(12, 'B');
+        groove.addInitialNote(12, 'b');
         groove.addInitialNote(14, 'S');
         _tab.clear();
         _tab.add(0, 'H|xxxxxxxx|');
-        _tab.add(1, 'B|o---o---|');
+        _tab.add(1, 'b|o---o---|');
         _tab.add(2, 'S|--o---o-|');
         _tab.add(3, ' |1+2+3+4+|');
         _tab.add(4, 'H=hi-hat');
-        _tab.add(5, 'B=bass,S=snare');
+        _tab.add(5, 'b=bass,S=snare');
         break;
 
       case RhythmType.jazz1:
@@ -140,52 +140,172 @@ class _OneTapPageState extends State<OneTapPage> {
 
         // hi-hat all all 1/8 notes on voice 1
         for (i = 0; i < 8; i++) {
-          groove.addInitialNote(i, 'F'); // changed from H to F for testing
+          groove.addInitialNote(i, 'H');
         }
         for (i = 16; i < 24; i++) {
-          groove.addInitialNote(i, 'F'); // changed from H to F for testing
+          groove.addInitialNote(i, 'H');
         }
 
         // use voice 2 for bass drum and woodblock (clave)
-        groove.addInitialNote(8, 'B');
+        groove.addInitialNote(8, 'b');
         groove.addInitialNote(9, '-');
         groove.addInitialNote(10, '-');
         groove.addInitialNote(11, 'W');
-        groove.addInitialNote(12, 'B');
+        groove.addInitialNote(12, 'b');
         groove.addInitialNote(13, '-');
         groove.addInitialNote(14, 'W');
-        groove.addInitialNote(15, 'B');
-        groove.addInitialNote(24, 'B');
+        groove.addInitialNote(15, 'b');
+        groove.addInitialNote(24, 'b');
         groove.addInitialNote(25, '-');
         groove.addInitialNote(26, 'W');
         groove.addInitialNote(27, '-');
-        groove.addInitialNote(28, 'B');
+        groove.addInitialNote(28, 'b');
         groove.addInitialNote(29, 'W');
         groove.addInitialNote(30, '-');
-        groove.addInitialNote(31, 'B');
+        groove.addInitialNote(31, 'b');
 
         _tab.clear();
         _tab.add(0, 'H|xxxxxxxx|xxxxxxxx|');
-        _tab.add(1, 'B|o---o--o|o---o--o|');
+        _tab.add(1, 'b|o---o--o|o---o--o|');
         _tab.add(2, 'W|---o--o-|--o--o--|');
         _tab.add(3, ' |1+2+3+4+|1+2+3+4+|');
-        _tab.add(4, 'H=hi-hat,B=bass');
+        _tab.add(4, 'H=hi-hat,b=bass');
         _tab.add(5, '  W=woodblock');
         break;
 
+      case RhythmType.merengue:
+        print('HF: 1-tap: merengue');
+        Get.snackbar('Status'.tr, '1-tap rhythm: merengue'.tr,
+            snackPosition: SnackPosition.BOTTOM);
+        groove.initialize(8, 1, 2); // 8 beats per measure, 1 measures, 2 voices
+        groove.reset();
+
+        // guira pattern on hi-hat on first voice.  Note that the Guiar pattern
+        // uses 16th notes so we're emulating it here with 8th notes
+        groove.addInitialNote(0, 'H');
+        groove.addInitialNote(1, '-');
+        groove.addInitialNote(2, '-');
+        groove.addInitialNote(3, 'H');
+        groove.addInitialNote(4, 'H');
+        groove.addInitialNote(5, '-');
+        groove.addInitialNote(6, '-');
+        groove.addInitialNote(7, 'H');
+
+        // bass drum on 1 and 3 of second voice
+        groove.addInitialNote(8, 'b');
+        groove.addInitialNote(9, '-');
+        groove.addInitialNote(10, '-');
+        groove.addInitialNote(11, '-');
+        groove.addInitialNote(12, 'b');
+        groove.addInitialNote(13, '-');
+        groove.addInitialNote(14, '-');
+        groove.addInitialNote(15, '-');
+
+        _tab.clear();
+        _tab.add(0, 'H|x--xx--x|');
+        _tab.add(1, 'B|o---o---|');
+        _tab.add(2, ' |1+2+3+4+|');
+        _tab.add(3, 'H=hi-hat,b=bass');
+        break;
+
+      case RhythmType.afrocuban68:
+        print('HF: 1-tap: AfroCuban 6/8');
+        Get.snackbar('Status'.tr, '1-tap rhythm: Afro-Cuban 6/8'.tr,
+            snackPosition: SnackPosition.BOTTOM);
+        groove.initialize(6, 2, 2); // 6 beats per measure, 2 measures, 2 voices
+        groove.reset();
+
+        // cowbell on voice 1
+        groove.addInitialNote(0, 'C');
+        groove.addInitialNote(1, '-');
+        groove.addInitialNote(2, 'C');
+        groove.addInitialNote(3, '-');
+        groove.addInitialNote(4, 'C');
+        groove.addInitialNote(5, 'C');
+
+        groove.addInitialNote(12, '-');
+        groove.addInitialNote(13, 'C');
+        groove.addInitialNote(14, '-');
+        groove.addInitialNote(15, 'C');
+        groove.addInitialNote(16, '-');
+        groove.addInitialNote(17, 'C');
+
+        // bass and snare on voice 2
+        groove.addInitialNote(6, 'b');
+        groove.addInitialNote(7, 'S');
+        groove.addInitialNote(8, 'b');
+        groove.addInitialNote(9, 'S');
+        groove.addInitialNote(10, 'S');
+        groove.addInitialNote(11, 'b');
+
+        groove.addInitialNote(18, 'S');
+        groove.addInitialNote(19, 'b');
+        groove.addInitialNote(20, 'S');
+        groove.addInitialNote(21, 'b');
+        groove.addInitialNote(22, 'S');
+        groove.addInitialNote(23, 'S');
+
+        _tab.clear();
+        _tab.add(0, 'C|x-x-xx|-x-x-x|');
+        _tab.add(1, 'S|-o-oo-|o-o-oo|');
+        _tab.add(2, 'b|o-o--o|-o-o--|');
+        _tab.add(3, ' |1+2+3+|1+2+3+|');
+        _tab.add(4, 'C=cowbell,s=snare');
+        _tab.add(5, 'b=bass');
+        break;
+
       case RhythmType.samba:
-        print('HF: 1-tap: test groove');
+        print('HF: 1-tap: samba');
         Get.snackbar('Status'.tr, '1-tap rhythm: samba'.tr,
             snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
         groove.reset();
+
+        // use voice 1 for hi-hat
+        groove.addInitialNote(0, 'H');
+        groove.addInitialNote(1, '-');
+        groove.addInitialNote(2, 'H');
+        groove.addInitialNote(3, 'H');
+        groove.addInitialNote(4, 'H');
+        groove.addInitialNote(5, '-');
+        groove.addInitialNote(6, 'H');
+        groove.addInitialNote(7, 'H');
+
+        groove.addInitialNote(16, 'H');
+        groove.addInitialNote(17, '-');
+        groove.addInitialNote(18, 'H');
+        groove.addInitialNote(19, 'H');
+        groove.addInitialNote(20, 'H');
+        groove.addInitialNote(21, '-');
+        groove.addInitialNote(22, 'H');
+        groove.addInitialNote(23, 'H');
+
+        // use voice 2 for bass drum and snare
+        groove.addInitialNote(8, 'b');
+        groove.addInitialNote(9, 'S');
+        groove.addInitialNote(10, '-');
+        groove.addInitialNote(11, 'b');
+        groove.addInitialNote(12, 'S');
+        groove.addInitialNote(13, '-');
+        groove.addInitialNote(14, 'S');
+        groove.addInitialNote(15, 'b');
+
+        groove.addInitialNote(24, 'b');
+        groove.addInitialNote(25, 'S');
+        groove.addInitialNote(26, '-');
+        groove.addInitialNote(27, 'b');
+        groove.addInitialNote(28, 'S');
+        groove.addInitialNote(29, '-');
+        groove.addInitialNote(30, 'S');
+        groove.addInitialNote(31, 'b');
+
         _tab.clear();
-        _tab.add(0, 'H|xxxxxxxx|xxxxxxxx|');
-        _tab.add(1, 'B|o---o--o|o---o--o|');
-        _tab.add(2, 'W|---o--o-|--o--o--|');
+        _tab.add(0, 'H|x-xxx-xx|x-xxx-xx|');
+        _tab.add(1, 'S|-o--o-o-|-o--o-o-|');
+        _tab.add(2, 'b|o--o---o|o--o---o|');
         _tab.add(3, ' |1+2+3+4+|1+2+3+4+|');
-        _tab.add(4, 'H=hi-hat,B=bass');
-        _tab.add(5, '  W=woodblock');
+        _tab.add(4, 'H=hi-hat,S=snare');
+        _tab.add(5, '  b=bass');
         break;
 
       case RhythmType.salsa:
@@ -193,6 +313,7 @@ class _OneTapPageState extends State<OneTapPage> {
             snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
         groove.reset();
+
         _tab.clear();
         _tab.add(0, 'H|xxxxxxxx|xxxxxxxx|');
         _tab.add(1, 'B|o---o--o|o---o--o|');
@@ -301,12 +422,16 @@ class _OneTapPageState extends State<OneTapPage> {
                           type = RhythmType.bossanova;
                           createGroove(type);
                           break;
-                        case 'Samba':
-                          type = RhythmType.samba;
+                        case 'Merengue':
+                          type = RhythmType.merengue;
                           createGroove(type);
                           break;
-                        case 'Salsa':
-                          type = RhythmType.salsa;
+                        case 'Afro-Cuban 6/8':
+                          type = RhythmType.afrocuban68;
+                          createGroove(type);
+                          break;
+                        case 'Samba':
+                          type = RhythmType.samba;
                           createGroove(type);
                           break;
                         default:
@@ -322,8 +447,9 @@ class _OneTapPageState extends State<OneTapPage> {
                     'Rock 2',
                     'Jazz 1',
                     'Bossa Nova',
+                    'Merengue',
+                    'Afro-Cuban 6/8',
                     'Samba',
-                    'Salsa'
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,

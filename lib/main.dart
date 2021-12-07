@@ -472,7 +472,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 items: <String>[
                   'Bass drum'.tr,
-                  'Kick drum'.tr,
+                  'Bass echo'.tr,
+                  'Lo tom'.tr,
+                  'Hi tom'.tr,
                   'Snare drum'.tr,
                   'Hi-hat cymbal'.tr,
                   'Cowbell'.tr,
@@ -481,6 +483,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Rim shot'.tr,
                   'Shaker'.tr,
                   'Woodblock'.tr,
+                  'Brushes'.tr,
+                  'Quijada'.tr,
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -532,7 +536,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 items: <String>[
                   'none'.tr,
                   'Bass drum'.tr,
-                  'Kick drum'.tr,
+                  'Bass echo'.tr,
+                  'Lo tom'.tr,
+                  'Hi tom'.tr,
                   'Snare drum'.tr,
                   'Hi-hat cymbal'.tr,
                   'Cowbell'.tr,
@@ -541,7 +547,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Rim shot'.tr,
                   'Shaker'.tr,
                   'Woodblock'.tr,
-                ].map<DropdownMenuItem<String>>((String value) {
+                  'Brushes'.tr,
+                  'Quijada'.tr,
+                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -825,7 +833,7 @@ class _GroovePageState extends State<GroovePage> {
 
             // beat grid
             Text(
-              ' Choose "-" for no note, B for bass drum, K for kick drum, S for snare drum, H for hi-hat cymbal, T for tambourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock '
+              ' Choose "-" for no note, b for bass drum, B for bass echo, t for low tom, T for high tom, S for snare drum, H for hi-hat cymbal, T for tambourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock, Q for quijada, U for brUshes '
                   .tr,
               style: Theme.of(context).textTheme.caption,
             ), // Text
@@ -857,16 +865,20 @@ class _GroovePageState extends State<GroovePage> {
                           },
                           items: <String>[
                             '-',
+                            'b',
                             'B',
-                            'K',
+                            't',
+                            'T',
                             'S',
                             'H',
-                            'T',
+                            'M',
                             'C',
                             'F',
                             'R',
                             'A',
-                            'W'
+                            'W',
+                            'Q',
+                            'U',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,

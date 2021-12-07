@@ -15,7 +15,9 @@ var oggMap = <String, num>{
   'none': -1,
   '-': -1,
   'Bass drum': 0,
-  'Kick drum': 1,
+  'Bass echo': 1,
+  'Lo tom': 11,
+  'Hi tom': 12,
   'Snare drum': 2,
   'Hi-hat cymbal': 3,
   'Cowbell': 4,
@@ -24,12 +26,14 @@ var oggMap = <String, num>{
   'Rim shot': 8,
   'Shaker': 9,
   'Woodblock': 10,
+  'Brushes': 13,
+  'Quijada': 14,
 };
 
 // Mapping from note name to mp3 file name for audiocache
 var mp3Map = <int, String>{
   -1: 'none',
-  0: 'bass_drum_fade.mp3',
+  0: 'fatkick.mp3',
   1: 'kick_drum2.mp3',
   2: 'snare_drum.mp3',
   3: 'high_hat.mp3',
@@ -38,7 +42,7 @@ var mp3Map = <int, String>{
   7: 'fingersnap.mp3',
   8: 'sidestick.mp3',
   9: 'shaker.mp3',
-  10: 'woodblock.mp3',
+  10: 'woodblock2.mp3',
   11: '00.mp3',
   12: '01.mp3',
   13: '02.mp3',
@@ -63,6 +67,10 @@ var mp3Map = <int, String>{
   32: '21.mp3',
   33: '22.mp3',
   34: '23.mp3',
+  35: 'lodrytom.mp3',
+  36: 'hidrytom.mp3',
+  37: 'circlebrush.mp3',
+  38: 'vibraslap.mp3',
 };
 
 var soundIdMap = <int, int>{};
@@ -73,16 +81,20 @@ var soundIdMap = <int, int>{};
 var initialMap = <String, String>{
   'none': '-',
   '-': '-',
-  'Bass drum': 'B',
-  'Kick drum': 'K',
+  'Bass drum': 'b',
+  'Bass echo': 'B',
   'Snare drum': 'S',
   'Hi-hat cymbal': 'H',
   'Cowbell': 'C',
-  'Tambourine': 'T',
+  'Tambourine': 'M',
   'Fingersnap': 'F',
   'Rim shot': 'R',
   'Shaker': 'A',
   'Woodblock': 'W',
+  'Lo tom': 't',
+  'Hi tom': 'T',
+  'Brushes': 'U',
+  'Quijada': 'Q',
 };
 
 class HfAudio {
@@ -171,7 +183,7 @@ class HfAudio {
     //await pool.release();
     //soundIdMap.clear();
 
-    _filename = _path + "bass_drum_fade.mp3";
+    _filename = _path + "fatkick.mp3";
     var asset0 = await rootBundle.load(_filename);
     int id0 = await pool.load(asset0);
     soundIdMap[0] = id0;
@@ -216,10 +228,30 @@ class HfAudio {
     int id9 = await pool.load(asset9);
     soundIdMap[9] = id9;
 
-    _filename = _path + "woodblock.mp3";
+    _filename = _path + "woodblock2.mp3";
     var asset10 = await rootBundle.load(_filename);
     int id10 = await pool.load(asset10);
     soundIdMap[10] = id10;
+
+    _filename = _path + "lodrytom.mp3";
+    var asset11 = await rootBundle.load(_filename);
+    int id11 = await pool.load(asset11);
+    soundIdMap[11] = id11;
+
+    _filename = _path + "hidrytom.mp3";
+    var asset12 = await rootBundle.load(_filename);
+    int id12 = await pool.load(asset12);
+    soundIdMap[12] = id12;
+
+    _filename = _path + "circlebrush.mp3";
+    var asset13 = await rootBundle.load(_filename);
+    int id13 = await pool.load(asset13);
+    soundIdMap[13] = id13;
+
+    _filename = _path + "vibraslap.mp3";
+    var asset14 = await rootBundle.load(_filename);
+    int id14 = await pool.load(asset14);
+    soundIdMap[14] = id14;
 
 //TODO: play all sounds at zero volume to remove the large latency on the first
 // play of a sound
@@ -242,15 +274,6 @@ class HfAudio {
     _len = soundIdMap.length;
     print('HF: initIOSSoundpoolBass : soundIdMap length (after clear) = $_len');
 
-/*
-      for (var note in notes) {
-      _filename = _path + sprintf("%02d", i) + ".mp3";
-      print('HF: initIOSSoundpoolBass: filename = $_filename');
-      var asset = await rootBundle.load(_filename);
-      int id = await pool.load(asset);
-      soundIdMap[i] = id;
-      }
-*/
     _i = 40;
     _filename = _path + "00.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
@@ -433,10 +456,10 @@ class HfAudio {
     print('HF: initAndroidPercussion...');
 
     // load the sound sample files
-    rootBundle.load('assets/sounds/bass_drum_fade.ogg').then((ogg0) {
+    rootBundle.load('assets/sounds/fatkick.ogg').then((ogg0) {
       fop.load(
           src: ogg0,
-          name: 'bass_drum_fade.ogg',
+          name: 'fatkick.ogg',
           index: 0,
           forceLoad: true,
           replace: false);
@@ -493,20 +516,7 @@ class HfAudio {
       print('HF: finished loading ogg file 5');
       loadCount++;
     });
-    /*  this is the previous method of playing bass sounds: with
-        one ogg file and transposing...
-    rootBundle
-        .load('assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg')
-        .then((ogg6) {
-      fop.load(
-          src: ogg6,
-          name: 'Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg',
-          index: 6,
-          forceLoad: true,
-          replace: false);
-      print('HF: finished loading ogg file 6');
-      loadCount++;
-    });  */
+
     rootBundle.load('assets/sounds/fingersnap.ogg').then((ogg7) {
       fop.load(
           src: ogg7,
@@ -537,14 +547,54 @@ class HfAudio {
       print('HF: finished loading ogg file 9');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/woodblock1.ogg').then((ogg10) {
+    rootBundle.load('assets/sounds/woodblock2.ogg').then((ogg10) {
       fop.load(
           src: ogg10,
-          name: 'woodblock1.ogg',
+          name: 'woodblock2.ogg',
           index: 10,
           forceLoad: true,
           replace: false);
       print('HF: finished loading ogg file 10');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/lodrytom.ogg').then((ogg11) {
+      fop.load(
+          src: ogg11,
+          name: 'lodrytom.ogg',
+          index: 11,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 11');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/hidrytom.ogg').then((ogg12) {
+      fop.load(
+          src: ogg12,
+          name: 'hidrytom.ogg',
+          index: 12,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 12');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/circlebrush.ogg').then((ogg13) {
+      fop.load(
+          src: ogg13,
+          name: 'circlebrush.ogg',
+          index: 13,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 13');
+      loadCount++;
+    });
+    rootBundle.load('assets/sounds/vibraslap.ogg').then((ogg14) {
+      fop.load(
+          src: ogg14,
+          name: 'vibraslap.ogg',
+          index: 14,
+          forceLoad: true,
+          replace: false);
+      print('HF: finished loading ogg file 14');
       loadCount++;
     });
     print('HF: initAndroidPercussion: loadCount = $loadCount');
