@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_ogg_piano/flutter_ogg_piano.dart';
 //import 'package:audioplayers/audioplayers.dart';
-//import 'package:soundpool/soundpool.dart';
+import 'package:soundpool/soundpool.dart';
 import 'dart:io' show Platform;
 import 'package:get/get.dart';
 
@@ -100,8 +100,8 @@ var initialMap = <String, String>{
 class HfAudio {
   final fop = FlutterOggPiano();
 //  final AudioCache ac = new AudioCache(prefix: 'assets/sounds/');
-//  Soundpool pool = Soundpool.fromOptions(
-//      options: SoundpoolOptions(streamType: StreamType.alarm, maxStreams: 10));
+  Soundpool pool = Soundpool.fromOptions(
+      options: SoundpoolOptions(streamType: StreamType.alarm, maxStreams: 10));
 
   // flags used to indicate if the persussion or bass sounds have been loaded.
   bool engineInitialized = false;
@@ -185,51 +185,53 @@ class HfAudio {
 
     _filename = _path + "fatkick.mp3";
     var asset0 = await rootBundle.load(_filename);
-//    int id0 = await pool.load(asset0);
-//    soundIdMap[0] = id0;
+    int id0 = await pool.load(asset0);
+    soundIdMap[0] = id0;
 
     _filename = _path + "kick_drum2.mp3";
     var asset1 = await rootBundle.load(_filename);
-//    int id1 = await pool.load(asset1);
-//    soundIdMap[1] = id1;
+    int id1 = await pool.load(asset1);
+    soundIdMap[1] = id1;
 
     _filename = _path + "snare_drum.mp3";
     var asset2 = await rootBundle.load(_filename);
-//    int id2 = await pool.load(asset2);
-//    soundIdMap[2] = id2;
+    int id2 = await pool.load(asset2);
+    soundIdMap[2] = id2;
 
     _filename = _path + "high_hat.mp3";
     var asset3 = await rootBundle.load(_filename);
-//    int id3 = await pool.load(asset3);
-//    soundIdMap[3] = id3;
+    int id3 = await pool.load(asset3);
+    soundIdMap[3] = id3;
 
     _filename = _path + "cowbell.mp3";
     var asset4 = await rootBundle.load(_filename);
-//    int id4 = await pool.load(asset4);
-//    soundIdMap[4] = id4;
+    int id4 = await pool.load(asset4);
+    soundIdMap[4] = id4;
 
     _filename = _path + "tambourine.mp3";
     var asset5 = await rootBundle.load(_filename);
-//    int id5 = await pool.load(asset5);
-//    soundIdMap[5] = id5;
+    int id5 = await pool.load(asset5);
+    soundIdMap[5] = id5;
 
     _filename = _path + "fingersnap.mp3";
     var asset7 = await rootBundle.load(_filename);
-//    int id7 = await pool.load(asset7);
-//    soundIdMap[7] = id7;
+    int id7 = await pool.load(asset7);
+    soundIdMap[7] = id7;
 
     _filename = _path + "sidestick.mp3";
     var asset8 = await rootBundle.load(_filename);
-//    int id8 = await pool.load(asset8);
-//    soundIdMap[8] = id8;
+    int id8 = await pool.load(asset8);
+    soundIdMap[8] = id8;
 
     _filename = _path + "shaker.mp3";
     var asset9 = await rootBundle.load(_filename);
-//    int id9 = await pool.load(asset9);
-//  soundIdMap[9] = id9;
+    int id9 = await pool.load(asset9);
+    soundIdMap[9] = id9;
 
     _filename = _path + "woodblock2.mp3";
     var asset10 = await rootBundle.load(_filename);
+    int id10 = await pool.load(asset10);
+    soundIdMap[10] = id10;
 
     _filename = _path + "lodrytom.mp3";
     var asset11 = await rootBundle.load(_filename);
@@ -276,121 +278,169 @@ class HfAudio {
     _filename = _path + "00.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset0 = await rootBundle.load(_filename);
+    int id0 = await pool.load(asset0);
+    soundIdMap[_i] = id0;
 
     _i = 41;
     _filename = _path + "01.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset1 = await rootBundle.load(_filename);
+    int id1 = await pool.load(asset1);
+    soundIdMap[1] = id1;
 
     _i = 42;
     _filename = _path + "02.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset2 = await rootBundle.load(_filename);
+    int id2 = await pool.load(asset2);
+    soundIdMap[_i] = id2;
 
     _i = 43;
     _filename = _path + "03.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset3 = await rootBundle.load(_filename);
+    int id3 = await pool.load(asset3);
+    soundIdMap[_i] = id3;
 
     _i = 44;
     _filename = _path + "04.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset4 = await rootBundle.load(_filename);
+    int id4 = await pool.load(asset4);
+    soundIdMap[_i] = id4;
 
     _i = 45;
     _filename = _path + "05.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset5 = await rootBundle.load(_filename);
+    int id5 = await pool.load(asset5);
+    soundIdMap[_i] = id5;
 
     _i = 46;
     _filename = _path + "06.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset6 = await rootBundle.load(_filename);
+    int id6 = await pool.load(asset6);
+    soundIdMap[_i] = id6;
 
     _i = 47;
     _filename = _path + "07.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset7 = await rootBundle.load(_filename);
+    int id7 = await pool.load(asset7);
+    soundIdMap[_i] = id7;
 
     _i = 48;
     _filename = _path + "08.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset8 = await rootBundle.load(_filename);
+    int id8 = await pool.load(asset8);
+    soundIdMap[_i] = id8;
 
     _i = 49;
     _filename = _path + "09.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset9 = await rootBundle.load(_filename);
+    int id9 = await pool.load(asset9);
+    soundIdMap[_i] = id9;
 
     _i = 50;
     _filename = _path + "10.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset10 = await rootBundle.load(_filename);
+    int id10 = await pool.load(asset10);
+    soundIdMap[_i] = id10;
 
     _i = 51;
     _filename = _path + "11.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset11 = await rootBundle.load(_filename);
+    int id11 = await pool.load(asset11);
+    soundIdMap[_i] = id11;
 
     _i = 52;
     _filename = _path + "12.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset12 = await rootBundle.load(_filename);
+    int id12 = await pool.load(asset12);
+    soundIdMap[_i] = id12;
 
     _i = 53;
     _filename = _path + "13.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset13 = await rootBundle.load(_filename);
+    int id13 = await pool.load(asset13);
+    soundIdMap[_i] = id13;
 
     _i = 54;
     _filename = _path + "14.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset14 = await rootBundle.load(_filename);
+    int id14 = await pool.load(asset14);
+    soundIdMap[_i] = id14;
 
     _i = 55;
     _filename = _path + "15.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset15 = await rootBundle.load(_filename);
+    int id15 = await pool.load(asset15);
+    soundIdMap[_i] = id15;
 
     _i = 56;
     _filename = _path + "16.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset16 = await rootBundle.load(_filename);
+    int id16 = await pool.load(asset16);
+    soundIdMap[_i] = id16;
 
     _i = 57;
     _filename = _path + "17.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset17 = await rootBundle.load(_filename);
+    int id17 = await pool.load(asset17);
+    soundIdMap[_i] = id17;
 
     _i = 58;
     _filename = _path + "18.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset18 = await rootBundle.load(_filename);
+    int id18 = await pool.load(asset18);
+    soundIdMap[_i] = id18;
 
     _i = 59;
     _filename = _path + "19.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset19 = await rootBundle.load(_filename);
+    int id19 = await pool.load(asset19);
+    soundIdMap[_i] = id19;
 
     _i = 60;
     _filename = _path + "20.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset20 = await rootBundle.load(_filename);
+    int id20 = await pool.load(asset20);
+    soundIdMap[_i] = id20;
 
     _i = 61;
     _filename = _path + "21.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset21 = await rootBundle.load(_filename);
+    int id21 = await pool.load(asset21);
+    soundIdMap[_i] = id21;
 
     _i = 62;
     _filename = _path + "22.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset22 = await rootBundle.load(_filename);
+    int id22 = await pool.load(asset22);
+    soundIdMap[_i] = id22;
 
     _i = 23;
     _filename = _path + "23.mp3";
     print('HF: initIOSSoundpoolBass: filename = $_filename');
     var asset23 = await rootBundle.load(_filename);
+    int id23 = await pool.load(asset23);
+    soundIdMap[_i] = id23;
 
     _len = soundIdMap.length;
     print(
@@ -858,7 +908,7 @@ class HfAudio {
 //          print('HF:   1 voice, note = $note1');
 //          ac.play(mp3Map[note1]!);
 //          print('HF: audio.play: voices = 1, note1 = $note1');
-//          pool.play(soundIdMap[note1]!);
+          pool.play(soundIdMap[note1]!);
           return;
         }
       } else if (voices == 2) {
@@ -866,14 +916,14 @@ class HfAudio {
 //          print('HF:  2 voices, 1 note, note: $note2, transpose: $transpose2');
           // play note 2 as a single note
 //          ac.play(mp3Map[note2]!);
-//          pool.play(soundIdMap[note2]!);
+          pool.play(soundIdMap[note2]!);
           return;
         }
         if (note2 == -1 && note1 != -1) {
 //          print('HF:  2 voices, 1 note, note: $note1, transpose: $transpose1');
           // play note 1 as a single note
 //          ac.play(mp3Map[note1]!);
-//          pool.play(soundIdMap[note1]!);
+          pool.play(soundIdMap[note1]!);
           return;
         }
         if (note1 == -1 && note2 == -1) {
@@ -883,8 +933,8 @@ class HfAudio {
         if (note1 != -1 && note2 != -1) {
 //          ac.play(mp3Map[note1]!);
 //          ac.play(mp3Map[note2]!);
-//          pool.play(soundIdMap[note1]!);
-//          pool.play(soundIdMap[note2]!);
+          pool.play(soundIdMap[note1]!);
+          pool.play(soundIdMap[note2]!);
         }
       }
     }
