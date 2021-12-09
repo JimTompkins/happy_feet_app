@@ -461,7 +461,7 @@ class HfAudio {
           src: ogg0,
           name: 'fatkick.ogg',
           index: 0,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 0');
       loadCount++;
@@ -471,7 +471,7 @@ class HfAudio {
           src: ogg1,
           name: 'kick_drum2.ogg',
           index: 1,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 1');
       loadCount++;
@@ -481,7 +481,7 @@ class HfAudio {
           src: ogg2,
           name: 'snare_drum.ogg',
           index: 2,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 2');
       loadCount++;
@@ -491,7 +491,7 @@ class HfAudio {
           src: ogg3,
           name: 'high_hat.ogg',
           index: 3,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 3');
       loadCount++;
@@ -501,7 +501,7 @@ class HfAudio {
           src: ogg4,
           name: 'cowbell.ogg',
           index: 4,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 4');
       loadCount++;
@@ -511,7 +511,7 @@ class HfAudio {
           src: ogg5,
           name: 'tambourine.ogg',
           index: 5,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 5');
       loadCount++;
@@ -522,7 +522,7 @@ class HfAudio {
           src: ogg7,
           name: 'fingersnap.ogg',
           index: 7,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 7');
       loadCount++;
@@ -532,7 +532,7 @@ class HfAudio {
           src: ogg8,
           name: 'sidestick.ogg',
           index: 8,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 8');
       loadCount++;
@@ -542,7 +542,7 @@ class HfAudio {
           src: ogg9,
           name: 'shaker.ogg',
           index: 9,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 9');
       loadCount++;
@@ -552,7 +552,7 @@ class HfAudio {
           src: ogg10,
           name: 'woodblock2.ogg',
           index: 10,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 10');
       loadCount++;
@@ -562,7 +562,7 @@ class HfAudio {
           src: ogg11,
           name: 'lodrytom.ogg',
           index: 11,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 11');
       loadCount++;
@@ -572,7 +572,7 @@ class HfAudio {
           src: ogg12,
           name: 'hidrytom.ogg',
           index: 12,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 12');
       loadCount++;
@@ -582,7 +582,7 @@ class HfAudio {
           src: ogg13,
           name: 'circlebrush.ogg',
           index: 13,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 13');
       loadCount++;
@@ -592,7 +592,7 @@ class HfAudio {
           src: ogg14,
           name: 'vibraslap.ogg',
           index: 14,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 14');
       loadCount++;
@@ -611,7 +611,7 @@ class HfAudio {
           src: ogg40,
           name: '00.ogg',
           index: 40,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 0');
       loadCount++;
@@ -621,7 +621,7 @@ class HfAudio {
           src: ogg41,
           name: '01.ogg',
           index: 41,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 1');
       loadCount++;
@@ -631,7 +631,7 @@ class HfAudio {
           src: ogg42,
           name: '02.ogg',
           index: 42,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 2');
       loadCount++;
@@ -641,7 +641,7 @@ class HfAudio {
           src: ogg43,
           name: '03.ogg',
           index: 43,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 3');
       loadCount++;
@@ -651,7 +651,7 @@ class HfAudio {
           src: ogg44,
           name: '04.ogg',
           index: 44,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 4');
       loadCount++;
@@ -661,7 +661,7 @@ class HfAudio {
           src: ogg45,
           name: '05.ogg',
           index: 45,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 5');
       loadCount++;
@@ -671,7 +671,7 @@ class HfAudio {
           src: ogg46,
           name: '06.ogg',
           index: 46,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 6');
       loadCount++;
@@ -681,7 +681,7 @@ class HfAudio {
           src: ogg47,
           name: '07.ogg',
           index: 47,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 7');
       loadCount++;
@@ -691,7 +691,7 @@ class HfAudio {
           src: ogg48,
           name: '08.ogg',
           index: 48,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 8');
       loadCount++;
@@ -701,7 +701,7 @@ class HfAudio {
           src: ogg49,
           name: '09.ogg',
           index: 49,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 9');
       loadCount++;
@@ -711,7 +711,7 @@ class HfAudio {
           src: ogg50,
           name: 'ogg10.ogg',
           index: 50,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 10');
       loadCount++;
@@ -721,7 +721,7 @@ class HfAudio {
           src: ogg51,
           name: '11.ogg',
           index: 51,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 11');
       loadCount++;
@@ -731,7 +731,7 @@ class HfAudio {
           src: ogg52,
           name: '12.ogg',
           index: 52,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 12');
       loadCount++;
@@ -741,7 +741,7 @@ class HfAudio {
           src: ogg53,
           name: '13.ogg',
           index: 53,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 13');
       loadCount++;
@@ -751,7 +751,7 @@ class HfAudio {
           src: ogg54,
           name: '14.ogg',
           index: 54,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 14');
       loadCount++;
@@ -761,7 +761,7 @@ class HfAudio {
           src: ogg55,
           name: '15.ogg',
           index: 55,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 15');
       loadCount++;
@@ -771,7 +771,7 @@ class HfAudio {
           src: ogg56,
           name: '16.ogg',
           index: 56,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 16');
       loadCount++;
@@ -781,7 +781,7 @@ class HfAudio {
           src: ogg57,
           name: '17.ogg',
           index: 57,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 17');
       loadCount++;
@@ -791,7 +791,7 @@ class HfAudio {
           src: ogg58,
           name: '18.ogg',
           index: 58,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 18');
       loadCount++;
@@ -801,7 +801,7 @@ class HfAudio {
           src: ogg59,
           name: '19.ogg',
           index: 59,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 19');
       loadCount++;
@@ -811,7 +811,7 @@ class HfAudio {
           src: ogg60,
           name: '20.ogg',
           index: 60,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 20');
       loadCount++;
@@ -821,7 +821,7 @@ class HfAudio {
           src: ogg61,
           name: '21.ogg',
           index: 61,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 21');
       loadCount++;
@@ -831,7 +831,7 @@ class HfAudio {
           src: ogg62,
           name: '22.ogg',
           index: 62,
-          forceLoad: true,
+          forceLoad: false,
           replace: false);
       print('HF: finished loading ogg file 22');
       loadCount++;
