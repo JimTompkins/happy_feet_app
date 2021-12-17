@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
 import 'ble.dart';   // flutter_reactive_ble version
 //import 'ble2.dart'; // flutter_blue version
@@ -106,6 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _checkPermission() async {
     if (Platform.isAndroid) {
+      /*
       final status = await Permission.locationWhenInUse.request();
       if (status == PermissionStatus.granted) {
         print('HF: Permission granted');
@@ -116,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print('HF: Take the user to the settings page.');
         await openAppSettings();
       }
+      */
     } else if (Platform.isIOS) {
       // insert permission checks for iOS here
     }
