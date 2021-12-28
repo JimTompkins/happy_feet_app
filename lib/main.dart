@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -130,7 +130,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
 
-    hfaudio.init();
+    // delay the call to audio init since it includes a snackbar which (on iOS)
+    // can't be displayed until the scaffold is built
+    Future<Null>.delayed(Duration.zero, () {
+      hfaudio.init();
+    });
 
     if (!audioTestMode) {
       // request needed permissions
@@ -551,7 +555,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Woodblock'.tr,
                   'Brushes'.tr,
                   'Quijada'.tr,
-                 ].map<DropdownMenuItem<String>>((String value) {
+                ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),

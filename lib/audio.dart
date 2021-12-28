@@ -944,7 +944,7 @@ class HfAudio {
     if (Platform.isAndroid) {
       fop.release();
     } else if (Platform.isIOS) {
-  //    pool.release();
+      //    pool.release();
     }
   }
 }
