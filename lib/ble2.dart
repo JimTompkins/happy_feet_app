@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+//import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:happy_feet_app/main.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -68,12 +70,16 @@ class BluetoothBLEService {
   bool serviceDiscoveryComplete = true;
   final isConnected = false.obs;
   int heartbeatCount = 0;
+  int rssi = -1;
+  String bleAddress = 'unknown';
+  bool scanComplete = false;
 
   String? connectionText = "";
-  List<BluetoothDevice>? _devicesList;
+  List<BluetoothDevice> devicesList = [];
+  var rssiMap = <BluetoothDevice, int>{};
 
   BluetoothBLEService() {
-    _devicesList = [];
+    devicesList = [];
 
     isDeviceBluetoothOn();
   }
@@ -81,14 +87,6 @@ class BluetoothBLEService {
   final _deviceBluetoothStateSubject = BehaviorSubject<bool>();
   Stream<bool> get deviceBluetoothStateStream =>
       _deviceBluetoothStateSubject.stream;
-
-//final _connectionStateSubject =
-//BehaviorSubject<BluetoothConnectionStateDTO>();
-//Stream<BluetoothConnectionStateDTO> get connectionStateStream =>
-//    _connectionStateSubject.stream;
-
-//  final _beatSubject = BehaviorSubject<List<int>>();
-//  Stream<List<int>> get beatStream => _beatSubject.stream;
 
   isDeviceBluetoothOn() async {
     try {
@@ -113,6 +111,7 @@ class BluetoothBLEService {
 
   init() {
     isReady = false;
+    scanComplete = false;
     isConnected(false);
     _ble!.state.listen((status) {
       switch (status) {
@@ -153,6 +152,9 @@ class BluetoothBLEService {
   }
 
   startConnection() {
+    devicesList.clear(); // clear the list of found devices
+    rssiMap.clear();
+    scanComplete = false;
     if (targetDevice == null) {
       try {
         stopScan();
@@ -166,16 +168,36 @@ class BluetoothBLEService {
                   try {
                     // if (scanResult.device.name.isEmpty) return;
 
-                    _devicesList!.add(scanResult.device);
+                    //_devicesList!.add(scanResult.device);
 
                     String foundDevice = TARGET_DEVICE_NAMES
                         .firstWhere((e) => e == scanResult.device.name);
                     if (foundDevice.isNotEmpty) {
                       print('HF: HappyFeet found');
-                      print('HF: RSSI = $scanResult.device.rssi.toString()');
-                      stopScan();
-                      targetDevice = scanResult.device;
-                      connectToDevice();
+                      // if not in multi mode, stop further scanning and
+                      // connect to the first device found...
+                      if (!multiMode) {
+                        stopScan();
+                        rssi = scanResult.rssi;
+                        bleAddress = scanResult.device.id.toString();
+                        print('HF: rssi = $rssi, address = $bleAddress');
+                        targetDevice = scanResult.device;
+                        connectToDevice();
+                        print(
+                            'HF: connecting to device immediately since not in multi mode');
+                      }
+                      // if in multi mode, add the device to a list of devices
+                      // and keep scanning
+                      else {
+                        if (!devicesList.contains(scanResult.device)) {
+                          print(
+                              'HF: adding device to list since in multi mode');
+                          devicesList.add(scanResult.device);
+                          rssiMap[scanResult.device] = scanResult.rssi;
+                        } else {
+                          print('HF: already on devicesList');
+                        }
+                      }
                     }
                   } catch (err) {
                     print(err);
@@ -195,9 +217,61 @@ class BluetoothBLEService {
 
   _onDoneScan() {
     stopScan();
-    if (targetDevice == null) {
-      Get.snackbar('Bluetooth status'.tr, 'Can\'t find Happy Feet!  Do you own one?  Is it nearby?  Is it charged?'.tr, snackPosition: SnackPosition.BOTTOM);
+    if (!multiMode) {
+      if (targetDevice == null) {
+        Get.snackbar(
+            'Bluetooth status'.tr,
+            'Can\'t find Happy Feet!  Do you own one?  Is it nearby?  Is it charged?'
+                .tr,
+            snackPosition: SnackPosition.BOTTOM);
+      }
+    } else
+    // if in multi mode, check the list of devices found.  If none, open a snackbar.
+    // if one, connect to it.  If more than one, open a list for the user to select
+    // the desired device
+    {
+      if (devicesList.length == 0) {
+        Get.snackbar(
+            'Bluetooth status'.tr,
+            'Can\'t find Happy Feet!  Do you own one?  Is it nearby?  Is it charged?'
+                .tr,
+            snackPosition: SnackPosition.BOTTOM);
+      } else if (devicesList.length == 1) {
+        print('HF: found 1 HappyFeet, connecting now...');
+        bleAddress = devicesList[0].id.toString();
+        rssi = rssiMap[devicesList[0]]!;
+        print('HF: rssi = $rssi, address = $bleAddress');
+        targetDevice = devicesList[0];
+        connectToDevice();
+      } else if (devicesList.length > 1) {
+        var n = devicesList.length;
+        print('HF: found $n HappyFeet in multi mode');
+        Get.to(() => multiConnectPage);
+      }
     }
+    scanComplete = true;
+  }
+
+  // wait for the scan to complete by checking the scanComplete flag every 500ms
+  isScanComplete() async {
+    var scanStartTime = DateTime.now(); // get system time at start of scan
+    print('HF: starting scan');
+    while (true) {
+      if (scanComplete) {
+        break;
+      }
+      var now = DateTime.now(); // get current system time
+      Duration scanDuration =
+          now.difference(scanStartTime); // calculate duration of scan so far
+      var t = scanDuration.inSeconds.toDouble();
+      print('HF: scan time = $t');
+      if (t > 10.0) {
+        print('HF: scan timed out');
+        break;
+      }
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+    return;
   }
 
   stopScan() {
@@ -335,6 +409,12 @@ class BluetoothBLEService {
     _beatSubscription = null;
     print("HF: _beatSubscription is cancelled");
 
+    await scanSubscription?.cancel();
+    scanSubscription = null;
+    print('HF: scanSubscription is cancelled');
+
+    devicesList.clear(); // clear the list of found devices
+
     if (_char1 != null) _char1 = null;
     if (_char2 != null) _char2 = null;
     if (_char3 != null) _char3 = null;
@@ -348,9 +428,7 @@ class BluetoothBLEService {
     Get.snackbar('Bluetooth status'.tr, 'Disconnecting'.tr,
         snackPosition: SnackPosition.BOTTOM);
 
-//  _connectionStateSubject.add(BluetoothConnectionStateDTO(
-//      bluetoothConnectionState:
-//      BluetoothConnectionState.DEVICE_DISCONNECTED));
+    targetDevice = null;
   }
 
   Future<void> setDisconnectFlag() async {
@@ -548,6 +626,34 @@ class BluetoothBLEService {
           return ('Error'.tr);
         }
       }
+    }
+  }
+
+  // read the RSSI
+  Future<String>? readRSSI() async {
+    String result = 'Error'.tr;
+    if (!isConnected()) {
+      // not connected
+      result = 'not connected'.tr;
+      return result;
+    } else {
+      // connected
+      result = this.rssi.toString();
+      return (result);
+    }
+  }
+
+  // read the BLE address (which can also be used as a serial number)
+  Future<String>? readBleAddress() async {
+    String result = 'Error'.tr;
+    if (!isConnected()) {
+      // not connected
+      result = 'not connected'.tr;
+      return result;
+    } else {
+      // connected
+      result = this.bleAddress;
+      return (result);
     }
   }
 

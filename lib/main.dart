@@ -86,6 +86,11 @@ enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
 // audio from the BLE interface.
 bool audioTestMode = false;
 
+// flag used to enable multi mode.  Use multi mode if you have more than one
+// HappyFeet.  In multi mode, it will show all of the HappyFeet discovered
+// when connecting, and let you select which one you want to connect to.
+bool multiMode = false;
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -250,6 +255,17 @@ class _MyHomePageState extends State<MyHomePage> {
                               'Status'.tr, 'connecting to Bluetooth'.tr,
                               snackPosition: SnackPosition.BOTTOM);
                           _bluetoothBLEService.startConnection();
+                          if (multiMode) {
+                            // wait for the scan to complete
+                            print('HF: waiting for scan to complete...');
+                            _bluetoothBLEService.isScanComplete();
+                            print('HF: ...done');
+                            // if more than one device was found during the scan
+                            if (_bluetoothBLEService.devicesList.length > 1) {
+                              // go to the multi-connect screen...
+                              Get.to(() => multiConnectPage);
+                            }
+                          }
                         }
                       }),
                 ),
@@ -1251,6 +1267,8 @@ class _InfoPageState extends State<InfoPage> {
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   Future<String>? _modelNumber;
   Future<String>? _firmwareRevision;
+  Future<String>? _rssi;
+  Future<String>? _bleAddress;
 
   @override
   initState() {
@@ -1258,6 +1276,8 @@ class _InfoPageState extends State<InfoPage> {
     _initPackageInfo();
     _modelNumber = _bluetoothBLEService.readModelNumber();
     _firmwareRevision = _bluetoothBLEService.readFirmwareRevision();
+    _rssi = _bluetoothBLEService.readRSSI();
+    _bleAddress = _bluetoothBLEService.readBleAddress();
   }
 
   Future<void> _initPackageInfo() async {
@@ -1288,6 +1308,123 @@ class _InfoPageState extends State<InfoPage> {
 //              _infoTile('Package name', _packageInfo.packageName),
               _infoTile('App version'.tr, _packageInfo.version),
 //              _infoTile('Build number', _packageInfo.buildNumber),
+              Row(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Serial number:'.tr),
+                ),
+                Flexible(
+                  // this widget is here so that text wrapping will work...
+                  child: FutureBuilder<String>(
+                      future: _bleAddress,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        List<Widget> children;
+                        if (snapshot.hasData) {
+                          children = <Widget>[
+                            const Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.green,
+                              size: 60,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text('${snapshot.data}', maxLines: 2),
+                            )
+                          ];
+                        } else if (snapshot.hasError) {
+                          children = <Widget>[
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 60,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text('Error: ${snapshot.error}'.tr),
+                            )
+                          ];
+                        } else {
+                          children = const <Widget>[
+                            SizedBox(
+                              child: CircularProgressIndicator(),
+                              width: 60,
+                              height: 60,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Text(
+                                  '...'), // can't translate a string here...
+                            )
+                          ];
+                        }
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: children,
+                          ),
+                        );
+                      }),
+                )
+              ]),
+              Row(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('RSSI:'.tr),
+                ),
+                FutureBuilder<String>(
+                    future: _rssi,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      List<Widget> children;
+                      if (snapshot.hasData) {
+                        children = <Widget>[
+                          const Icon(
+                            Icons.check_circle_outline,
+                            color: Colors.green,
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Result: ${snapshot.data}' + 'dB'),
+                          )
+                        ];
+                      } else if (snapshot.hasError) {
+                        children = <Widget>[
+                          const Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Error: ${snapshot.error}'.tr),
+                          )
+                        ];
+                      } else {
+                        children = const <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(),
+                            width: 60,
+                            height: 60,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child:
+                                Text('...'), // can't translate a string here...
+                          )
+                        ];
+                      }
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: children,
+                        ),
+                      );
+                    })
+              ]),
               Row(children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -1614,6 +1751,55 @@ class _MenuPageState extends State<MenuPage> {
                 },
               ),
             ]),
+            Row(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Multi mode'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              Switch(
+                value: multiMode,
+                activeColor: Colors.deepOrange[400],
+                activeTrackColor: Colors.deepOrange[200],
+                inactiveThumbColor: Colors.grey[600],
+                inactiveTrackColor: Colors.grey[400],
+                onChanged: (value) {
+                  setState(() {
+                    multiMode = value;
+                    if (multiMode) {
+                      print('HF: multi mode enabled');
+                      Get.snackbar('Status'.tr, 'Multi mode enabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      print('HF: multi mode disabled');
+                      Get.snackbar('Status'.tr, 'Multi mode disabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    }
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.help,
+                ),
+                iconSize: 30,
+                color: Colors.blue[400],
+                onPressed: () {
+                  Get.defaultDialog(
+                    title: 'Multi mode'.tr,
+                    middleText:
+                        'Use multi mode if you have more than one HappyFeet.'
+                            .tr,
+                    textConfirm: 'OK',
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+            ]),
           ]), // Column
         ]),
       ),
@@ -1714,25 +1900,6 @@ class _SaveGroovePageState extends State<SaveGroovePage> {
                       snackPosition: SnackPosition.BOTTOM);
                   // go back to previous screen
                   Get.back(closeOverlays: true);
-                  /*
-                  switch (groove.type) {
-                    case GrooveType.percussion:
-                      {
-                        Get.to(() => groovePage);
-                        break;
-                      }
-                    case GrooveType.bass:
-                      {
-                        Get.to(() => bassPage);
-                        break;
-                      }
-                    default:
-                      {
-                        Get.to(() => groovePage);
-                        break;
-                      }
-                  }
-                  */
                 }),
           ]),
         ]),
@@ -1788,25 +1955,75 @@ class _LoadGroovePageState extends State<LoadGroovePage> {
                                 snackPosition: SnackPosition.BOTTOM);
                             // go back to previous screen
                             Get.back(closeOverlays: true);
-                            /*
-                            switch (groove.type) {
-                              case GrooveType.percussion:
-                                {
-                                  Get.to(() => groovePage);
-                                  break;
-                                }
-                              case GrooveType.bass:
-                                {
-                                  Get.to(() => bassPage);
-                                  break;
-                                }
-                              default:
-                                {
-                                  Get.to(() => groovePage);
-                                  break;
-                                }
-                            }
-                            */
+                          });
+                    })),
+          ],
+        ),
+      ),
+    );
+  } // Widget
+} // class
+
+// multi-connect page
+MultiConnectPage multiConnectPage = new MultiConnectPage();
+
+// Stateful version of multiConnectPage page
+class MultiConnectPage extends StatefulWidget {
+  @override
+  _MultiConnectPageState createState() => _MultiConnectPageState();
+}
+
+class _MultiConnectPageState extends State<MultiConnectPage> {
+  static BluetoothBLEService _bluetoothBLEService = Get.find();
+  int? _rssi = 0;
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Happy Feet - Multi-connect'.tr),
+      ),
+      body: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(6),
+        child: Column(
+          children: <Widget>[
+            Text(
+              'Select an available HappyFeet: '.tr,
+              style: Theme.of(context).textTheme.caption,
+            ),
+            Flexible(
+                child: ListView.builder(
+                    itemCount: _bluetoothBLEService.devicesList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      _rssi = _bluetoothBLEService
+                          .rssiMap[_bluetoothBLEService.devicesList[index]];
+                      return ListTile(
+                          title: Text(_bluetoothBLEService.devicesList[index].id
+                              .toString()),
+                          trailing: Text(_rssi.toString() + 'dB'),
+                          onTap: () {
+                            // connect to the selected HappyFeet
+                            _bluetoothBLEService.targetDevice =
+                                _bluetoothBLEService.devicesList[index];
+                            _bluetoothBLEService.connectToDevice();
+                            _bluetoothBLEService.bleAddress =
+                                _bluetoothBLEService.devicesList[index].id
+                                    .toString();
+                            _bluetoothBLEService.rssi =
+                                _bluetoothBLEService.rssiMap[
+                                    _bluetoothBLEService.devicesList[index]]!;
+                            print(
+                                'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
+                            Get.snackbar('Bluetooth status'.tr,
+                                'connecting to Bluetooth '.tr,
+                                snackPosition: SnackPosition.BOTTOM);
+                            // go back to previous screen
+                            Get.back(closeOverlays: true);
                           });
                     })),
           ],
