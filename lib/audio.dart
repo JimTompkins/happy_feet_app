@@ -162,7 +162,7 @@ class HfAudio {
       if (!this.percussionLoaded) {
         Get.snackbar('Status'.tr, 'Loading percussion sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 3), // measured 262ms
             showProgressIndicator: true);
         initIOSSoundpoolPercussion();
         this.percussionLoaded = true;
@@ -171,7 +171,7 @@ class HfAudio {
       if (!this.bassLoaded) {
         Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 10),
+            duration: const Duration(seconds: 3),  // measured 550ms
             showProgressIndicator: true);
         initIOSSoundpoolBass();
         this.bassLoaded = true;
@@ -186,6 +186,8 @@ class HfAudio {
     print('HF: loading percussion mp3files into soundpool');
     String _path = "assets/sounds/";
     String _filename;
+
+    var _startTime = DateTime.now(); // get system time
 
     // release previously loaded sounds
     //await pool.release();
@@ -261,6 +263,12 @@ class HfAudio {
     int id14 = await pool.load(asset14);
     soundIdMap[14] = id14;
 
+    var _finishTime = DateTime.now(); // get system time
+    Duration _loadTime = _finishTime.difference(_startTime);
+    var _loadTimeMs = _loadTime.inMilliseconds.toDouble(); // convert load time to ms
+
+    print('HF: initIOSPercussion: time = $_loadTimeMs ms');
+
 //TODO: play all sounds at zero volume to remove the large latency on the first
 // play of a sound
   }
@@ -275,6 +283,8 @@ class HfAudio {
     int _len = soundIdMap.length;
     print(
         'HF: initIOSSoundpoolBass : soundIdMap length (before clear) = $_len');
+
+    var _startTime = DateTime.now(); // get system time
 
     // release previously loaded sounds
     //await pool.release();
@@ -449,6 +459,12 @@ class HfAudio {
     var asset23 = await rootBundle.load(_filename);
     int id23 = await pool.load(asset23);
     soundIdMap[_i] = id23;
+
+    var _finishTime = DateTime.now(); // get system time
+    Duration _loadTime = _finishTime.difference(_startTime);
+    var _loadTimeMs = _loadTime.inMilliseconds.toDouble(); // convert load time to ms
+
+    print('HF: initIOSSoundpoolBass: time = $_loadTimeMs ms');
 
     _len = soundIdMap.length;
     print(

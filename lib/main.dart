@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -34,7 +34,7 @@ void main() {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
 */
-  
+
   runApp(MyApp());
 }
 
@@ -2007,8 +2007,13 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                 child: ListView.builder(
                     itemCount: _bluetoothBLEService.devicesList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      _rssi = _bluetoothBLEService
-                          .rssiMap[_bluetoothBLEService.devicesList[index].id];
+                      if (Platform.isAndroid) {
+                        _rssi = _bluetoothBLEService.rssiMap[
+                            _bluetoothBLEService.devicesList[index].id];
+                      } else if (Platform.isIOS) {
+                        _rssi = _bluetoothBLEService.rssiMap[
+                          _bluetoothBLEService.devicesList[index]];
+                      }
                       return ListTile(
                           title: Text(_bluetoothBLEService.devicesList[index].id
                               .toString()),
@@ -2021,9 +2026,15 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                             _bluetoothBLEService.bleAddress =
                                 _bluetoothBLEService.devicesList[index].id
                                     .toString();
-                            _bluetoothBLEService.rssi =
-                                _bluetoothBLEService.rssiMap[
-                                    _bluetoothBLEService.devicesList[index].id]!;
+                            if (Platform.isAndroid) {
+                              _bluetoothBLEService.rssi = _bluetoothBLEService
+                                    .rssiMap[
+                                _bluetoothBLEService.devicesList[index].id]!; 
+                            } else if (Platform.isIOS) {
+                              _bluetoothBLEService.rssi = _bluetoothBLEService
+                                    .rssiMap[
+                                _bluetoothBLEService.devicesList[index]]!; 
+                                }
                             print(
                                 'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
                             Get.snackbar('Bluetooth status'.tr,
