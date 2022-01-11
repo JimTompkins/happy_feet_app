@@ -129,14 +129,18 @@ class HfAudio {
     if (groove.type == GrooveType.percussion) {
       if (!this.percussionLoaded) {
         Get.snackbar('Status'.tr, 'Loading percussion sounds.'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 5),
+            showProgressIndicator: true);
         initAndroidPercussion();
         this.percussionLoaded = true;
       }
     } else if (groove.type == GrooveType.bass) {
       if (!this.bassLoaded) {
         Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 10),
+            showProgressIndicator: true);
         initAndroidBass();
         this.bassLoaded = true;
       }
@@ -157,14 +161,18 @@ class HfAudio {
     if (groove.type == GrooveType.percussion) {
       if (!this.percussionLoaded) {
         Get.snackbar('Status'.tr, 'Loading percussion sounds.'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 5),
+            showProgressIndicator: true);
         initIOSSoundpoolPercussion();
         this.percussionLoaded = true;
       }
     } else if (groove.type == GrooveType.bass) {
       if (!this.bassLoaded) {
         Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 10),
+            showProgressIndicator: true);
         initIOSSoundpoolBass();
         this.bassLoaded = true;
       }
@@ -452,392 +460,408 @@ class HfAudio {
 
   void initAndroidPercussion() async {
     int loadCount = 0;
+    bool _forceLoad = true;
+    bool _replace = true;
 
     print('HF: initAndroidPercussion...');
 
+    var _startTime = DateTime.now(); // get system time
+
     // load the sound sample files
-    rootBundle.load('assets/sounds/fatkick.ogg').then((ogg0) {
-      fop.load(
+    await rootBundle.load('assets/sounds/fatkick.ogg').then((ogg0) async {
+      await fop.load(
           src: ogg0,
           name: 'fatkick.ogg',
           index: 0,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace);
       print('HF: finished loading ogg file 0');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/kick_drum2.ogg').then((ogg1) {
-      fop.load(
+    await rootBundle.load('assets/sounds/kick_drum2.ogg').then((ogg1) async {
+      await fop.load(
           src: ogg1,
           name: 'kick_drum2.ogg',
           index: 1,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace);
       print('HF: finished loading ogg file 1');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/snare_drum.ogg').then((ogg2) {
-      fop.load(
+    await rootBundle.load('assets/sounds/snare_drum.ogg').then((ogg2) async {
+      await fop.load(
           src: ogg2,
           name: 'snare_drum.ogg',
           index: 2,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 2');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/high_hat.ogg').then((ogg3) {
-      fop.load(
+    await rootBundle.load('assets/sounds/high_hat.ogg').then((ogg3) async {
+      await fop.load(
           src: ogg3,
           name: 'high_hat.ogg',
           index: 3,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 3');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/cowbell.ogg').then((ogg4) {
-      fop.load(
+    await rootBundle.load('assets/sounds/cowbell.ogg').then((ogg4) async {
+      await fop.load(
           src: ogg4,
           name: 'cowbell.ogg',
           index: 4,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 4');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/tambourine.ogg').then((ogg5) {
-      fop.load(
+    await rootBundle.load('assets/sounds/tambourine.ogg').then((ogg5) async {
+      await fop.load(
           src: ogg5,
           name: 'tambourine.ogg',
           index: 5,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 5');
       loadCount++;
     });
 
-    rootBundle.load('assets/sounds/fingersnap.ogg').then((ogg7) {
-      fop.load(
+    await rootBundle.load('assets/sounds/fingersnap.ogg').then((ogg7) async {
+      await fop.load(
           src: ogg7,
           name: 'fingersnap.ogg',
           index: 7,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 7');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/sidestick.ogg').then((ogg8) {
-      fop.load(
+    await rootBundle.load('assets/sounds/sidestick.ogg').then((ogg8) async {
+      await fop.load(
           src: ogg8,
           name: 'sidestick.ogg',
           index: 8,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 8');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/shaker.ogg').then((ogg9) {
-      fop.load(
+    await rootBundle.load('assets/sounds/shaker.ogg').then((ogg9) async {
+      await fop.load(
           src: ogg9,
           name: 'shaker.ogg',
           index: 9,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 9');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/woodblock2.ogg').then((ogg10) {
-      fop.load(
+    await rootBundle.load('assets/sounds/woodblock2.ogg').then((ogg10) async {
+      await fop.load(
           src: ogg10,
           name: 'woodblock2.ogg',
           index: 10,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 10');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/lodrytom.ogg').then((ogg11) {
-      fop.load(
+    await rootBundle.load('assets/sounds/lodrytom.ogg').then((ogg11) async {
+      await fop.load(
           src: ogg11,
           name: 'lodrytom.ogg',
           index: 11,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 11');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/hidrytom.ogg').then((ogg12) {
-      fop.load(
+    await rootBundle.load('assets/sounds/hidrytom.ogg').then((ogg12) async {
+      await fop.load(
           src: ogg12,
           name: 'hidrytom.ogg',
           index: 12,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 12');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/circlebrush.ogg').then((ogg13) {
-      fop.load(
+    await rootBundle.load('assets/sounds/circlebrush.ogg').then((ogg13) async {
+      await fop.load(
           src: ogg13,
           name: 'circlebrush.ogg',
           index: 13,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 13');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/vibraslap.ogg').then((ogg14) {
-      fop.load(
+    await rootBundle.load('assets/sounds/vibraslap.ogg').then((ogg14) async {
+      await fop.load(
           src: ogg14,
           name: 'vibraslap.ogg',
           index: 14,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 14');
       loadCount++;
     });
-    print('HF: initAndroidPercussion: loadCount = $loadCount');
+
+    var _finishTime = DateTime.now(); // get system time
+    Duration loadTime = _finishTime.difference(_startTime);
+    var loadTimeMs = loadTime.inMilliseconds.toDouble(); // convert load time to ms
+
+    print('HF: initAndroidPercussion: loadCount = $loadCount, time = $loadTimeMs ms');
   }
 
   void initAndroidBass() async {
     int loadCount = 0;
+    bool _forceLoad = true;
+    bool _replace = true;
 
     print('HF: initAndroidBass...');
+    var _startTime = DateTime.now(); // get system time
 
     // load the sound sample files
-    rootBundle.load('assets/sounds/00.ogg').then((ogg40) {
-      fop.load(
+    await rootBundle.load('assets/sounds/00.ogg').then((ogg40) async {
+      await fop.load(
           src: ogg40,
           name: '00.ogg',
           index: 40,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 0');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/01.ogg').then((ogg41) {
-      fop.load(
+    await rootBundle.load('assets/sounds/01.ogg').then((ogg41) async {
+      await fop.load(
           src: ogg41,
           name: '01.ogg',
           index: 41,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 1');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/02.ogg').then((ogg42) {
-      fop.load(
+    await rootBundle.load('assets/sounds/02.ogg').then((ogg42) async {
+      await fop.load(
           src: ogg42,
           name: '02.ogg',
           index: 42,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 2');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/03.ogg').then((ogg43) {
-      fop.load(
+    await rootBundle.load('assets/sounds/03.ogg').then((ogg43) async {
+      await fop.load(
           src: ogg43,
           name: '03.ogg',
           index: 43,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 3');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/04.ogg').then((ogg44) {
-      fop.load(
+    await rootBundle.load('assets/sounds/04.ogg').then((ogg44) async {
+      await fop.load(
           src: ogg44,
           name: '04.ogg',
           index: 44,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 4');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/05.ogg').then((ogg45) {
-      fop.load(
+    await rootBundle.load('assets/sounds/05.ogg').then((ogg45) async {
+      await fop.load(
           src: ogg45,
           name: '05.ogg',
           index: 45,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 5');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/06.ogg').then((ogg46) {
-      fop.load(
+    await rootBundle.load('assets/sounds/06.ogg').then((ogg46) async {
+      await fop.load(
           src: ogg46,
           name: '06.ogg',
           index: 46,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 6');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/07.ogg').then((ogg47) {
-      fop.load(
+    await rootBundle.load('assets/sounds/07.ogg').then((ogg47) async {
+      await fop.load(
           src: ogg47,
           name: '07.ogg',
           index: 47,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 7');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/08.ogg').then((ogg48) {
-      fop.load(
+    await rootBundle.load('assets/sounds/08.ogg').then((ogg48) async {
+      await fop.load(
           src: ogg48,
           name: '08.ogg',
           index: 48,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 8');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/09.ogg').then((ogg49) {
-      fop.load(
+    await rootBundle.load('assets/sounds/09.ogg').then((ogg49) async {
+      await fop.load(
           src: ogg49,
           name: '09.ogg',
           index: 49,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 9');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/10.ogg').then((ogg50) {
-      fop.load(
+    await rootBundle.load('assets/sounds/10.ogg').then((ogg50) async {
+      await fop.load(
           src: ogg50,
           name: 'ogg10.ogg',
           index: 50,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 10');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/11.ogg').then((ogg51) {
-      fop.load(
+    await rootBundle.load('assets/sounds/11.ogg').then((ogg51) async {
+      await fop.load(
           src: ogg51,
           name: '11.ogg',
           index: 51,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 11');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/12.ogg').then((ogg52) {
-      fop.load(
+    await rootBundle.load('assets/sounds/12.ogg').then((ogg52) async {
+      await fop.load(
           src: ogg52,
           name: '12.ogg',
           index: 52,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 12');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/13.ogg').then((ogg53) {
-      fop.load(
+    await rootBundle.load('assets/sounds/13.ogg').then((ogg53) async {
+      await fop.load(
           src: ogg53,
           name: '13.ogg',
           index: 53,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 13');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/14.ogg').then((ogg54) {
-      fop.load(
+    await rootBundle.load('assets/sounds/14.ogg').then((ogg54) async {
+      await fop.load(
           src: ogg54,
           name: '14.ogg',
           index: 54,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 14');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/15.ogg').then((ogg55) {
-      fop.load(
+    await rootBundle.load('assets/sounds/15.ogg').then((ogg55) async {
+      await fop.load(
           src: ogg55,
           name: '15.ogg',
           index: 55,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 15');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/16.ogg').then((ogg56) {
-      fop.load(
+    await rootBundle.load('assets/sounds/16.ogg').then((ogg56) async {
+      await fop.load(
           src: ogg56,
           name: '16.ogg',
           index: 56,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 16');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/17.ogg').then((ogg57) {
-      fop.load(
+    await rootBundle.load('assets/sounds/17.ogg').then((ogg57) async {
+      await fop.load(
           src: ogg57,
           name: '17.ogg',
           index: 57,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 17');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/18.ogg').then((ogg58) {
-      fop.load(
+    await rootBundle.load('assets/sounds/18.ogg').then((ogg58) async {
+      await fop.load(
           src: ogg58,
           name: '18.ogg',
           index: 58,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 18');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/19.ogg').then((ogg59) {
-      fop.load(
+    await rootBundle.load('assets/sounds/19.ogg').then((ogg59) async {
+      await fop.load(
           src: ogg59,
           name: '19.ogg',
           index: 59,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 19');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/20.ogg').then((ogg60) {
-      fop.load(
+    await rootBundle.load('assets/sounds/20.ogg').then((ogg60) async {
+      await fop.load(
           src: ogg60,
           name: '20.ogg',
           index: 60,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 20');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/21.ogg').then((ogg61) {
-      fop.load(
+    await rootBundle.load('assets/sounds/21.ogg').then((ogg61) async {
+      await fop.load(
           src: ogg61,
           name: '21.ogg',
           index: 61,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 21');
       loadCount++;
     });
-    rootBundle.load('assets/sounds/22.ogg').then((ogg62) {
-      fop.load(
+    await rootBundle.load('assets/sounds/22.ogg').then((ogg62) async {
+      await fop.load(
           src: ogg62,
           name: '22.ogg',
           index: 62,
-          forceLoad: false,
-          replace: false);
+          forceLoad: _forceLoad,
+          replace: _replace,);
       print('HF: finished loading ogg file 22');
       loadCount++;
     });
 
-    print('HF: initAndroidBass: loadCount = $loadCount');
+    var _finishTime = DateTime.now(); // get system time
+    Duration loadTime = _finishTime.difference(_startTime);
+    var loadTimeMs = loadTime.inMilliseconds.toDouble(); // convert load time to ms
+
+    print('HF: initAndroidBass: loadCount = $loadCount, time = $loadTimeMs ms');
   }
 
   // play a single sound from the index i sample loaded earlier, transposed

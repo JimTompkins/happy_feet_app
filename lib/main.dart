@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
-//import 'ble.dart';   // flutter_reactive_ble version
-import 'ble2.dart'; // flutter_blue version
+import 'ble.dart';   // flutter_reactive_ble version
+//import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -28,6 +28,13 @@ _launchURL() async {
 }
 
 void main() {
+  /*
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
+*/
+  
   runApp(MyApp());
 }
 
@@ -2001,7 +2008,7 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                     itemCount: _bluetoothBLEService.devicesList.length,
                     itemBuilder: (BuildContext context, int index) {
                       _rssi = _bluetoothBLEService
-                          .rssiMap[_bluetoothBLEService.devicesList[index]];
+                          .rssiMap[_bluetoothBLEService.devicesList[index].id];
                       return ListTile(
                           title: Text(_bluetoothBLEService.devicesList[index].id
                               .toString()),
@@ -2016,7 +2023,7 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                                     .toString();
                             _bluetoothBLEService.rssi =
                                 _bluetoothBLEService.rssiMap[
-                                    _bluetoothBLEService.devicesList[index]]!;
+                                    _bluetoothBLEService.devicesList[index].id]!;
                             print(
                                 'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
                             Get.snackbar('Bluetooth status'.tr,
