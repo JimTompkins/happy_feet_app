@@ -978,6 +978,7 @@ class _BassPageState extends State<BassPage> {
   int _numberOfMeasures = groove.numMeasures;
   int _totalBeats = groove.bpm * groove.numMeasures;
   int _testModeData = 0x00;
+  bool _interpolate = groove.interpolate;
   String _key = groove.key;
   List<String> dropdownValue = groove.getInitials();
   static BluetoothBLEService _bluetoothBLEService = Get.find();
@@ -990,6 +991,13 @@ class _BassPageState extends State<BassPage> {
     _numberOfMeasures = groove.numMeasures;
     _totalBeats = groove.bpm * groove.numMeasures;
     _key = groove.key;
+    _interpolate = groove.interpolate;
+    if (_interpolate) {
+      groove.leadInCount = 4;
+      print('HF: set lead-in counter to 4');
+    } else {
+      groove.leadInCount = 0;
+    }
     groove.checkType('bass');
     dropdownValue = groove.getInitials();
     print('HF: dropdownValue = $dropdownValue');
@@ -999,9 +1007,21 @@ class _BassPageState extends State<BassPage> {
   // return a colour to use for each gridview element based on its index
   // this is done to improve readability when entering notes into a bass groove.
   Color? rowColor(int index) {
-    return ((index ~/ _beatsPerMeasure) & 0x01 == 0x01)
-        ? Colors.blue[200]
-        : Colors.blue[400];
+    Color? _result;
+
+    // alternate between two shades of blue for each measure
+    if ((index ~/ _beatsPerMeasure) & 0x01 == 0x01) {
+      _result = Colors.blue[200];
+    } else {
+      _result = Colors.blue[400];
+    }
+
+    // if in interpolate mode, use a separate colour for the back beats
+    if (groove.interpolate && index.isOdd) {
+      _result = Colors.deepPurple[200];
+    }
+
+    return _result;
   }
 
   @override
@@ -1145,6 +1165,29 @@ class _BassPageState extends State<BassPage> {
                     );
                   }).toList(),
                 ),
+                Text('  Backbeat'.tr,
+                    style: Theme.of(context).textTheme.caption),
+                Switch(
+                    value: _interpolate,
+                    onChanged: (value) {
+                      setState(() {
+                        // check if the number of beats per measure is even.  If not, open a snackbar
+                        // and don't set interpolate mode
+                        if (_beatsPerMeasure.isEven) {
+                          _interpolate = value;
+                          groove.interpolate = value;
+                          if (value) {
+                            groove.leadInCount = 4;
+                          } // if changing to interpolate mode, add a 4 beat lead-in
+                        } else {
+                          Get.snackbar(
+                              'Notice'.tr,
+                              'back beat mode can only be used with even number of beats per measure.'
+                                  .tr,
+                              snackPosition: SnackPosition.BOTTOM);
+                        }
+                      });
+                    }),
               ]),
             ]), // Column
 
@@ -2011,8 +2054,8 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                         _rssi = _bluetoothBLEService.rssiMap[
                             _bluetoothBLEService.devicesList[index].id];
                       } else if (Platform.isIOS) {
-                        _rssi = _bluetoothBLEService.rssiMap[
-                          _bluetoothBLEService.devicesList[index]];
+                        _rssi = _bluetoothBLEService
+                            .rssiMap[_bluetoothBLEService.devicesList[index]];
                       }
                       return ListTile(
                           title: Text(_bluetoothBLEService.devicesList[index].id
@@ -2028,13 +2071,13 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                                     .toString();
                             if (Platform.isAndroid) {
                               _bluetoothBLEService.rssi = _bluetoothBLEService
-                                    .rssiMap[
-                                _bluetoothBLEService.devicesList[index].id]!; 
+                                      .rssiMap[
+                                  _bluetoothBLEService.devicesList[index].id]!;
                             } else if (Platform.isIOS) {
-                              _bluetoothBLEService.rssi = _bluetoothBLEService
-                                    .rssiMap[
-                                _bluetoothBLEService.devicesList[index]]!; 
-                                }
+                              _bluetoothBLEService.rssi =
+                                  _bluetoothBLEService.rssiMap[
+                                      _bluetoothBLEService.devicesList[index]]!;
+                            }
                             print(
                                 'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
                             Get.snackbar('Bluetooth status'.tr,

@@ -589,9 +589,14 @@ class Groove {
 
     // if the list of notes is too long
     if (this.notes.length > beats) {
+      var numToRemove = this.notes.length - beats;
+      var notesLength = this.notes.length;
+      var notes2Length = this.notes2.length;
+      print(
+          "HF: resize groove removing $numToRemove notes, beat = $beat, measure = $measure, notes length = $notesLength, notes2 length = $notes2Length");
       // remove the extra items
-      this.notes.removeRange(beat, this.notes.length - 1);
-      this.notes2.removeRange(beat, this.notes2.length - 1);
+      this.notes.removeRange(beats - 1, this.notes.length - 1);
+      this.notes2.removeRange(beats - 1, this.notes2.length - 1);
     } else if (this.notes.length < beats) {
       // if the list is too short
       var numToAdd = beats - this.notes.length;
