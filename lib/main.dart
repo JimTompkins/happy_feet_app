@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -2042,9 +2042,32 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
         padding: const EdgeInsets.all(6),
         child: Column(
           children: <Widget>[
-            Text(
-              'Select an available HappyFeet: '.tr,
-              style: Theme.of(context).textTheme.caption,
+            Row(
+              children: [
+                Text(
+                  'Select an available HappyFeet: '.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                IconButton(
+                icon: Icon(
+                  Icons.help,
+                ),
+                iconSize: 30,
+                color: Colors.blue[400],
+                onPressed: () {
+                  Get.defaultDialog(
+                    title: 'Multi mode'.tr,
+                    middleText:
+                        'Nearby HappyFeet are listed from closest to furthest as shown by RSSI'
+                            .tr,
+                    textConfirm: 'OK',
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+              ],
             ),
             Flexible(
                 child: ListView.builder(

@@ -246,6 +246,8 @@ class BluetoothBLEService {
       } else if (devicesList.length > 1) {
         var n = devicesList.length;
         print('HF: found $n HappyFeet in multi mode');
+        // sort the devices list by RSSI in descending order i.e. closest first
+        devicesList.sort((b, a) => rssiMap[a]!.compareTo(rssiMap[b]!));
         Get.to(() => multiConnectPage);
       }
     }
