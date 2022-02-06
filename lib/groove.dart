@@ -410,36 +410,36 @@ class Groove {
     }
   }
 
-  // add a bass note to the groove using the roman numeral and which key
-  // we're in currently e.g. key of C, III would be E.
-  addBassNote(int index, String roman, String keyName) {
+  // add a bass note to the groove using the arabic numeral and which key
+  // we're in currently e.g. key of C, 3 would be E.
+  addBassNote(int index, String arabic, String keyName) {
     // if no note is to be played, as indicated by -,
     // then set oggIndex to -1 and name and initial to -
-    if (roman == '-') {
+    if (arabic == '-') {
       this.notes[index].name = '-';
       this.notes[index].initial = '-';
       this.notes[index].oggIndex = -1;
       this.notes[index].oggNote = 0;
     } else {
       // create a name by concatenating the key name, a "-" and the
-      // roman numeral,  e.g. C-IV
-      this.notes[index].name = keyName + '-' + roman;
-      this.notes[index].initial = roman;
+      // arabic numeral,  e.g. C-4
+      this.notes[index].name = keyName + '-' + arabic;
+      this.notes[index].initial = arabic;
 
       // get the index of the keyName
       int keyIndex = keys.indexWhere((element) => element == keyName);
       print('HF: addBassNote: keyName = $keyName, keyIndex = $keyIndex');
 
       // get the index of the roman numeral
-      if (roman == 'none') {
-        roman = '-';
+      if (arabic == 'none') {
+        arabic = '-';
       }
-      int romanIndex =
-          scaleTonesRoman.indexWhere((element) => element == roman);
-      print('HF: addBassNote: roman = $roman');
-      print('HF: addBassNote: romanIndex = $romanIndex');
+      int arabicIndex =
+          scaleTonesArabic.indexWhere((element) => element == arabic);
+      print('HF: addBassNote: arabic = $arabic');
+      print('HF: addBassNote: arabicIndex = $arabicIndex');
 
-      int offset = scaleTonesIndex[romanIndex];
+      int offset = scaleTonesIndex[arabicIndex];
       print('HF: addBassNote: offset = $offset');
 
       if (Platform.isAndroid) {

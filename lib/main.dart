@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -1199,7 +1199,7 @@ class _BassPageState extends State<BassPage> {
 
             // beat grid
             Text(
-              ' Choose "-" for no note, or Roman numerals I through VII plus flats for tones '
+              ' Choose "-" for no note, or numbers 1 through 7 plus flats for tones '
                   .tr,
               style: Theme.of(context).textTheme.caption,
             ), // Text
@@ -1232,18 +1232,18 @@ class _BassPageState extends State<BassPage> {
 //                           items: <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].map<DropdownMenuItem<String>>((String value) {
                             items: <String>[
                               '-',
-                              'I',
-                              'bII',
-                              'II',
-                              'bIII',
-                              'III',
-                              'IV',
-                              'bV',
-                              'V',
-                              'bVI',
-                              'VI',
-                              'bVII',
-                              'VII'
+                              '1',
+                              'b2',
+                              '2',
+                              'b3',
+                              '3',
+                              '4',
+                              'b5',
+                              '5',
+                              'b6',
+                              '6',
+                              'b7',
+                              '7'
                             ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                   value: value, child: Text(value));

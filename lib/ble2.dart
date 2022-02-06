@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 //import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:happy_feet_app/main.dart';
 import 'package:rxdart/rxdart.dart';
@@ -44,7 +44,7 @@ class BluetoothBLEService {
 
   static const TARGET_DEVICE_NAMES = ["HappyFeet"];
 
-  FlutterBlue? _ble = FlutterBlue.instance;
+  FlutterBluePlus? _ble = FlutterBluePlus.instance;
 //  _ble.setLogLevel(LogLevel.debug);
   StreamSubscription<ScanResult>? scanSubscription;
 

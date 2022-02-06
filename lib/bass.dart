@@ -36,6 +36,21 @@ List scaleTonesRoman = <String>[
   'bVII',
   'VII'
 ];
+List scaleTonesArabic = <String>[
+  '-',
+  '1',
+  'b2',
+  '2',
+  'b3',
+  '3',
+  '4',
+  'b5',
+  '5',
+  'b6',
+  '6',
+  'b7',
+  '7'
+];
 
 List chordsInKey = <String>['M', 'm', 'm', 'M', 'M', 'm', 'dim'];
 
