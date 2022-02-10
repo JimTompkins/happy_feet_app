@@ -2,10 +2,10 @@ PODS:
   - device_display_brightness (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_blue (0.0.1):
+  - flutter_blue_plus (0.0.1):
     - Flutter
-    - flutter_blue/Protos (= 0.0.1)
-  - flutter_blue/Protos (0.0.1):
+    - flutter_blue_plus/Protos (= 0.0.1)
+  - flutter_blue_plus/Protos (0.0.1):
     - Flutter
     - Protobuf (~> 3.11)
   - flutter_ogg_piano (0.0.1):
@@ -23,7 +23,7 @@ PODS:
 DEPENDENCIES:
   - device_display_brightness (from `.symlinks/plugins/device_display_brightness/ios`)
   - Flutter (from `Flutter`)
-  - flutter_blue (from `.symlinks/plugins/flutter_blue/ios`)
+  - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
   - flutter_ogg_piano (from `.symlinks/plugins/flutter_ogg_piano/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
@@ -39,8 +39,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/device_display_brightness/ios"
   Flutter:
     :path: Flutter
-  flutter_blue:
-    :path: ".symlinks/plugins/flutter_blue/ios"
+  flutter_blue_plus:
+    :path: ".symlinks/plugins/flutter_blue_plus/ios"
   flutter_ogg_piano:
     :path: ".symlinks/plugins/flutter_ogg_piano/ios"
   package_info_plus:
@@ -55,13 +55,13 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   device_display_brightness: 1510e72c567a1f6ce6ffe393dcd9afd1426034f7
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_blue: f98d52ff2bb55351112d94fe9731e53f6aea391c
+  flutter_blue_plus: 6787777145d615de01828f3a9fa423c3c702f0b3
   flutter_ogg_piano: 449dbef983488bf0af18f8cfee53d1f5cbb65ef9
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
   Protobuf: e9b99dd5da72f665ec503b19191f245a22188b4d
   soundpool: c7f4422ca206e77f8900ed3c4ee6a6ff5a0e38a9
-  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
+  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 

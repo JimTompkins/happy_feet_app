@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 //import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:happy_feet_app/main.dart';
 import 'package:rxdart/rxdart.dart';
@@ -44,7 +44,7 @@ class BluetoothBLEService {
 
   static const TARGET_DEVICE_NAMES = ["HappyFeet"];
 
-  FlutterBlue? _ble = FlutterBlue.instance;
+  FlutterBluePlus? _ble = FlutterBluePlus.instance;
 //  _ble.setLogLevel(LogLevel.debug);
   StreamSubscription<ScanResult>? scanSubscription;
 
@@ -71,6 +71,7 @@ class BluetoothBLEService {
   final isConnected = false.obs;
   int heartbeatCount = 0;
   int rssi = -1;
+  int batteryVoltage = 0;
   String bleAddress = 'unknown';
   bool scanComplete = false;
 
@@ -678,6 +679,64 @@ class BluetoothBLEService {
         print("HF: error readBeatEnable");
         print(err);
         return (false);
+      }
+    }
+  }
+
+  // read BLE characteristic 1 (char1) which contains battery voltage as a
+  // percentage of 3.273V  See the function battMeasure in simple_gatt_profile.c in the
+  // embedded code.  The TI CC2650 has a minimum operating voltage of 1.8V.
+  // The ST LD3985 LDO (low drop out) linear regulator has a typical 20mV
+  // dropout voltage at 50mA so probably less in this design, e.g. 10mV.
+  // The LD3985 has a min operating voltage of 2.5V.
+  // So the min battery voltage as a percentage is 2.51V/3.273V = 76%.
+  Future<int>? readBatteryVoltage() async {
+    if (_char1 == null) {
+      print('HF: readBatteryVoltage: _char1 is null');
+      return (0);
+    } else {
+      try {
+        List<int> value = await _char1!.read();
+        print("HF: battery voltage .  Value = $value[0]");
+        batteryVoltage = value[0];
+        // scale batteryVoltage to convert the range 76:100 to 0:100 
+        if (batteryVoltage > 100) {
+          // limit battery voltage to 100%
+          batteryVoltage = 100;
+        } else if (batteryVoltage < 76) {
+          batteryVoltage = 0;
+        } else {
+          batteryVoltage = (batteryVoltage - 76) * 100 ~/ 24;
+        }
+        return (batteryVoltage);
+      } catch (err) {
+        print("HF: error readBatteryVoltage");
+        print(err);
+        return (0);
+      }
+    }
+  }
+
+  // read char2 which Y or N based on the result of reading the
+  // accelerometer's whoAmi register.
+  Future<String>? readAccStatus() async {
+    if (_char2 == null) {
+      print('HF: readAccStatus: _char2 is null');
+      return ('not connected');
+    } else {
+      try {
+        List<int> value = await _char2!.read();
+        print("HF: accelerometer status .  Value = $value[0]");
+        if (value[0] == 0x59) {
+          // Y = 0x59
+          return ('OK');
+        } else {
+          return ('NOK');
+        }
+      } catch (err) {
+        print("HF: error readAccStatus");
+        print(err);
+        return ('Error');
       }
     }
   }
