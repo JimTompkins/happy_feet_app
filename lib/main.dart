@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'mybool.dart';
-//import 'ble.dart';   // flutter_reactive_ble version
-import 'ble2.dart'; // flutter_blue version
+import 'ble.dart';   // flutter_reactive_ble version
+//import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
