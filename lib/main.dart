@@ -1319,6 +1319,7 @@ class _InfoPageState extends State<InfoPage> {
   Future<String>? _firmwareRevision;
   Future<String>? _rssi;
   Future<String>? _bleAddress;
+  Future<int>? _batteryVoltage;
 
   @override
   initState() {
@@ -1328,6 +1329,7 @@ class _InfoPageState extends State<InfoPage> {
     _firmwareRevision = _bluetoothBLEService.readFirmwareRevision();
     _rssi = _bluetoothBLEService.readRSSI();
     _bleAddress = _bluetoothBLEService.readBleAddress();
+    _batteryVoltage = _bluetoothBLEService.readBatteryVoltage();
   }
 
   Future<void> _initPackageInfo() async {
@@ -1552,6 +1554,62 @@ class _InfoPageState extends State<InfoPage> {
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
                             child: Text('Result: ${snapshot.data}'.tr),
+                          )
+                        ];
+                      } else if (snapshot.hasError) {
+                        children = <Widget>[
+                          const Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Error: ${snapshot.error}'.tr),
+                          )
+                        ];
+                      } else {
+                        children = const <Widget>[
+                          SizedBox(
+                            child: CircularProgressIndicator(),
+                            width: 60,
+                            height: 60,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text('...'),
+                          )
+                        ];
+                      }
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: children,
+                        ),
+                      );
+                    })
+              ]),
+              Row(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Battery charge level:'.tr),
+                ),
+                FutureBuilder<int>(
+                    future: _batteryVoltage,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<int> snapshot) {
+                      List<Widget> children;
+                      if (snapshot.hasData) {
+                        children = <Widget>[
+                          const Icon(
+                            Icons.check_circle_outline,
+                            color: Colors.green,
+                            size: 60,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: Text('Result: ${snapshot.data.toString()}%'.tr),
                           )
                         ];
                       } else if (snapshot.hasError) {
@@ -2049,24 +2107,24 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                   style: Theme.of(context).textTheme.caption,
                 ),
                 IconButton(
-                icon: Icon(
-                  Icons.help,
+                  icon: Icon(
+                    Icons.help,
+                  ),
+                  iconSize: 30,
+                  color: Colors.blue[400],
+                  onPressed: () {
+                    Get.defaultDialog(
+                      title: 'Multi mode'.tr,
+                      middleText:
+                          'Nearby HappyFeet are listed from closest to furthest as shown by RSSI'
+                              .tr,
+                      textConfirm: 'OK',
+                      onConfirm: () {
+                        Get.back();
+                      },
+                    );
+                  },
                 ),
-                iconSize: 30,
-                color: Colors.blue[400],
-                onPressed: () {
-                  Get.defaultDialog(
-                    title: 'Multi mode'.tr,
-                    middleText:
-                        'Nearby HappyFeet are listed from closest to furthest as shown by RSSI'
-                            .tr,
-                    textConfirm: 'OK',
-                    onConfirm: () {
-                      Get.back();
-                    },
-                  );
-                },
-              ),
               ],
             ),
             Flexible(

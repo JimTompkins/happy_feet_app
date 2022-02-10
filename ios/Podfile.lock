@@ -61,7 +61,7 @@ SPEC CHECKSUMS:
   path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
   Protobuf: e9b99dd5da72f665ec503b19191f245a22188b4d
   soundpool: c7f4422ca206e77f8900ed3c4ee6a6ff5a0e38a9
-  url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
+  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
