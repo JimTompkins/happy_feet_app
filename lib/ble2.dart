@@ -307,12 +307,14 @@ class BluetoothBLEService {
       targetDevice!.state.listen((connectionStateUpdate) async {
         switch (connectionStateUpdate) {
           case BluetoothDeviceState.connected:
-            isConnected(true);
-            print('HF: device connected');
-            Get.snackbar('Bluetooth status'.tr, 'Connected!'.tr,
-                snackPosition: SnackPosition.BOTTOM);
-            heartbeatCount = 0;
-            discoverServices();
+            if (!isBleConnected()) {
+              isConnected(true);
+              print('HF: device connected');
+              Get.snackbar('Bluetooth status'.tr, 'Connected!'.tr,
+                  snackPosition: SnackPosition.BOTTOM);
+              heartbeatCount = 0;
+              discoverServices();
+            }
             break;
           case BluetoothDeviceState.disconnected:
             isConnected(false);
@@ -405,8 +407,7 @@ class BluetoothBLEService {
   }
 
   disconnectFromDevice() async {
-    isConnected(false);
-    setDisconnectFlag();
+    await disableBeat();
 
     await _beatSubscription?.cancel();
     _beatSubscription = null;
@@ -430,6 +431,8 @@ class BluetoothBLEService {
     await targetDevice!.disconnect();
     Get.snackbar('Bluetooth status'.tr, 'Disconnecting'.tr,
         snackPosition: SnackPosition.BOTTOM);
+
+    isConnected(false);
 
     targetDevice = null;
   }
@@ -550,15 +553,11 @@ class BluetoothBLEService {
                   snackPosition: SnackPosition.BOTTOM);
               disconnectFromDevice();
             }
-//              Timeline.timeSync("HF: heartbeat received", () {});
           } else {
             print('HF: beat received');
             heartbeatCount = 0;
             // play the next note in the groove
             groove.play(data[0]);
-//              Timeline.timeSync("HF: play note", () {
-//                groove.play(data[0]);
-//              });
           }
         } else {
           print('HF:  data is empty');
@@ -699,7 +698,7 @@ class BluetoothBLEService {
         List<int> value = await _char1!.read();
         print("HF: battery voltage .  Value = $value[0]");
         batteryVoltage = value[0];
-        // scale batteryVoltage to convert the range 76:100 to 0:100 
+        // scale batteryVoltage to convert the range 76:100 to 0:100
         if (batteryVoltage > 100) {
           // limit battery voltage to 100%
           batteryVoltage = 100;

@@ -228,10 +228,6 @@ class Groove {
     this.voices = 1;
   }
 
-  void addNote(int beat, int measure, Note note) {
-    this.notes[(beat - 1) + (measure - 1) * this.bpm] = note;
-  }
-
   // add a note to the groove using its initial only
   void addInitialNote(int index, String initial) {
     int _oggIndex = -1;

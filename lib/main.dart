@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'mybool.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
 import 'ble2.dart'; // flutter_blue version
@@ -136,8 +137,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  initState() {
+  initState() async {
     groove.initSingle(note1);
+
+    // load saved preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    audioTestMode = prefs.getBool('audioTestMode') ?? false;
+    multiMode = prefs.getBool('multiMode') ?? false;
 
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
@@ -299,14 +305,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () {
                       // stop the BLE connection
                       if (_bluetoothBLEService.isBleConnected()) {
-                        Get.snackbar('Status'.tr, 'disconnecting Bluetooth'.tr,
-                            snackPosition: SnackPosition.BOTTOM);
                         _bluetoothBLEService.disconnectFromDevice();
                         _playState.x = false;
                       } else {
                         Get.snackbar('Error'.tr, 'not connected'.tr,
                             snackPosition: SnackPosition.BOTTOM);
                       }
+                      setState(() {
+                        _playState.x = false;
+                      });
                     },
                   ),
                 ),
@@ -888,11 +895,32 @@ class _GroovePageState extends State<GroovePage> {
                           elevation: 24,
                           onChanged: (String? newValue) {
                             setState(() {
+//                                String? _initial = initialMap[newValue!];
+//                                groove.addInitialNote(index, _initial!);
+//                                dropdownValue[index] = _initial;
+//                                String? _initial = initialMap[newValue!];
                               groove.addInitialNote(index, newValue!);
                               dropdownValue[index] = newValue;
                             });
                           },
                           items: <String>[
+                            /*
+                            'none',
+                            'Bass drum',
+                            'Bass echo',
+                            'Lo tom',
+                            'Hi tom',
+                            'Snare drum',
+                            'Hi-hat cymbal',
+                            'Tambourine',
+                            'Cowbell',
+                            'Fingersnap',
+                            'Rim shot',
+                            'Shaker',
+                            'Woodblock',
+                            'Quijada',
+                            'Brushes',
+                            */
                             '-',
                             'b',
                             'B',
@@ -1609,7 +1637,8 @@ class _InfoPageState extends State<InfoPage> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
-                            child: Text('Result: ${snapshot.data.toString()}%'.tr),
+                            child:
+                                Text('Result: ${snapshot.data.toString()}%'.tr),
                           )
                         ];
                       } else if (snapshot.hasError) {
@@ -1817,7 +1846,7 @@ class _MenuPageState extends State<MenuPage> {
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
-                  setState(() {
+                  setState(() async {
                     if (_bluetoothBLEService.isConnected() && value) {
                       // can't turn on audio test mode if BLE is connected
                       Get.snackbar('Error:'.tr,
@@ -1825,6 +1854,8 @@ class _MenuPageState extends State<MenuPage> {
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
                       audioTestMode = value;
+                      final _prefs = await SharedPreferences.getInstance();
+                      await _prefs.setBool('audioTestMode', value);
                       if (audioTestMode) {
                         print('HF: audio test mode enabled');
                         Get.snackbar('Status'.tr, 'Audio test mode enabled.'.tr,
@@ -1874,8 +1905,10 @@ class _MenuPageState extends State<MenuPage> {
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
-                  setState(() {
+                  setState(() async {
                     multiMode = value;
+                    final _prefs = await SharedPreferences.getInstance();
+                    await _prefs.setBool('multiMode', value);
                     if (multiMode) {
                       print('HF: multi mode enabled');
                       Get.snackbar('Status'.tr, 'Multi mode enabled.'.tr,
