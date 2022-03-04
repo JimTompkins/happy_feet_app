@@ -38,7 +38,7 @@ var mp3Map = <int, String>{
   2: 'snare_drum.mp3',
   3: 'high_hat.mp3',
   4: 'cowbell.mp3',
-  5: 'tambourine.mp3',
+  5: 'TambourineHitandRoll.mp3',
   7: 'fingersnap.mp3',
   8: 'sidestick.mp3',
   9: 'shaker.mp3',
@@ -218,7 +218,7 @@ class HfAudio {
     int id4 = await pool.load(asset4);
     soundIdMap[4] = id4;
 
-    _filename = _path + "tambourine.mp3";
+    _filename = _path + "TambourineHitandRoll.mp3";
     var asset5 = await rootBundle.load(_filename);
     int id5 = await pool.load(asset5);
     soundIdMap[5] = id5;
@@ -534,10 +534,10 @@ class HfAudio {
       print('HF: finished loading ogg file 4');
       loadCount++;
     });
-    await rootBundle.load('assets/sounds/tambourine.ogg').then((ogg5) async {
+    await rootBundle.load('assets/sounds/TambourineHitandRoll.ogg').then((ogg5) async {
       await fop.load(
           src: ogg5,
-          name: 'tambourine.ogg',
+          name: 'TambourineHitandRoll.ogg',
           index: 5,
           forceLoad: _forceLoad,
           replace: _replace,);

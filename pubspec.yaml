@@ -133,6 +133,7 @@ flutter:
     - assets/sounds/hidrytom.ogg
     - assets/sounds/circlebrush.ogg
     - assets/sounds/vibraslap.ogg
+    - assets/sounds/TambourineHitandRoll.ogg
     - assets/sounds/fatkick.mp3
     - assets/sounds/kick_drum2.mp3
     - assets/sounds/snare_drum.mp3
@@ -147,6 +148,7 @@ flutter:
     - assets/sounds/hidrytom.mp3
     - assets/sounds/circlebrush.mp3
     - assets/sounds/vibraslap.mp3
+    - assets/sounds/TambourineHitandRoll.mp3
 #    - assets/sounds/Bass74MapleJazzA1.ogg
 #    - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope.ogg
 #    - assets/sounds/Bass74MapleJazzA1_5sTrimEnvelope2dB.ogg

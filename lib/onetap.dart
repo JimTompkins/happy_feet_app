@@ -147,27 +147,33 @@ class _OneTapPageState extends State<OneTapPage> {
         }
 
         // use voice 2 for bass drum and woodblock (clave)
-        groove.addInitialNote(8, 'b');
-        groove.addInitialNote(9, '-');
-        groove.addInitialNote(10, '-');
-        groove.addInitialNote(11, 'W');
-        groove.addInitialNote(12, 'b');
-        groove.addInitialNote(13, '-');
-        groove.addInitialNote(14, 'W');
-        groove.addInitialNote(15, 'b');
-        groove.addInitialNote(24, 'b');
-        groove.addInitialNote(25, '-');
-        groove.addInitialNote(26, 'W');
-        groove.addInitialNote(27, '-');
-        groove.addInitialNote(28, 'b');
-        groove.addInitialNote(29, 'W');
-        groove.addInitialNote(30, '-');
-        groove.addInitialNote(31, 'b');
+        // bass pattern:     1,   2+, 3,    4+, 1, 2+, 3,   4+
+        // woodblock pattern:   2,       3+,    1, 2+,    4
+        // note 1 and 2+ in second measure both have notes.  Since
+        // we're limited to two voices, we'll leave out the some notes
+        
+        groove.addInitialNote(8,  'b'); // 1
+        groove.addInitialNote(9,  '-'); // +
+        groove.addInitialNote(10, 'W'); // 2
+        groove.addInitialNote(11, 'b'); // +
+        groove.addInitialNote(12, 'b'); // 3
+        groove.addInitialNote(13, 'W'); // +
+        groove.addInitialNote(14, '-'); // 4
+        groove.addInitialNote(15, 'b'); // +
+
+        groove.addInitialNote(24, 'W'); // 1 : conflict: choose W
+        groove.addInitialNote(25, '-'); // +
+        groove.addInitialNote(26, '-'); // 2
+        groove.addInitialNote(27, 'b'); // + : conflict: choose b
+        groove.addInitialNote(28, 'b'); // 3
+        groove.addInitialNote(29, '-'); // +
+        groove.addInitialNote(30, 'W'); // 4
+        groove.addInitialNote(31, 'b'); // +
 
         _tab.clear();
         _tab.add(0, 'H|xxxxxxxx|xxxxxxxx|');
-        _tab.add(1, 'b|o---o--o|o---o--o|');
-        _tab.add(2, 'W|---o--o-|--o--o--|');
+        _tab.add(1, 'b|o--oo--o|---oo--o|');
+        _tab.add(2, 'W|--o--o--|o-----o-|');
         _tab.add(3, ' |1+2+3+4+|1+2+3+4+|');
         _tab.add(4, 'H=hi-hat,b=bass');
         _tab.add(5, '  W=woodblock');
