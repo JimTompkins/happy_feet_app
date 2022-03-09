@@ -26,7 +26,7 @@ The app interfaces to HappyFeet over Bluetooth Low Energy (BLE) using a service 
 | char 1 | read | 1 byte | battery voltage as percentage of 3.3V |
 | char2 | read | 1 byte | used to show results of reading the accelerometer IC's whoAmI register, 'Y' for OK and 'N' for NOK |
 | char3 | write | 1 byte | used to set beat detection threshold |
-| char4 | notify | 1 byte | send beat information: sequence number (bit 6), heartbeat flag (bit 7) |
+| char4 | notify | 1 byte | send beat information: heartbeat flag (bit 7), sequence number (bit 6), foot enable (bit 5)  |
 | char6 | read, write | 1 byte | enable beats (bit 0), disconnect (bit 6), enable test mode (bit 7) |
 
 ### Notes
