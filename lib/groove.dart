@@ -96,6 +96,7 @@ class Groove {
   var practiceStreak3 = 0.obs;
   var practiceStreak5 = 0.obs;
   var targetTempo = 120.obs;
+  var practiceColor = Colors.white;
   bool firstBeat = true;
   int runCount = 0;
   bool practice = false;
@@ -703,8 +704,14 @@ class Groove {
     var err = 0;
 
     err = this.targetTempo.value - this.practiceBPM.value.toInt();
+
+    // set the background color based on the sign of the error:
+    // red if going too fast, green if going too slow
     if (err < 0) {
       err = err * -1;
+      practiceColor = Colors.red;
+    } else {
+      practiceColor = Colors.green;
     }
 
     if (err <= 1) {

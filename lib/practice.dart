@@ -164,7 +164,10 @@ class _PracticePageState extends State<PracticePage> {
               child: Obx(
                 () => Text(
                   groove.practiceBPM.value.toStringAsFixed(1),
-                  style: TextStyle(fontSize: 40),
+                  style: TextStyle(
+                    fontSize: 40,
+                    color: Colors.white,
+                    backgroundColor: groove.practiceColor),
                 ),
               ),
             ),
