@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'mybool.dart';
+//import 'mybool.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
 import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
@@ -44,9 +44,9 @@ class OneTapPage extends StatefulWidget {
 
 class _OneTapPageState extends State<OneTapPage> {
   static BluetoothBLEService _bluetoothBLEService = Get.find();
+  RxBool _playState = Get.find();
   RhythmType type = RhythmType.rock1;
   String _rhythmName = 'Rock 1';
-  MyBool _playState = Get.find();
   Tablature _tab = new Tablature();
 
   @override
@@ -343,39 +343,41 @@ class _OneTapPageState extends State<OneTapPage> {
       appBar: AppBar(
         title: Text('Happy Feet - 1-tap Menu'.tr),
       ),
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Theme.of(context).colorScheme.secondary,
-        elevation: 25,
-        onPressed: () {
-          if (_playState.x) {
-            // disable beats
-            _bluetoothBLEService.disableBeat();
-            Get.snackbar('Status'.tr, 'beats disabled'.tr,
-                snackPosition: SnackPosition.BOTTOM);
-          } else {
-            if (_bluetoothBLEService.isBleConnected()) {
-              // enable beats
-              groove.reset();
-              _bluetoothBLEService.enableBeat();
-              Get.snackbar('Status'.tr, 'beats enabled'.tr,
+      floatingActionButton: Obx(() =>
+        FloatingActionButton(
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          elevation: 25,
+          onPressed: () {
+            if (_playState.value) {
+              // disable beats
+              _bluetoothBLEService.disableBeat();
+              Get.snackbar('Status'.tr, 'beats disabled'.tr,
                   snackPosition: SnackPosition.BOTTOM);
             } else {
-              Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
-                  snackPosition: SnackPosition.BOTTOM);
+              if (_bluetoothBLEService.isBleConnected()) {
+                // enable beats
+                groove.reset();
+                _bluetoothBLEService.enableBeat();
+                Get.snackbar('Status'.tr, 'beats enabled'.tr,
+                    snackPosition: SnackPosition.BOTTOM);
+              } else {
+                Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                    snackPosition: SnackPosition.BOTTOM);
+              }
             }
-          }
-          setState(() {
-            if (_bluetoothBLEService.isBleConnected()) {
-              _playState.x = !_playState.x;
-            }
-          });
-        }, //onPressed
-        tooltip: 'Enable beats'.tr,
-        child: _playState.x
-            ? new Icon(Icons.pause,
-                size: 50, color: Theme.of(context).primaryColor)
-            : new Icon(Icons.music_note_outlined,
-                size: 50, color: Theme.of(context).primaryColor),
+            setState(() {
+              if (_bluetoothBLEService.isBleConnected()) {
+                _playState.value = !_playState.value;
+              }
+            });
+          }, //onPressed
+          tooltip: 'Enable beats'.tr,
+          child: _playState.value
+              ? new Icon(Icons.pause,
+                  size: 50, color: Theme.of(context).primaryColor)
+              : new Icon(Icons.music_note_outlined,
+                  size: 50, color: Theme.of(context).primaryColor),
+        ),
       ),
       body: Center(
         child: ListView(children: <Widget>[

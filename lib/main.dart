@@ -16,6 +16,7 @@ import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
 import 'onetap.dart';
+import 'practice.dart';
 import 'saveAndLoad.dart';
 import 'localization.g.dart';
 
@@ -99,6 +100,9 @@ bool audioTestMode = false;
 // when connecting, and let you select which one you want to connect to.
 bool multiMode = false;
 
+// threshold between 0 and 100 for beat detection sensitivity
+int beatThreshold = 50;
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -112,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _testModeData = 0x00;
   Mode playMode = Mode.singleNote;
   String? playModeString = 'Single Note';
-  MyBool _playState = Get.put(MyBool(false));
+  RxBool _playState = Get.put(RxBool(false));
   static BluetoothBLEService _bluetoothBLEService =
       Get.put(BluetoothBLEService());
   bool _audioInitNeeded = false;
@@ -189,45 +193,47 @@ class _MyHomePageState extends State<MyHomePage> {
               )),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Theme.of(context).colorScheme.secondary,
-        elevation: 25,
-        onPressed: () {
-          if (audioTestMode) {
-            groove.play(_testModeData);
-            _testModeData ^= 0x40; // toggle bit 6, the sequence bit
-          } else {
-            if (_playState.x) {
-              // disable beats
-              _bluetoothBLEService.disableBeat();
-              Get.snackbar('Status'.tr, 'beats disabled'.tr,
-                  snackPosition: SnackPosition.BOTTOM);
+      floatingActionButton: Obx( () =>
+        FloatingActionButton(
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          elevation: 25,
+          onPressed: () {
+            if (audioTestMode) {
+              groove.play(_testModeData);
+              _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {
-              if (_bluetoothBLEService.isBleConnected()) {
-                // enable beats
-                groove.reset();
-                _bluetoothBLEService.enableBeat();
-//                       _bluetoothBLEService.enableTestMode();
-                Get.snackbar('Status'.tr, 'beats enabled'.tr,
+              if (_playState.value) {
+                // disable beats
+                _bluetoothBLEService.disableBeat();
+                Get.snackbar('Status'.tr, 'beats disabled'.tr,
                     snackPosition: SnackPosition.BOTTOM);
               } else {
-                Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
-                    snackPosition: SnackPosition.BOTTOM);
+                if (_bluetoothBLEService.isBleConnected()) {
+                  // enable beats
+                  groove.reset();
+                  _bluetoothBLEService.enableBeat();
+      //                       _bluetoothBLEService.enableTestMode();
+                  Get.snackbar('Status'.tr, 'beats enabled'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                } else {
+                  Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                }
               }
             }
-          }
-          setState(() {
-            if (_bluetoothBLEService.isBleConnected()) {
-              _playState.x = !_playState.x;
-            }
-          });
-        }, //onPressed
-        tooltip: 'Enable beats'.tr,
-        child: _playState.x
-            ? new Icon(Icons.pause,
-                size: 50, color: Theme.of(context).primaryColor)
-            : new Icon(Icons.music_note_outlined,
-                size: 50, color: Theme.of(context).primaryColor),
+            setState(() {
+              if (_bluetoothBLEService.isBleConnected()) {
+                _playState.value = !_playState.value;
+              }
+            });
+          }, //onPressed
+          tooltip: 'Enable beats'.tr,
+          child: _playState.value
+              ? new Icon(Icons.pause,
+                  size: 50, color: Theme.of(context).primaryColor)
+              : new Icon(Icons.music_note_outlined,
+                  size: 50, color: Theme.of(context).primaryColor),
+        ),
       ),
       body: ListView(children: <Widget>[
         Column(children: <Widget>[
@@ -306,13 +312,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       // stop the BLE connection
                       if (_bluetoothBLEService.isBleConnected()) {
                         _bluetoothBLEService.disconnectFromDevice();
-                        _playState.x = false;
+                        _playState.value = false;
                       } else {
                         Get.snackbar('Error'.tr, 'not connected'.tr,
                             snackPosition: SnackPosition.BOTTOM);
                       }
                       setState(() {
-                        _playState.x = false;
+                        _playState.value = false;
                       });
                     },
                   ),
@@ -423,6 +429,16 @@ class _MyHomePageState extends State<MyHomePage> {
                             Get.to(() => oneTapPage);
                             break;
                           }
+                        case 'Practice':
+                          {
+                            if (playMode != Mode.groove) {
+                              groove.clearNotes();
+                            }
+                            playMode = Mode.groove;
+                            groove.practice = true;
+                            Get.to(() => practicePage);
+                            break;
+                          }
                         default:
                           {
                             playMode = Mode.unknown;
@@ -443,6 +459,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     'Groove'.tr,
                     'Bass'.tr,
                     '1-tap'.tr,
+                    'Practice'.tr,
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -696,45 +713,47 @@ class _GroovePageState extends State<GroovePage> {
       appBar: AppBar(
         title: Text('Happy Feet - Grooves'.tr),
       ),
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Theme.of(context).colorScheme.secondary,
-        elevation: 25,
-        onPressed: () {
-          if (audioTestMode) {
-            groove.play(_testModeData);
-            _testModeData ^= 0x40; // toggle bit 6, the sequence bit
-          } else {
-            if (_playState.x) {
-              // disable beats
-              _bluetoothBLEService.disableBeat();
-              Get.snackbar('Status'.tr, 'beats disabled'.tr,
-                  snackPosition: SnackPosition.BOTTOM);
+      floatingActionButton: Obx(() =>
+        FloatingActionButton(
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          elevation: 25,
+          onPressed: () {
+            if (audioTestMode) {
+              groove.play(_testModeData);
+              _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {
-              if (_bluetoothBLEService.isBleConnected()) {
-                // enable beats
-                groove.reset();
-                _bluetoothBLEService.enableBeat();
-//                       _bluetoothBLEService.enableTestMode();
-                Get.snackbar('Status'.tr, 'beats enabled'.tr,
+              if (_playState.x.value) {
+                // disable beats
+                _bluetoothBLEService.disableBeat();
+                Get.snackbar('Status'.tr, 'beats disabled'.tr,
                     snackPosition: SnackPosition.BOTTOM);
               } else {
-                Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
-                    snackPosition: SnackPosition.BOTTOM);
+                if (_bluetoothBLEService.isBleConnected()) {
+                  // enable beats
+                  groove.reset();
+                  _bluetoothBLEService.enableBeat();
+      //                       _bluetoothBLEService.enableTestMode();
+                  Get.snackbar('Status'.tr, 'beats enabled'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                } else {
+                  Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                }
               }
+              setState(() {
+                if (_bluetoothBLEService.isBleConnected()) {
+                  _playState.x.value = !_playState.x.value;
+                }
+              });
             }
-            setState(() {
-              if (_bluetoothBLEService.isBleConnected()) {
-                _playState.x = !_playState.x;
-              }
-            });
-          }
-        }, //onPressed
-        tooltip: 'Enable beats',
-        child: _playState.x
-            ? new Icon(Icons.pause,
-                size: 50, color: Theme.of(context).primaryColor)
-            : new Icon(Icons.music_note_outlined,
-                size: 50, color: Theme.of(context).primaryColor),
+          }, //onPressed
+          tooltip: 'Enable beats',
+          child: _playState.x.value
+              ? new Icon(Icons.pause,
+                  size: 50, color: Theme.of(context).primaryColor)
+              : new Icon(Icons.music_note_outlined,
+                  size: 50, color: Theme.of(context).primaryColor),
+        ),
       ),
       body: Center(
         child: ListView(
@@ -1058,44 +1077,46 @@ class _BassPageState extends State<BassPage> {
       appBar: AppBar(
         title: Text('Happy Feet - Bass'.tr),
       ),
-      floatingActionButton: FloatingActionButton(
-        foregroundColor: Theme.of(context).colorScheme.secondary,
-        elevation: 25,
-        onPressed: () {
-          if (audioTestMode) {
-            groove.play(_testModeData);
-            _testModeData ^= 0x40; // toggle bit 6, the sequence bit
-          } else {
-            if (_playState.x) {
-              // disable beats
-              _bluetoothBLEService.disableBeat();
-              Get.snackbar('Status'.tr, 'beats disabled'.tr,
-                  snackPosition: SnackPosition.BOTTOM);
+      floatingActionButton: Obx(() =>
+        FloatingActionButton(
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          elevation: 25,
+          onPressed: () {
+            if (audioTestMode) {
+              groove.play(_testModeData);
+              _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {
-              if (_bluetoothBLEService.isBleConnected()) {
-                // enable beats
-                groove.reset();
-                _bluetoothBLEService.enableBeat();
-                Get.snackbar('Status'.tr, 'beats enabled'.tr,
+              if (_playState.x.value) {
+                // disable beats
+                _bluetoothBLEService.disableBeat();
+                Get.snackbar('Status'.tr, 'beats disabled'.tr,
                     snackPosition: SnackPosition.BOTTOM);
               } else {
-                Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
-                    snackPosition: SnackPosition.BOTTOM);
+                if (_bluetoothBLEService.isBleConnected()) {
+                  // enable beats
+                  groove.reset();
+                  _bluetoothBLEService.enableBeat();
+                  Get.snackbar('Status'.tr, 'beats enabled'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                } else {
+                  Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+                      snackPosition: SnackPosition.BOTTOM);
+                }
               }
-            }
-            setState(() {
-              if (_bluetoothBLEService.isBleConnected()) {
-                _playState.x = !_playState.x;
-              }
-            });
-          } // else
-        }, //onPressed
-        tooltip: 'Enable beats',
-        child: _playState.x
-            ? new Icon(Icons.pause,
-                size: 50, color: Theme.of(context).primaryColor)
-            : new Icon(Icons.music_note_outlined,
-                size: 50, color: Theme.of(context).primaryColor),
+              setState(() {
+                if (_bluetoothBLEService.isBleConnected()) {
+                  _playState.x.value = !_playState.x.value;
+                }
+              });
+            } // else
+          }, //onPressed
+          tooltip: 'Enable beats',
+          child: _playState.x.value
+              ? new Icon(Icons.pause,
+                  size: 50, color: Theme.of(context).primaryColor)
+              : new Icon(Icons.music_note_outlined,
+                  size: 50, color: Theme.of(context).primaryColor),
+        ),
       ),
       body: Center(
         child: ListView(
@@ -1701,7 +1722,7 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  int _detectionThreshold = 29;
+  int _detectionThreshold = 50;
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   String lang = 'English';
   var locale = Get.deviceLocale!;
@@ -1735,9 +1756,9 @@ class _MenuPageState extends State<MenuPage> {
               ), // Text
               Slider(
                 value: _detectionThreshold.toDouble(),
-                min: 20,
-                max: 50,
-                divisions: 15,
+                min: 0,
+                max: 100,
+                divisions: 10,
                 label: _detectionThreshold.round().toString(),
                 onChanged: (double value) {
                   setState(() {
@@ -1747,8 +1768,7 @@ class _MenuPageState extends State<MenuPage> {
                 onChangeEnd: (double value) {
                   setState(() {
                     _detectionThreshold = value.toInt();
-                    _bluetoothBLEService
-                        .writeThreshold(_detectionThreshold & 0xFF);
+                    _bluetoothBLEService.writeThreshold(_detectionThreshold);
                   });
                 }, // setState, onChanged
               ),
@@ -1760,7 +1780,7 @@ class _MenuPageState extends State<MenuPage> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _detectionThreshold = 29;
+                    _detectionThreshold = 50;
                     _bluetoothBLEService
                         .writeThreshold(_detectionThreshold & 0xFF);
                   });

@@ -89,7 +89,16 @@ class Groove {
   var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
   var leadInString = '0'.obs;
+  // variables for practice mode: instantaneous BPM, current streaks
+  // within +/- 1, 3, and 5 BPM of target
+  var practiceBPM = 0.0.obs;
+  var practiceStreak1 = 0.obs;
+  var practiceStreak3 = 0.obs;
+  var practiceStreak5 = 0.obs;
+  var targetTempo = 120.obs;
   bool firstBeat = true;
+  int runCount = 0;
+  bool practice = false;
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
@@ -102,6 +111,7 @@ class Groove {
     this.type = type;
     this.voices = 1;
     this.interpolate = false;
+    this.runCount = 0;
 
     // add notes
     for (int i = 0; i < (beats * measures); i++) {
@@ -136,6 +146,7 @@ class Groove {
       return Note(-1, "-");
     });
     this.type = type;
+    this.runCount = 0;
   }
 
   // initialize the groove in single note mode
@@ -686,13 +697,45 @@ class Groove {
     variationToColor();
   }
 
+// update the practice mode streak counts: the number of successive
+// beats within +/-X BPM of the target tempo where X is 1, 3 and 5.
+  void updateStreakCounts() {
+    var err = 0;
+
+    err = this.targetTempo.value - this.practiceBPM.value.toInt();
+    if (err < 0) {
+      err = err * -1;
+    }
+
+    if (err <= 1) {
+      this.practiceStreak1++;
+      this.practiceStreak3++;
+      this.practiceStreak5++;
+    } else {
+      this.practiceStreak1.value = 0;
+    }
+
+    if (err <= 3) {
+      this.practiceStreak3++;
+      this.practiceStreak5++;
+    } else {
+      this.practiceStreak3.value = 0;
+    }
+
+    if (err <= 5) {
+      this.practiceStreak5++;
+    } else {
+      this.practiceStreak5.value = 0;
+    }
+  }
+
   // play the next note in the groove
   void play(int data) {
     int sequenceBit;
     double mean2;
     var now = DateTime.now(); // get system time
-    print(
-        'HF:   Time: $now, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
+//    print(
+//        'HF:   Time: $now, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
@@ -714,6 +757,10 @@ class Groove {
     Duration beatInterval = now.difference(lastBeatTime);
     var beatPeriod =
         beatInterval.inMilliseconds.toDouble(); // convert period to ms
+
+    // update info used by practice mode
+    practiceBPM.value = 1000.0 / beatPeriod * 60;
+    updateStreakCounts();
 
     // play the next note in the groove in these cases:
     // i) not in interpolate or 1-tap mode, or
@@ -750,19 +797,33 @@ class Groove {
       sysLatestBPM = sysLatestBPM * this.bpm;
     }
     variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
-    print(
-        'HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%');
+
+    // create status string
+    String _status = '';
+    if (beatPeriod > (mean2 * 1.5)) {
+      _status = 'missing';
+      runCount = 0;
+    } else if (beatPeriod < (mean2 * 0.75)) {
+      _status = 'spurious';
+      runCount = 0;
+    } else {
+      runCount++;
+    }
+
+//    print(
+//        'HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%, $_status');
+
     // print comma separated data for later analysis in Excel
     //    latest beat period,latest BPM,mean beat period,mean BPM,variation
-    //    ms,BPM,ms,BPM,%
+    //    run count, status
     print(
-        'HF: groove.play.csv,${beatPeriod.toStringAsFixed(0)},${sysLatestBPM.toStringAsFixed(1)},${mean2.toStringAsFixed(0)},${sysFilteredBPM.toStringAsFixed(1)},${variation.toStringAsFixed(1)}%');
+        'HF: groove.play.csv,${beatPeriod.toStringAsFixed(0)},${sysLatestBPM.toStringAsFixed(1)},${mean2.toStringAsFixed(0)},${sysFilteredBPM.toStringAsFixed(1)},${variation.toStringAsFixed(1)}%,$runCount,$_status');
     lastBeatTime = now;
 
     // interpolate mode: schedule a note to be played at a future time if these conditions are met:
     // i)   in interpolate mode
     // ii)  we're past the lead-in, as indicated by leadInCount == 0
-    // iii) variation < 20% i.e. the beat is consistent
+    // iii) variation < 40% i.e. the beat is consistent
     if (groove.interpolate && (groove.leadInCount == 0)) {
       // the index should only be odd at this point.  If not, print an error message
       if (this.index.isEven) {
@@ -772,9 +833,10 @@ class Groove {
       }
       // schedule the next note using a timer.  1/2 of the mean beat interval will be used to
       // schedule the note at the expected mid-point of the beat.
-      var halfPeriodInMs = mean2.toInt() ~/ 2;
+//      var halfPeriodInMs = mean2.toInt() ~/ 2;
+      var halfPeriodInMs = beatPeriod.toInt() ~/ 2;
       Timer(Duration(milliseconds: halfPeriodInMs), () {
-        if (variation.abs() <= 20.0) {
+        if (variation.abs() <= 40.0) {
           // only play the note if the beat is stable i.e. variation < 20%
           hfaudio.play(
               this.voices,
