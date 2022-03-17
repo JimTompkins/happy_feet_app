@@ -554,7 +554,7 @@ class BluetoothBLEService {
                   snackPosition: SnackPosition.BOTTOM);
               disconnectFromDevice();
             }
-          } else if ((data[0] & 0x20) == 0x20) {
+          } else if (footSwitch && ((data[0] & 0x20) == 0x20)) {
             //  bit 5
             print('HF: foot-switch toggle notify received');
             if (_playState.value) {
@@ -562,18 +562,20 @@ class BluetoothBLEService {
               // disable beats
               this.disableBeat();
               _playState.value = false;
+              Get.closeAllSnackbars();
               Get.snackbar('Status'.tr, 'Beats disabled by foot'.tr,
                   snackPosition: SnackPosition.BOTTOM,
-                  duration: Duration(seconds: 2));
+                  duration: Duration(milliseconds: 1000));
             } else {
               // enable beats
               print('HF: beats currently off, being enabled');
               groove.reset();
               this.enableBeat();
               _playState.value = true;
+              Get.closeAllSnackbars();
               Get.snackbar('Status'.tr, 'Beats enabled by foot'.tr,
                   snackPosition: SnackPosition.BOTTOM,
-                  duration: Duration(seconds: 2));
+                  duration: Duration(milliseconds: 1000));
             }
           } else {
 //            print('HF: beat received');

@@ -706,27 +706,18 @@ class Groove {
     err = this.targetTempo.value - this.practiceBPM.value.toInt();
 
     // set the background color based on the sign of the error:
-    // red if going too fast, green if going too slow
+    // red if going too fast, green if going too slow, blue otherwise
+    if (err < -5) {
+      practiceColor = Colors.red;
+    } else if (err > 5) {
+      practiceColor = Colors.green;
+    } else {
+      practiceColor = Colors.blue;
+    }
+
+    // absolute value of error, used by the streak couters below
     if (err < 0) {
       err = err * -1;
-      practiceColor = Colors.red;
-    } else {
-      practiceColor = Colors.green;
-    }
-
-    if (err <= 1) {
-      this.practiceStreak1++;
-      this.practiceStreak3++;
-      this.practiceStreak5++;
-    } else {
-      this.practiceStreak1.value = 0;
-    }
-
-    if (err <= 3) {
-      this.practiceStreak3++;
-      this.practiceStreak5++;
-    } else {
-      this.practiceStreak3.value = 0;
     }
 
     if (err <= 5) {
@@ -734,6 +725,7 @@ class Groove {
     } else {
       this.practiceStreak5.value = 0;
     }
+    
   }
 
   // play the next note in the groove
