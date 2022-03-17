@@ -537,26 +537,27 @@ class BluetoothBLEService {
               disconnectFromDevice();
             }
 //              Timeline.timeSync("HF: heartbeat received", () {});
-          } else if (footSwitch && ((data[0] & 0x20) == 0x20)) {
-            //  bit 5
-            print('HF: foot-switch toggle notify received');
-            if (_playState.value) {
-              print('HF: beats currently on, being disabled');
-              // disable beats
-              this.disableBeat();
-              _playState.value = false;
-              Get.snackbar('Status'.tr, 'Beats disabled by foot'.tr,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: Duration(seconds: 2));
-            } else {
-              // enable beats
-              print('HF: beats currently off, being enabled');
-              groove.reset();
-              this.enableBeat();
-              _playState.value = true;
-              Get.snackbar('Status'.tr, 'Beats enabled by foot'.tr,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: Duration(seconds: 2));
+          } else if ((data[0] & 0x20) == 0x20) {  // foot-switch notify received
+            if (footSwitch) { // only take action if the foot-switch is enabled            //  bit 5
+              print('HF: foot-switch toggle notify received');
+              if (_playState.value) {
+                print('HF: beats currently on, being disabled');
+                // disable beats
+                this.disableBeat();
+                _playState.value = false;
+                Get.snackbar('Status'.tr, 'Beats disabled by foot'.tr,
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: Duration(seconds: 2));
+              } else {
+                // enable beats
+                print('HF: beats currently off, being enabled');
+                groove.reset();
+                this.enableBeat();
+                _playState.value = true;
+                Get.snackbar('Status'.tr, 'Beats enabled by foot'.tr,
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: Duration(seconds: 2));
+              }
             }
           } else {
             print('HF: beat received');
