@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'groove.dart';
+//import 'mybool.dart';
 
 class BluetoothBLEService {
   static const String DEVINFO_SERVICE_UUID =
@@ -74,6 +75,7 @@ class BluetoothBLEService {
   int batteryVoltage = 0;
   String bleAddress = 'unknown';
   bool scanComplete = false;
+  RxBool _playState = Get.find();
 
   String? connectionText = "";
   List<BluetoothDevice> devicesList = [];
@@ -387,27 +389,16 @@ class BluetoothBLEService {
           print("HF: ...done.");
         }
       });
-
-      // disable the sending of notifications on char4 by
-      // writing to char6.  This is in case the value of char6
-      // is remembered from the last connection, or it is
-      // currently enabled.
-      // disableBeat();
-
-//    await Future.delayed(Duration(milliseconds: 1000));
-
-      //print("HF: enable processing notifications on char4...");
-      // they should not actually be sent yet because of the call
-      // to disableBeat above.
-      //processBeats();
-
     } catch (e) {
       print(e.toString());
     }
   }
 
   disconnectFromDevice() async {
-    await disableBeat();
+    if (targetDevice == null) return;
+    if (_char6 != null) {
+      await disableBeat();
+    }
 
     await _beatSubscription?.cancel();
     _beatSubscription = null;
@@ -450,7 +441,7 @@ class BluetoothBLEService {
 
   // clear bit 0 of char6, the beat enable flag
   Future<void> disableBeat() async {
-    stopProcessingBeats();
+    //stopProcessingBeats();
     if (_char6 == null) {
       print('HF: disableBeat: error: null characteristic');
       // error
@@ -485,12 +476,22 @@ class BluetoothBLEService {
     }
   }
 
+  // write the beat detection threshold.  The input value threshold comes
+  // from a slider that varies between 0 and 100.
   Future<void> writeThreshold(int threshold) async {
     if (_char3 == null) {
       print('HF: writeThreshold: error: null characteristic');
       // error
     } else {
-      int value = threshold & 0xFF;
+      int value = 0;
+      // limit threshold to the range [0: 100]
+      if (threshold > 100) {
+        value = 100;
+      } else if (threshold < 0) {
+        value = 0;
+      } else {
+        value = threshold;
+      }
       print('HF: writeThreshold: threshold = $threshold, value = $value');
       await _char3!.write([value]);
     }
@@ -537,14 +538,14 @@ class BluetoothBLEService {
         await _char4!.setNotifyValue(true);
       },
     );
-//    await _char4!.setNotifyValue(true);
     try {
       _beatSubscription = _char4!.value.listen((data) {
-        var time = DateTime.now(); // get system time
-        print('HF:   notify received at time: $time with data: $data');
+//        var time = DateTime.now(); // get system time
+//        print('HF:   notify received at time: $time with data: $data');
         if (data.isNotEmpty) {
-          if ((data[0] & 0xFF) == 0xFF) {
-            print("HF: heartbeat notify received");
+          if ((data[0] & 0x80) == 0x80) {
+            // bit 7
+//            print("HF: heartbeat notify received");
             heartbeatCount++;
             if (heartbeatCount >= 360) {
               print('HF: timeout error.  No beat received for 30min');
@@ -553,8 +554,29 @@ class BluetoothBLEService {
                   snackPosition: SnackPosition.BOTTOM);
               disconnectFromDevice();
             }
+          } else if ((data[0] & 0x20) == 0x20) {
+            //  bit 5
+            print('HF: foot-switch toggle notify received');
+            if (_playState.value) {
+              print('HF: beats currently on, being disabled');
+              // disable beats
+              this.disableBeat();
+              _playState.value = false;
+              Get.snackbar('Status'.tr, 'Beats disabled by foot'.tr,
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: Duration(seconds: 2));
+            } else {
+              // enable beats
+              print('HF: beats currently off, being enabled');
+              groove.reset();
+              this.enableBeat();
+              _playState.value = true;
+              Get.snackbar('Status'.tr, 'Beats enabled by foot'.tr,
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: Duration(seconds: 2));
+            }
           } else {
-            print('HF: beat received');
+//            print('HF: beat received');
             heartbeatCount = 0;
             // play the next note in the groove
             groove.play(data[0]);

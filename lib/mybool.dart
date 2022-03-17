@@ -1,7 +1,8 @@
+import 'package:get/get.dart';
 class MyBool {
-  bool x = false;
+  RxBool x = false.obs;
 
-  MyBool(bool val) {
+  MyBool(RxBool val) {
     x = val;
   }
 }
