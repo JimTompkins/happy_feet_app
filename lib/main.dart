@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'mybool.dart';
 import 'ble.dart';   // flutter_reactive_ble version
 //import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
@@ -99,6 +100,14 @@ bool audioTestMode = false;
 // when connecting, and let you select which one you want to connect to.
 bool multiMode = false;
 
+// flag used to enable the foot switch.  When foot switch is enabled, you
+// can move your foot quickly to either side while it is flat on the floor
+// to enable or disable beats.
+bool footSwitch = false;
+
+// saved preference for language
+String language = 'English';
+
 // threshold between 0 and 100 for beat detection sensitivity
 int beatThreshold = 50;
 
@@ -147,6 +156,8 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     audioTestMode = prefs.getBool('audioTestMode') ?? false;
     multiMode = prefs.getBool('multiMode') ?? false;
+    footSwitch = prefs.getBool('footSwitch') ?? false;
+    language = prefs.getString('langugage') ?? 'English';
 
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
@@ -192,8 +203,8 @@ class _MyHomePageState extends State<MyHomePage> {
               )),
         ],
       ),
-      floatingActionButton: Obx( () =>
-        FloatingActionButton(
+      floatingActionButton: Obx(
+        () => FloatingActionButton(
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: () {
@@ -211,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // enable beats
                   groove.reset();
                   _bluetoothBLEService.enableBeat();
-      //                       _bluetoothBLEService.enableTestMode();
+                  //                       _bluetoothBLEService.enableTestMode();
                   Get.snackbar('Status'.tr, 'beats enabled'.tr,
                       snackPosition: SnackPosition.BOTTOM);
                 } else {
@@ -712,8 +723,8 @@ class _GroovePageState extends State<GroovePage> {
       appBar: AppBar(
         title: Text('Happy Feet - Grooves'.tr),
       ),
-      floatingActionButton: Obx(() =>
-        FloatingActionButton(
+      floatingActionButton: Obx(
+        () => FloatingActionButton(
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: () {
@@ -731,7 +742,7 @@ class _GroovePageState extends State<GroovePage> {
                   // enable beats
                   groove.reset();
                   _bluetoothBLEService.enableBeat();
-      //                       _bluetoothBLEService.enableTestMode();
+                  //                       _bluetoothBLEService.enableTestMode();
                   Get.snackbar('Status'.tr, 'beats enabled'.tr,
                       snackPosition: SnackPosition.BOTTOM);
                 } else {
@@ -1076,8 +1087,8 @@ class _BassPageState extends State<BassPage> {
       appBar: AppBar(
         title: Text('Happy Feet - Bass'.tr),
       ),
-      floatingActionButton: Obx(() =>
-        FloatingActionButton(
+      floatingActionButton: Obx(
+        () => FloatingActionButton(
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: () {
@@ -1723,13 +1734,14 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   int _detectionThreshold = 50;
   static BluetoothBLEService _bluetoothBLEService = Get.find();
-  String lang = 'English';
+  String lang = language;
   var locale = Get.deviceLocale!;
 //  var locale = Locale('en', 'US');
 //  var locale: Get.deviceLocale;
 
   @override
   initState() {
+    lang = language;
     super.initState();
   }
 
@@ -1750,9 +1762,7 @@ class _MenuPageState extends State<MenuPage> {
                   style: Theme.of(context).textTheme.caption,
                 ),
               ), // Text
-              Text(
-                'Less'.tr,
-              ), // Text
+              Text(' - '), // Text
               Slider(
                 value: _detectionThreshold.toDouble(),
                 min: 0,
@@ -1772,7 +1782,7 @@ class _MenuPageState extends State<MenuPage> {
                 }, // setState, onChanged
               ),
               Text(
-                'More'.tr,
+                ' + ',
               ), // Text// Slider
             ]),
             Row(children: <Widget>[
@@ -1804,7 +1814,7 @@ class _MenuPageState extends State<MenuPage> {
                   elevation: 24,
                   style: Theme.of(context).textTheme.headline4,
                   onChanged: (String? newValue) {
-                    setState(() {
+                    setState(() async {
                       switch (newValue) {
                         case 'English':
                           locale = Locale('en', 'US');
@@ -1824,12 +1834,20 @@ class _MenuPageState extends State<MenuPage> {
                         case 'Português':
                           locale = Locale('pt', 'PT');
                           break;
+                        case 'Nederlands':
+                          locale = Locale('nl', 'NL');
+                          break;
+                        case 'Українська':
+                          locale = Locale('uk', 'UK');
+                          break;
                         default:
                           locale = Locale('en', 'US');
                           break;
                       }
                       lang = newValue!;
                       Get.updateLocale(locale);
+                      final _prefs = await SharedPreferences.getInstance();
+                      await _prefs.setString('langugage', newValue);
                       print("HF: language changed to $newValue");
                     });
                   },
@@ -1839,7 +1857,9 @@ class _MenuPageState extends State<MenuPage> {
                     'Deutsch',
                     'Español',
                     'Italiano',
-                    'Português'
+                    'Português',
+                    'Nederlands',
+                    'Українська',
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -1951,6 +1971,57 @@ class _MenuPageState extends State<MenuPage> {
                     title: 'Multi mode'.tr,
                     middleText:
                         'Use multi mode if you have more than one HappyFeet.'
+                            .tr,
+                    textConfirm: 'OK',
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+            ]),
+            Row(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Foot switch'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              Switch(
+                value: footSwitch,
+                activeColor: Colors.deepOrange[400],
+                activeTrackColor: Colors.deepOrange[200],
+                inactiveThumbColor: Colors.grey[600],
+                inactiveTrackColor: Colors.grey[400],
+                onChanged: (value) {
+                  setState(() async {
+                    footSwitch = value;
+                    final _prefs = await SharedPreferences.getInstance();
+                    await _prefs.setBool('footSwitch', value);
+                    if (footSwitch) {
+                      print('HF: foot switch enabled');
+                      Get.snackbar('Status'.tr, 'Foot switch enabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      print('HF: foot switch disabled');
+                      Get.snackbar('Status'.tr, 'Foot switch disabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    }
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.help,
+                ),
+                iconSize: 30,
+                color: Colors.blue[400],
+                onPressed: () {
+                  Get.defaultDialog(
+                    title: 'Foot switch'.tr,
+                    middleText:
+                        'When the foot switch is enabled, you can enable or disable beats by moving your foot quickly to either side while flat on the floor.'
                             .tr,
                     textConfirm: 'OK',
                     onConfirm: () {
