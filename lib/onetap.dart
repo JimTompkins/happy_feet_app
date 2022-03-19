@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-//import 'mybool.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
 import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';

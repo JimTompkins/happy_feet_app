@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
 import 'ble2.dart'; // flutter_blue version
+//import 'mybool.dart';
 import 'groove.dart';
 
 // Practice page

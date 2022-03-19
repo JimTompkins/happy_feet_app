@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 //import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'mybool.dart';
+//import 'mybool.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
 import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
@@ -661,7 +661,7 @@ class _GroovePageState extends State<GroovePage> {
   bool _interpolate = groove.interpolate;
   var dropdownValue = groove.getInitials();
   static BluetoothBLEService _bluetoothBLEService = Get.find();
-  MyBool _playState = Get.find();
+  RxBool _playState = Get.find();
 
   @override
   initState() {
@@ -732,7 +732,7 @@ class _GroovePageState extends State<GroovePage> {
               groove.play(_testModeData);
               _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {
-              if (_playState.x.value) {
+              if (_playState.value) {
                 // disable beats
                 _bluetoothBLEService.disableBeat();
                 Get.snackbar('Status'.tr, 'beats disabled'.tr,
@@ -752,13 +752,13 @@ class _GroovePageState extends State<GroovePage> {
               }
               setState(() {
                 if (_bluetoothBLEService.isBleConnected()) {
-                  _playState.x.value = !_playState.x.value;
+                  _playState.value = !_playState.value;
                 }
               });
             }
           }, //onPressed
           tooltip: 'Enable beats',
-          child: _playState.x.value
+          child: _playState.value
               ? new Icon(Icons.pause,
                   size: 50, color: Theme.of(context).primaryColor)
               : new Icon(Icons.music_note_outlined,
@@ -1039,7 +1039,7 @@ class _BassPageState extends State<BassPage> {
   String _key = groove.key;
   List<String> dropdownValue = groove.getInitials();
   static BluetoothBLEService _bluetoothBLEService = Get.find();
-  MyBool _playState = Get.find();
+  RxBool _playState = Get.find();
 
   @override
   initState() {
@@ -1096,7 +1096,7 @@ class _BassPageState extends State<BassPage> {
               groove.play(_testModeData);
               _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {
-              if (_playState.x.value) {
+              if (_playState.value) {
                 // disable beats
                 _bluetoothBLEService.disableBeat();
                 Get.snackbar('Status'.tr, 'beats disabled'.tr,
@@ -1115,13 +1115,13 @@ class _BassPageState extends State<BassPage> {
               }
               setState(() {
                 if (_bluetoothBLEService.isBleConnected()) {
-                  _playState.x.value = !_playState.x.value;
+                  _playState.value = !_playState.value;
                 }
               });
             } // else
           }, //onPressed
           tooltip: 'Enable beats',
-          child: _playState.x.value
+          child: _playState.value
               ? new Icon(Icons.pause,
                   size: 50, color: Theme.of(context).primaryColor)
               : new Icon(Icons.music_note_outlined,
