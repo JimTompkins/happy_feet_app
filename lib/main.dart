@@ -663,9 +663,7 @@ class _GroovePageState extends State<GroovePage> {
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   RxBool _playState = Get.find();
 
-  @override
-  initState() {
-    super.initState();
+  void loadGroove() {
     _beatsPerMeasure = groove.bpm;
     _numberOfMeasures = groove.numMeasures;
     _totalBeats = groove.bpm * groove.numMeasures * groove.voices;
@@ -680,6 +678,12 @@ class _GroovePageState extends State<GroovePage> {
     groove.checkType('percussion');
     groove.printGroove();
     dropdownValue = groove.getInitials();
+  }
+
+  @override
+  initState() {
+    super.initState();
+    loadGroove();
   }
 
   // return a colour to use for each gridview element based on its index
@@ -870,7 +874,10 @@ class _GroovePageState extends State<GroovePage> {
                   },
                 ),
                 Text('2'),
-                Text('  Backbeat'.tr,
+              ]),
+              Row(children: <Widget>[
+                Text(
+                    'Offbeat', // note: no translation since I don't think machine translations are good
                     style: Theme.of(context).textTheme.caption),
                 Switch(
                     value: _interpolate,
@@ -887,13 +894,32 @@ class _GroovePageState extends State<GroovePage> {
                         } else {
                           Get.snackbar(
                               'Notice'.tr,
-                              'back beat mode can only be used with even number of beats per measure.'
+                              'Offbeat mode can only be used with even number of beats per measure.'
                                   .tr,
                               snackPosition: SnackPosition.BOTTOM);
                         }
                       });
                     }),
-              ])
+                IconButton(
+                  icon: Icon(
+                    Icons.help,
+                  ),
+                  iconSize: 30,
+                  color: Colors.blue[400],
+                  onPressed: () {
+                    Get.defaultDialog(
+                      title: 'Offbeat mode'.tr,
+                      middleText:
+                          "In offbeat mode, sounds are played between beats.  Beats are shown in blue and offbeats in purple."
+                              .tr,
+                      textConfirm: 'OK',
+                      onConfirm: () {
+                        Get.back();
+                      },
+                    );
+                  },
+                ),
+              ]),
             ]), // Column
 
             // beat grid
@@ -1224,7 +1250,8 @@ class _BassPageState extends State<BassPage> {
                     );
                   }).toList(),
                 ),
-                Text('  Backbeat'.tr,
+                Text(
+                    'Offbeat', // note: no translation since I don't think machine translations are good
                     style: Theme.of(context).textTheme.caption),
                 Switch(
                     value: _interpolate,
@@ -1247,6 +1274,25 @@ class _BassPageState extends State<BassPage> {
                         }
                       });
                     }),
+                IconButton(
+                  icon: Icon(
+                    Icons.help,
+                  ),
+                  iconSize: 30,
+                  color: Colors.blue[400],
+                  onPressed: () {
+                    Get.defaultDialog(
+                      title: 'Offbeat mode'.tr,
+                      middleText:
+                          "In offbeat mode, sounds are played between beats.  Beats are shown in blue and offbeats in purple."
+                              .tr,
+                      textConfirm: 'OK',
+                      onConfirm: () {
+                        Get.back();
+                      },
+                    );
+                  },
+                ),
               ]),
             ]), // Column
 
@@ -1776,8 +1822,15 @@ class _MenuPageState extends State<MenuPage> {
                 },
                 onChangeEnd: (double value) {
                   setState(() {
-                    _detectionThreshold = value.toInt();
-                    _bluetoothBLEService.writeThreshold(_detectionThreshold);
+                    if (!_bluetoothBLEService.isConnected()) {
+                      // can't reset sensitivity if BLE is not connected
+                      Get.snackbar(
+                          'Error:'.tr, 'You must be connected to adjust.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      _detectionThreshold = value.toInt();
+                      _bluetoothBLEService.writeThreshold(_detectionThreshold);
+                    }
                   });
                 }, // setState, onChanged
               ),
@@ -1789,9 +1842,16 @@ class _MenuPageState extends State<MenuPage> {
               ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    _detectionThreshold = 50;
-                    _bluetoothBLEService
-                        .writeThreshold(_detectionThreshold & 0xFF);
+                    if (!_bluetoothBLEService.isConnected()) {
+                      // can't reset sensitivity if BLE is not connected
+                      Get.snackbar('Error:'.tr,
+                          'You must be connected to reset to default.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      _detectionThreshold = 50;
+                      _bluetoothBLEService
+                          .writeThreshold(_detectionThreshold & 0xFF);
+                    }
                   });
                 },
                 child: new Text('Reset sensitivity to default'.tr),
@@ -2149,10 +2209,12 @@ class LoadGroovePage extends StatefulWidget {
 }
 
 class _LoadGroovePageState extends State<LoadGroovePage> {
+  Future<List>? _grooveList;
+
   @override
   initState() {
     super.initState();
-    grooveStorage.listOfSavedGrooves();
+    _grooveList = grooveStorage.listOfSavedGrooves();
   }
 
   @override
@@ -2171,22 +2233,40 @@ class _LoadGroovePageState extends State<LoadGroovePage> {
               style: Theme.of(context).textTheme.caption,
             ),
             Flexible(
-                child: ListView.builder(
-                    itemCount: grooveStorage.grooveFileNames.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                          title: Text(grooveStorage.grooveFileNames[index]),
-                          trailing: Icon(Icons.file_upload),
-                          onTap: () {
-                            // load the selected groove
-                            var name = grooveStorage.grooveFileNames[index];
-                            grooveStorage.readGroove(name);
-                            Get.snackbar(
-                                'Load status'.tr, 'Loaded groove '.tr + name,
-                                snackPosition: SnackPosition.BOTTOM);
-                            // go back to previous screen
-                            Get.back(closeOverlays: true);
-                          });
+                child: FutureBuilder(
+                    future: _grooveList,
+                    builder: (context, snapshot) {
+                      if (_grooveList == null) {
+                        // no saved grooves found
+                        return Text('No saved grooves found.'.tr);
+                      } else {
+                        return ListView.builder(
+                            itemCount: grooveStorage.grooveFileNames.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                  title: Text(
+                                      grooveStorage.grooveFileNames[index]),
+                                  trailing: Icon(Icons.file_upload),
+                                  onTap: () {
+                                    // load the selected groove
+                                    var name =
+                                        grooveStorage.grooveFileNames[index];
+                                    grooveStorage.readGroove(name);
+                                    Get.snackbar('Load status'.tr,
+                                        'Loaded groove '.tr + name,
+                                        snackPosition: SnackPosition.BOTTOM);
+                                    // go back to previous screen
+                                    Get.back(closeOverlays: true);
+                                    /*
+                                    if (groove.type == GrooveType.percussion) {
+                                      Get.offAll(groovePage);
+                                    } else if (groove.type == GrooveType.bass) {
+                                      Get.offAll(bassPage);
+                                    }
+                                    */
+                                  });
+                            });
+                      }
                     })),
           ],
         ),

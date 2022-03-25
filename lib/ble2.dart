@@ -543,7 +543,9 @@ class BluetoothBLEService {
 //        var time = DateTime.now(); // get system time
         if (data.isNotEmpty) {
           String notifyData = data[0].toRadixString(16).padLeft(4, '0');
-//          print('HF:   notify received with data: $notifyData');
+          print('HF:   notify received with data: $notifyData');
+//          var lengthOfData = data.length();
+//          print('HF:   length of data = $lengthOfData');
 
           if ((data[0] & 0xFF) == 0xFF) {
             // bit 7
@@ -556,8 +558,10 @@ class BluetoothBLEService {
                   snackPosition: SnackPosition.BOTTOM);
               disconnectFromDevice();
             }
-          } else if ((data[0] & 0x20) == 0x20) {  // foot-switch notify received
-            if (footSwitch) {  // only take action if the foot-switch is enabled
+          } else if ((data[0] & 0x20) == 0x20) {
+            // foot-switch notify received
+            if (footSwitch) {
+              // only take action if the foot-switch is enabled
               //  bit 5
               print('HF: foot-switch toggle notify received');
               if (_playState.value) {
@@ -582,7 +586,7 @@ class BluetoothBLEService {
               }
             }
           } else {
-//            print('HF: beat received');
+            print('HF: playing next note in groove, ${data[0]}');
             heartbeatCount = 0;
             // play the next note in the groove
             groove.play(data[0]);
