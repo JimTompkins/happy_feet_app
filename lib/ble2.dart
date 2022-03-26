@@ -541,9 +541,11 @@ class BluetoothBLEService {
     try {
       _beatSubscription = _char4!.value.listen((data) {
 //        var time = DateTime.now(); // get system time
-//        print('HF:   notify received at time: $time with data: $data');
         if (data.isNotEmpty) {
-          if ((data[0] & 0x80) == 0x80) {
+          String notifyData = data[0].toRadixString(16).padLeft(4, '0');
+//          print('HF:   notify received with data: $notifyData');
+
+          if ((data[0] & 0xFF) == 0xFF) {
             // bit 7
 //            print("HF: heartbeat notify received");
             heartbeatCount++;
@@ -554,26 +556,30 @@ class BluetoothBLEService {
                   snackPosition: SnackPosition.BOTTOM);
               disconnectFromDevice();
             }
-          } else if ((data[0] & 0x20) == 0x20) {
-            //  bit 5
-            print('HF: foot-switch toggle notify received');
-            if (_playState.value) {
-              print('HF: beats currently on, being disabled');
-              // disable beats
-              this.disableBeat();
-              _playState.value = false;
-              Get.snackbar('Status'.tr, 'Beats disabled by foot'.tr,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: Duration(seconds: 2));
-            } else {
-              // enable beats
-              print('HF: beats currently off, being enabled');
-              groove.reset();
-              this.enableBeat();
-              _playState.value = true;
-              Get.snackbar('Status'.tr, 'Beats enabled by foot'.tr,
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: Duration(seconds: 2));
+          } else if ((data[0] & 0x20) == 0x20) {  // foot-switch notify received
+            if (footSwitch) {  // only take action if the foot-switch is enabled
+              //  bit 5
+              print('HF: foot-switch toggle notify received');
+              if (_playState.value) {
+                print('HF: beats currently on, being disabled');
+                // disable beats
+                this.disableBeat();
+                _playState.value = false;
+                Get.closeAllSnackbars();
+                Get.snackbar('Status'.tr, 'Beats disabled by foot'.tr,
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: Duration(milliseconds: 1000));
+              } else {
+                // enable beats
+                print('HF: beats currently off, being enabled');
+                groove.reset();
+                this.enableBeat();
+                _playState.value = true;
+                Get.closeAllSnackbars();
+                Get.snackbar('Status'.tr, 'Beats enabled by foot'.tr,
+                    snackPosition: SnackPosition.BOTTOM,
+                    duration: Duration(milliseconds: 1000));
+              }
             }
           } else {
 //            print('HF: beat received');

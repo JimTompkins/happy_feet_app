@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
-//import 'mybool.dart';
 import 'ble.dart';   // flutter_reactive_ble version
 //import 'ble2.dart'; // flutter_blue version
+//import 'mybool.dart';
 import 'groove.dart';
 
 // Practice page
@@ -75,7 +75,8 @@ class _PracticePageState extends State<PracticePage> {
             padding: EdgeInsets.all(5),
             alignment: Alignment.center,
             child: Text(
-              'Choose a sound, set the tempo, enable beats and tap your foot.'.tr,
+              'Choose a sound, set the tempo, enable beats and tap your foot.'
+                  .tr,
             ),
           ),
 
@@ -130,26 +131,35 @@ class _PracticePageState extends State<PracticePage> {
             max: 180,
             step: 2,
             value: groove.targetTempo.toDouble(),
-            enableInteractiveSelection: false,
-            /*
+            keyboardType:
+                TextInputType.numberWithOptions(signed: true, decimal: false),
+            textInputAction:
+                TextInputAction.done, // this doesn't work as expected
+           
             validator: (value) {
-              print('HF: practice mode spinbox validator: $value');
-              int x = value.toInt();
+//              print('HF: practice mode spinbox validator: $value');
+              int x = int.parse(value!);
               if (x > 180) {
-                x = 180;
+                return('BPM should be 180 or less.'.tr);
               } else if (x < 40) {
-                x = 40;
-              }
-              return (x.toString());
-            }, */
+                return('BPM should be 40 or more.'.tr);
+              } else {
+                return(null);
+                }
+            }, 
             onChanged: (value) {
-              print('HF: practice mode tempo set to $value.toInt()');
+//              print('HF: practice mode tempo set to $value');
               setState(() {
                 groove.targetTempo.value = value.toInt();
               });
             },
             decoration: InputDecoration(labelText: 'Tempo [BPM]'.tr),
           ),
+
+          /*
+          TextField(
+            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+          ), */
           Row(children: <Widget>[
             Container(
               padding: EdgeInsets.all(5),
@@ -164,7 +174,10 @@ class _PracticePageState extends State<PracticePage> {
               child: Obx(
                 () => Text(
                   groove.practiceBPM.value.toStringAsFixed(1),
-                  style: TextStyle(fontSize: 40),
+                  style: TextStyle(
+                      fontSize: 40,
+                      color: Colors.white,
+                      backgroundColor: groove.practiceColor),
                 ),
               ),
             ),
@@ -182,7 +195,8 @@ class _PracticePageState extends State<PracticePage> {
               alignment: Alignment.center,
               child: Obx(
                 () => Text(
-                  (-groove.targetTempo.value.toDouble() + groove.practiceBPM.value)
+                  (-groove.targetTempo.value.toDouble() +
+                          groove.practiceBPM.value)
                       .toStringAsFixed(1),
                   style: TextStyle(fontSize: 40),
                 ),
@@ -207,28 +221,26 @@ class _PracticePageState extends State<PracticePage> {
                 ),
               ),
             ),
-              IconButton(
-                icon: Icon(
-                  Icons.help,
-                ),
-                iconSize: 30,
-                color: Colors.blue[400],
-                onPressed: () {
-                  Get.defaultDialog(
-                    title: 'Streak count'.tr,
-                    middleText:
-                        "Number of successive beats that are close to the target BPM."
-                            .tr,
-                    textConfirm: 'OK',
-                    onConfirm: () {
-                      Get.back();
-                    },
-                  );
-                },
+            IconButton(
+              icon: Icon(
+                Icons.help,
               ),
-
+              iconSize: 30,
+              color: Colors.blue[400],
+              onPressed: () {
+                Get.defaultDialog(
+                  title: 'Streak count'.tr,
+                  middleText:
+                      "Number of successive beats that are close to the target BPM."
+                          .tr,
+                  textConfirm: 'OK',
+                  onConfirm: () {
+                    Get.back();
+                  },
+                );
+              },
+            ),
           ]),
-
         ]),
       ),
       bottomNavigationBar: BottomAppBar(
