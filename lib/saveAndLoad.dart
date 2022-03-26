@@ -11,33 +11,38 @@ class GrooveStorage {
   List grooveFileNames = [];
 
   Future<String> get _localPath async {
+    /*
     Directory? directory = Platform.isAndroid
         ? await getExternalStorageDirectory() //FOR ANDROID
         : await getApplicationSupportDirectory(); //FOR iOS
     print('HF: application documents directory : $directory');
     return directory!.path;
+    */
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    return appDocDir.path;
   }
 
-
   // get list of .csv files in the applications doc directory
-  void listOfSavedGrooves() async {
-    String dir = (await getExternalStorageDirectory())!.path;
-    print('HF: external storage directory = $dir');
-    List<FileSystemEntity> files = Directory(dir).listSync(recursive: false);
+  Future<List> listOfSavedGrooves() async {
+    String dir = await _localPath;
+    print('HF: application documents directory = $dir');
+//    List<FileSystemEntity> files = Directory(dir).listSync(recursive: false);
+    final List<FileSystemEntity> entities =
+        await Directory(dir).list().toList();
+    final Iterable<File> files = entities.whereType<File>();
     this.grooveFileNames = [];
-    for (var fileOrDir in files) {
-      if (fileOrDir is File) {
-        if (fileOrDir.path.contains('.csv')) {
-          var grooveName = fileOrDir.path.replaceAll(dir,'');
-          grooveName = grooveName.replaceAll('/','');
-          grooveName = grooveName.replaceAll('.csv', '');
-          print('HF: found saved groove $grooveName');
-          this.grooveFileNames.add(grooveName);
-        }
+    for (var file in files) {
+      if (file.path.contains('.csv')) {
+        var grooveName = file.path.replaceAll(dir, '');
+        grooveName = grooveName.replaceAll('/', '');
+        grooveName = grooveName.replaceAll('.csv', '');
+        print('HF: found saved groove $grooveName');
+        this.grooveFileNames.add(grooveName);
       }
     }
     var len = this.grooveFileNames.length;
     print('HF: listOfSavedGrooves: found $len saved grooves');
+    return this.grooveFileNames;
   }
 
   Future<void> readGroove(String filename) async {
@@ -46,20 +51,20 @@ class GrooveStorage {
     print('HF: reading groove from file $fileNameAndPath');
 
     File file = File(fileNameAndPath);
-      try {
-        // Read the file
-        final contents = await file.readAsString();
-        print('HF: reading from file $filename= $contents');
+    try {
+      // Read the file
+      final contents = await file.readAsString();
+      print('HF: reading from file $filename= $contents');
 
-        // parse the file and populate the groove
-        groove.fromCSV(contents);
+      // parse the file and populate the groove
+      groove.fromCSV(contents);
 
-        return;
-      } catch (e) {
-        // If encountering an error, return 0
-        print('HF: readGroove readAsString error: $e');
-        return;
-      }
+      return;
+    } catch (e) {
+      // If encountering an error, return 0
+      print('HF: readGroove readAsString error: $e');
+      return;
+    }
   }
 
   Future<void> writeGroove(String filename, String description) async {
@@ -78,11 +83,11 @@ class GrooveStorage {
     // Write the file
     try {
       file.writeAsString('$grooveString');
-      Get.snackbar('Write status', message, snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Write status', message,
+          snackPosition: SnackPosition.BOTTOM);
       return;
-    } catch(e) {
+    } catch (e) {
       print('HF: writeGroove writeAsString error: $e');
     }
   }
-
 }
