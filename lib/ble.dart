@@ -138,6 +138,9 @@ class BluetoothBLEService {
 
     print('HF: start BLE scan');
     devicesList.clear(); // clear the list of found devices
+    if (devicesList.length != 0) {
+       print('HF: Error: devicesList length is not zero after clear');
+    }
     idList.clear();
     rssiMap.clear();
     scanComplete = false;
@@ -421,6 +424,8 @@ class BluetoothBLEService {
     isConnected(false);
 
     devicesList.clear(); // clear the list of found devices
+
+//    _ble.scanRegistry.discoveredDevices.clear();
 
     try {
       print('HF: disconnecting from device');

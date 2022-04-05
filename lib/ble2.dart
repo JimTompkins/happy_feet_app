@@ -182,6 +182,7 @@ class BluetoothBLEService {
                       if (!multiMode) {
                         stopScan();
                         rssi = scanResult.rssi;
+                        print('HF: found device with RSSI $rssi');
                         bleAddress = scanResult.device.id.toString();
                         print('HF: rssi = $rssi, address = $bleAddress');
                         targetDevice = scanResult.device;
@@ -196,7 +197,11 @@ class BluetoothBLEService {
                           print(
                               'HF: adding device to list since in multi mode');
                           devicesList.add(scanResult.device);
-                          rssiMap[scanResult.device] = scanResult.rssi;
+                          bleAddress = scanResult.device.id.toString();
+                          rssi = scanResult.rssi;
+                          //print('HF: found device $bleAddress with RSSI $rssi');
+                          //print('HF: scan result = $scanResult');
+                          rssiMap[scanResult.device] = rssi;
                         } else {
                           print('HF: already on devicesList');
                         }
