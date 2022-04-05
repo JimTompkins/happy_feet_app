@@ -132,6 +132,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'BPM should be 180 or less.',
 'BPM should be 40 or more.': 'BPM should be 40 or more.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.',
+'Angle': 'Angle',
 },
 'fr': {
 'Happy Feet': 'Happy Feet',
@@ -262,6 +263,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'BPM devrait avoir 180 ou moins.',
 'BPM should be 40 or more.': 'BPM devrait avoir 40 ans ou plus.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'En mode décalé, les sons sont joués entre les battements. Les battements sont montrés en bleu et décalés en violet.',
+'Angle': 'Angle',
 },
 'de': {
 'Happy Feet': 'Happy Feet',
@@ -392,6 +394,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'BPM sollte 180 oder weniger sein.',
 'BPM should be 40 or more.': 'BPM sollte 40 oder mehr sein.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'Im Offbeat-Modus werden Klänge zwischen Beats gespielt. Schläge sind in Blau und Offweats in Purpur dargestellt.',
+'Angle': 'Winkel',
 },
 'es': {
 'Happy Feet': 'Happy Feet',
@@ -522,6 +525,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'BPM debe ser de 180 o menos.',
 'BPM should be 40 or more.': 'BPM debe ser de 40 o más.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'En el modo offbeat, los sonidos se juegan entre los latidos. Los latidos se muestran en azul y afuera en púrpura.',
+'Angle': 'Ángulo',
 },
 'it': {
 'Happy Feet': 'Happy Feet',
@@ -652,6 +656,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'BPM dovrebbe essere 180 o meno.',
 'BPM should be 40 or more.': 'BPM dovrebbe essere 40 o più.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'In modalità OFFBEAT, i suoni vengono riprodotti tra Beats. I battiti sono mostrati in blu e fumetti in viola.',
+'Angle': 'Angolo',
 },
 'pt': {
 'Happy Feet': 'Happy Feet',
@@ -734,7 +739,7 @@ class Localization extends Translations {
 'Change language': 'Mudar idioma',
 'Firmware revision:': 'Revisão de firmware:',
 'Disconnecting since no beats detected for 30 minutes': 'Desconectando desde que não há batidas detectadas por 30 minutos',
-'Audio test mode': 'Modo de teste de áudio',
+'Audio test mode': 'Modo de teste de áudio.',
 'You cannot use audio test mode if connected.': 'Você não pode usar o modo de teste de áudio se estiver conectado.',
 'Audio test mode enabled.': 'Modo de teste de áudio ativado.',
 'Audio test mode disabled.': 'Modo de teste de áudio desativado.',
@@ -782,6 +787,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'O BPM deve ser 180 ou menos.',
 'BPM should be 40 or more.': 'BPM deve ser 40 ou mais.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'No modo offbeat, os sons são jogados entre batidas. As batidas são mostradas em azul e offbeats em roxo.',
+'Angle': 'Ângulo',
 },
 'nl': {
 'Happy Feet': 'Happy Feet',
@@ -817,7 +823,7 @@ class Localization extends Translations {
 'Result:': 'Resultaat:',
 'Error:': 'Fout:',
 'Awaiting result': 'In afwachting van het resultaat',
-'Show HappyFeet homepage': 'Toon HappyFeet Homepage',
+'Show HappyFeet homepage': 'Toon HappyFeet-startpagina',
 'Happy Feet - Settings Menu': 'Happy Feet - Instellingen Menu',
 'Sensitivity': 'Gevoeligheid',
 'Less': 'Minder',
@@ -912,6 +918,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'BPM moet 180 of minder zijn.',
 'BPM should be 40 or more.': 'BPM moet 40 of meer zijn.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'In de Offbeat-modus worden geluiden gespeeld tussen Beats. Beats worden in Purple in blauwe en offbeats getoond.',
+'Angle': 'Hoek',
 },
 'uk': {
 'Happy Feet': 'Happy Feet',
@@ -922,7 +929,7 @@ class Localization extends Translations {
 'Play mode': 'Режим відтворення',
 'NOTES': 'Ноти',
 '1st note': '1-й примітка',
-'2nd note': '2 нотатки',
+'2nd note': '2 нотатка',
 'Happy Feet - Grooves': 'Щасливі ноги - пази',
 'DEFINE GROOVE': 'Визначити паз',
 'Beats/measure': 'Б\'ється / міра',
@@ -1042,6 +1049,7 @@ class Localization extends Translations {
 'BPM should be 180 or less.': 'BPM повинен бути 180 або менше.',
 'BPM should be 40 or more.': 'BPM повинна бути 40 або більше.',
 'In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple.': 'У режимі відбиття звуки відтворюються між ударами. Бити показані в синіх і позаплістих у фіолетовому.',
+'Angle': 'Кут',
 },
         };
       }
