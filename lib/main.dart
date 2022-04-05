@@ -1804,11 +1804,19 @@ class _MenuPageState extends State<MenuPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Sensitivity'.tr,
+                  'Angle'.tr,
                   style: Theme.of(context).textTheme.caption,
                 ),
               ), // Text
-              Text(' - '), // Text
+//              Text(' - '), // Text
+              Image.asset(
+                 'assets/images/Shallow.png',
+                 width: 20,
+                 height: 40,
+                 color: Colors.deepOrange[400],
+                 fit: BoxFit.contain,
+                 semanticLabel: 'Shallow',
+              ),  // Image
               Slider(
                 value: _detectionThreshold.toDouble(),
                 min: 0,
@@ -1834,9 +1842,15 @@ class _MenuPageState extends State<MenuPage> {
                   });
                 }, // setState, onChanged
               ),
-              Text(
-                ' + ',
-              ), // Text// Slider
+//              Text(' + ',), // Text// Slider
+              Image.asset(
+                 'assets/images/Steep.png',
+                 width: 20,
+                 height: 40,
+                 color: Colors.deepOrange[400],
+                 fit: BoxFit.contain,
+                 semanticLabel: 'Steep',
+              ),  // Image
             ]),
             Row(children: <Widget>[
               ElevatedButton(
