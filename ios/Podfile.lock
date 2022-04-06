@@ -14,6 +14,8 @@ PODS:
     - Flutter
   - path_provider_ios (0.0.1):
     - Flutter
+  - "permission_handler (5.1.0+2)":
+    - Flutter
   - Protobuf (3.19.0)
   - shared_preferences_ios (0.0.1):
     - Flutter
@@ -29,6 +31,7 @@ DEPENDENCIES:
   - flutter_ogg_piano (from `.symlinks/plugins/flutter_ogg_piano/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - soundpool (from `.symlinks/plugins/soundpool/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -50,6 +53,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_ios:
     :path: ".symlinks/plugins/path_provider_ios/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
   shared_preferences_ios:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
   soundpool:
@@ -64,6 +69,7 @@ SPEC CHECKSUMS:
   flutter_ogg_piano: 449dbef983488bf0af18f8cfee53d1f5cbb65ef9
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
   path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
+  permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   Protobuf: e9b99dd5da72f665ec503b19191f245a22188b4d
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   soundpool: c7f4422ca206e77f8900ed3c4ee6a6ff5a0e38a9

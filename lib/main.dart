@@ -448,6 +448,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             }
                             playMode = Mode.groove;
                             groove.practice = true;
+                            _bluetoothBLEService.disableBeat();
                             Get.to(() => practicePage);
                             break;
                           }
@@ -1812,13 +1813,13 @@ class _MenuPageState extends State<MenuPage> {
               ), // Text
 //              Text(' - '), // Text
               Image.asset(
-                 'assets/images/Shallow.png',
-                 width: 20,
-                 height: 40,
-                 color: Colors.deepOrange[400],
-                 fit: BoxFit.contain,
-                 semanticLabel: 'Shallow',
-              ),  // Image
+                'assets/images/Shallow.png',
+                width: 20,
+                height: 40,
+                color: Colors.deepOrange[400],
+                fit: BoxFit.contain,
+                semanticLabel: 'Shallow',
+              ), // Image
               Slider(
                 value: _detectionThreshold.toDouble(),
                 min: 0,
@@ -1846,13 +1847,13 @@ class _MenuPageState extends State<MenuPage> {
               ),
 //              Text(' + ',), // Text// Slider
               Image.asset(
-                 'assets/images/Steep.png',
-                 width: 20,
-                 height: 40,
-                 color: Colors.deepOrange[400],
-                 fit: BoxFit.contain,
-                 semanticLabel: 'Steep',
-              ),  // Image
+                'assets/images/Steep.png',
+                width: 20,
+                height: 40,
+                color: Colors.deepOrange[400],
+                fit: BoxFit.contain,
+                semanticLabel: 'Steep',
+              ), // Image
             ]),
             Row(children: <Widget>[
               ElevatedButton(
@@ -2367,7 +2368,7 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                                     .toString();
                             _bluetoothBLEService.rssi =
                                 _bluetoothBLEService.rssiMap[
-                                  _bluetoothBLEService.devicesList[index]]!;
+                                    _bluetoothBLEService.devicesList[index]]!;
                             print(
                                 'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
                             Get.snackbar('Bluetooth status'.tr,

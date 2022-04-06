@@ -71,6 +71,7 @@ var mp3Map = <int, String>{
   36: 'hidrytom.mp3',
   37: 'circlebrush.mp3',
   38: 'vibraslap.mp3',
+  39: 'C3G4M6.mp3',    // metronome tone, -6dB
 };
 
 var soundIdMap = <int, int>{};
@@ -262,6 +263,11 @@ class HfAudio {
     var asset14 = await rootBundle.load(_filename);
     int id14 = await pool.load(asset14);
     soundIdMap[14] = id14;
+
+    _filename = _path + "click.mp3";
+    var asset15 = await rootBundle.load(_filename);
+    int id15 = await pool.load(asset15);
+    soundIdMap[15] = id15;
 
     var _finishTime = DateTime.now(); // get system time
     Duration _loadTime = _finishTime.difference(_startTime);
@@ -615,6 +621,7 @@ class HfAudio {
       print('HF: finished loading ogg file 13');
       loadCount++;
     });
+
     await rootBundle.load('assets/sounds/vibraslap.ogg').then((ogg14) async {
       await fop.load(
           src: ogg14,
@@ -623,6 +630,17 @@ class HfAudio {
           forceLoad: _forceLoad,
           replace: _replace,);
       print('HF: finished loading ogg file 14');
+      loadCount++;
+    });
+    
+    await rootBundle.load('assets/sounds/click.ogg').then((ogg15) async {
+      await fop.load(
+          src: ogg15,
+          name: 'click.ogg',
+          index: 15,
+          forceLoad: _forceLoad,
+          replace: _replace,);
+      print('HF: finished loading ogg file 15');
       loadCount++;
     });
 
