@@ -106,7 +106,8 @@ bool multiMode = false;
 bool footSwitch = false;
 
 // saved preference for language
-String language = 'English';
+String savedLanguage = '';
+String language = '';
 
 // threshold between 0 and 100 for beat detection sensitivity
 int beatThreshold = 50;
@@ -154,12 +155,94 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() async {
     groove.initSingle(note1);
 
+    // get the current language
+    Locale _locale = Get.deviceLocale!;
+    var _langCode = _locale.languageCode;
+    // convert languageCode to text name of language
+    switch (_langCode) {
+       case 'en':
+          {
+          language = 'English';
+          }
+          break;
+       case 'fr':
+          {
+          language = 'Français';
+          }
+          break;
+       case 'de':
+          {
+          language = 'Deutsch';
+          }
+          break;
+       case 'es':
+          {
+          language = 'Español';
+          }
+          break;
+       case 'it':
+          {
+          language = 'Italiano';
+          }
+          break;
+       case 'pt':
+          {
+          language = 'Português';
+          }
+          break;
+       case 'nl':
+          {
+          language = 'Nederlands';
+          }
+          break;
+       case 'uk':
+          {
+          language = 'Українська';
+          }
+          break;
+    }
+
     // load saved preferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     audioTestMode = prefs.getBool('audioTestMode') ?? false;
     multiMode = prefs.getBool('multiMode') ?? false;
     footSwitch = prefs.getBool('footSwitch') ?? false;
-    language = prefs.getString('langugage') ?? 'English';
+    savedLanguage = prefs.getString('language') ?? '';
+    if (savedLanguage != '') {
+      print('HF: found saved language $savedLanguage');
+      switch (savedLanguage) {
+         case 'English':
+           _locale = Locale('en', 'US');
+           break;
+         case 'Français':
+           _locale = Locale('fr', 'FR');
+           break;
+         case 'Deutsch':
+           _locale = Locale('de', 'DE');
+           break;
+         case 'Español':
+           _locale = Locale('es', 'ES');
+           break;
+         case 'Italiano':
+           _locale = Locale('it', 'IT');
+           break;
+         case 'Português':
+           _locale = Locale('pt', 'PT');
+           break;
+         case 'Nederlands':
+           _locale = Locale('nl', 'NL');
+           break;
+         case 'Українська':
+           _locale = Locale('uk', 'UK');
+           break;
+         default:
+           _locale = Locale('en', 'US');
+           break;
+         }
+         Get.updateLocale(_locale);
+         language = savedLanguage;
+         print('HF: updating language to $savedLanguage');
+    }
 
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
@@ -389,6 +472,53 @@ class _MyHomePageState extends State<MyHomePage> {
                         _audioInitNeeded = false;
                       }
 
+//                      newValue = untranslate(newValue);
+                      if (newValue == 'SingleNote'.tr) {
+                         playMode = Mode.singleNote;
+                         groove.initSingle(note1);
+                      } else if (newValue == 'Alternating Notes'.tr) {
+                         playMode = Mode.alternatingNotes;
+                         groove.initAlternating(note1, note2);
+                      } else if (newValue == 'Dual Notes'.tr) {
+                         playMode = Mode.dualNotes;
+                         groove.initDual(note1, note2);
+                      } else if (newValue == 'Groove'.tr) {
+                         groove.reset();
+                         if (playMode != Mode.groove) {
+                           groove.clearNotes();
+                         }
+                         playMode = Mode.groove;
+                         groove.oneTap = false;
+                         Get.to(() => groovePage);
+                      } else if (newValue == 'Bass'.tr) {
+                         groove.voices = 1;
+                         groove.reset();
+                         if (playMode != Mode.bass) {
+                           groove.clearNotes();
+                         }
+                         playMode = Mode.bass;
+                         groove.oneTap = false;
+                         Get.to(() => bassPage);
+                      } else if (newValue == '1-Tap'.tr) {
+                         if (playMode != Mode.groove) {
+                           groove.clearNotes();
+                         }
+                         playMode = Mode.groove;
+                         groove.oneTap = true;
+                         Get.to(() => oneTapPage);
+                      } else if (newValue == 'Practice'.tr) {
+                         if (playMode != Mode.groove) {
+                           groove.clearNotes();
+                         }
+                         playMode = Mode.groove;
+                         groove.practice = true;
+                         _bluetoothBLEService.disableBeat();
+                         Get.to(() => practicePage);
+                      } else {
+                         playMode = Mode.unknown;
+                         print('HF: error: unknown play mode');
+                      }
+                      /*
                       switch (newValue) {
                         case 'Single Note':
                           {
@@ -448,14 +578,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             }
                             playMode = Mode.groove;
                             groove.practice = true;
+                            _bluetoothBLEService.disableBeat();
                             Get.to(() => practicePage);
                             break;
                           }
                         default:
                           {
                             playMode = Mode.unknown;
+                            print('HF: error: unknown play mode');
                           }
                       }
+                      */
                       if (_audioInitNeeded) {
                         hfaudio.init();
                         _audioInitNeeded = false;
@@ -1784,8 +1917,6 @@ class _MenuPageState extends State<MenuPage> {
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   String lang = language;
   var locale = Get.deviceLocale!;
-//  var locale = Locale('en', 'US');
-//  var locale: Get.deviceLocale;
 
   @override
   initState() {
@@ -1812,13 +1943,13 @@ class _MenuPageState extends State<MenuPage> {
               ), // Text
 //              Text(' - '), // Text
               Image.asset(
-                 'assets/images/Shallow.png',
-                 width: 20,
-                 height: 40,
-                 color: Colors.deepOrange[400],
-                 fit: BoxFit.contain,
-                 semanticLabel: 'Shallow',
-              ),  // Image
+                'assets/images/Shallow.png',
+                width: 20,
+                height: 40,
+                color: Colors.deepOrange[400],
+                fit: BoxFit.contain,
+                semanticLabel: 'Shallow',
+              ), // Image
               Slider(
                 value: _detectionThreshold.toDouble(),
                 min: 0,
@@ -1846,13 +1977,13 @@ class _MenuPageState extends State<MenuPage> {
               ),
 //              Text(' + ',), // Text// Slider
               Image.asset(
-                 'assets/images/Steep.png',
-                 width: 20,
-                 height: 40,
-                 color: Colors.deepOrange[400],
-                 fit: BoxFit.contain,
-                 semanticLabel: 'Steep',
-              ),  // Image
+                'assets/images/Steep.png',
+                width: 20,
+                height: 40,
+                color: Colors.deepOrange[400],
+                fit: BoxFit.contain,
+                semanticLabel: 'Steep',
+              ), // Image
             ]),
             Row(children: <Widget>[
               ElevatedButton(
@@ -1921,10 +2052,11 @@ class _MenuPageState extends State<MenuPage> {
                           break;
                       }
                       lang = newValue!;
+                      language = lang;
                       Get.updateLocale(locale);
                       final _prefs = await SharedPreferences.getInstance();
-                      await _prefs.setString('langugage', newValue);
-                      print("HF: language changed to $newValue");
+                      await _prefs.setString('language', newValue);
+                      print("HF: saved language changed to $newValue");
                     });
                   },
                   items: <String>[
@@ -2322,7 +2454,7 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
             Row(
               children: [
                 Text(
-                  'Select an available HappyFeet: '.tr,
+                  'Select an available HappyFeet:'.tr,
                   style: Theme.of(context).textTheme.caption,
                 ),
                 IconButton(
@@ -2367,7 +2499,7 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                                     .toString();
                             _bluetoothBLEService.rssi =
                                 _bluetoothBLEService.rssiMap[
-                                  _bluetoothBLEService.devicesList[index]]!;
+                                    _bluetoothBLEService.devicesList[index]]!;
                             print(
                                 'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
                             Get.snackbar('Bluetooth status'.tr,

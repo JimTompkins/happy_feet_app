@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
 import 'ble2.dart'; // flutter_blue version
 //import 'mybool.dart';
+import 'audio.dart';
 import 'groove.dart';
 
 // Practice page
@@ -19,6 +22,12 @@ class _PracticePageState extends State<PracticePage> {
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   RxBool _playState = Get.find();
   String note = 'Bass drum';
+  Timer? _metronomeTimer;
+
+  // flag indicating whether a metronome is used in Practice mode or not.
+  // If set to true, a metronome tone (consisting of C4 and G4 on piano)
+  // will be played at the selected tempo
+  bool metronomeFlag = false;
 
   @override
   initState() {
@@ -43,11 +52,27 @@ class _PracticePageState extends State<PracticePage> {
               _bluetoothBLEService.disableBeat();
               Get.snackbar('Status'.tr, 'beats disabled'.tr,
                   snackPosition: SnackPosition.BOTTOM);
+              if (metronomeFlag) {
+                // stop the metronome tone timer
+                if (_metronomeTimer != null) {
+                  _metronomeTimer!.cancel();
+                }
+              }
             } else {
               if (_bluetoothBLEService.isBleConnected()) {
                 // enable beats
                 groove.reset();
                 _bluetoothBLEService.enableBeat();
+                if (metronomeFlag) {
+                  // start a timer to play the metronome tone at the
+                  // chosen tempo
+                  var periodInMs = 60000.0 / groove.targetTempo.value;
+                  _metronomeTimer = Timer.periodic(
+                      Duration(milliseconds: periodInMs.toInt()), (timer) {
+                    // play the metronome sound
+                    hfaudio.play(1, 15, 0, -1, 0);
+                  });
+                }
                 Get.snackbar('Status'.tr, 'beats enabled'.tr,
                     snackPosition: SnackPosition.BOTTOM);
               } else {
@@ -126,6 +151,59 @@ class _PracticePageState extends State<PracticePage> {
             ),
           ]),
 
+          // second row: metronome switch
+          Row(children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Metronome'.tr,
+                style: Theme.of(context).textTheme.caption,
+              ),
+            ),
+            Switch(
+              value: metronomeFlag,
+              activeColor: Colors.deepOrange[400],
+              activeTrackColor: Colors.deepOrange[200],
+              inactiveThumbColor: Colors.grey[600],
+              inactiveTrackColor: Colors.grey[400],
+              onChanged: (value) {
+                setState(() async {
+                  metronomeFlag = value;
+                  final _prefs = await SharedPreferences.getInstance();
+                  await _prefs.setBool('metronomeFlag', value);
+                  if (metronomeFlag) {
+                    print('HF: metronome enabled');
+                    Get.snackbar('Status'.tr, 'Metronome enabled.'.tr,
+                        snackPosition: SnackPosition.BOTTOM);
+                  } else {
+                    print('HF: metronome disabled');
+                    Get.snackbar('Status'.tr, 'Metronome disabled.'.tr,
+                        snackPosition: SnackPosition.BOTTOM);
+                  }
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.help,
+              ),
+              iconSize: 30,
+              color: Colors.blue[400],
+              onPressed: () {
+                Get.defaultDialog(
+                  title: 'Metronome'.tr,
+                  middleText:
+                      'When enabled, a tone will be played at the selected tempo.'.tr,
+                  textConfirm: 'OK',
+                  onConfirm: () {
+                    Get.back();
+                  },
+                );
+              },
+            ),
+          ]),
+
+          // third row: tempo spinbox
           SpinBox(
             min: 40,
             max: 180,
@@ -135,18 +213,18 @@ class _PracticePageState extends State<PracticePage> {
                 TextInputType.numberWithOptions(signed: true, decimal: false),
             textInputAction:
                 TextInputAction.done, // this doesn't work as expected
-           
+
             validator: (value) {
 //              print('HF: practice mode spinbox validator: $value');
               int x = int.parse(value!);
               if (x > 180) {
-                return('BPM should be 180 or less.'.tr);
+                return ('BPM should be 180 or less.'.tr);
               } else if (x < 40) {
-                return('BPM should be 40 or more.'.tr);
+                return ('BPM should be 40 or more.'.tr);
               } else {
-                return(null);
-                }
-            }, 
+                return (null);
+              }
+            },
             onChanged: (value) {
 //              print('HF: practice mode tempo set to $value');
               setState(() {
@@ -156,16 +234,14 @@ class _PracticePageState extends State<PracticePage> {
             decoration: InputDecoration(labelText: 'Tempo [BPM]'.tr),
           ),
 
-          /*
-          TextField(
-            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
-          ), */
+          // fourth row: measured tempo
           Row(children: <Widget>[
             Container(
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
               child: Text(
-                'Measured tempo'.tr,
+                'Measured tempo:'.tr,
+                style: Theme.of(context).textTheme.caption,
               ),
             ),
             Container(
@@ -182,12 +258,15 @@ class _PracticePageState extends State<PracticePage> {
               ),
             ),
           ]),
+
+          // fifth row: error from target tempo
           Row(children: <Widget>[
             Container(
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
               child: Text(
                 'Error:'.tr,
+                style: Theme.of(context).textTheme.caption,
               ),
             ),
             Container(
@@ -203,12 +282,15 @@ class _PracticePageState extends State<PracticePage> {
               ),
             ),
           ]),
+
+          // sixth row: streak counter
           Row(children: <Widget>[
             Container(
               padding: EdgeInsets.all(5),
               alignment: Alignment.center,
               child: Text(
                 'Streak count:'.tr,
+                style: Theme.of(context).textTheme.caption,
               ),
             ),
             Container(
@@ -229,9 +311,9 @@ class _PracticePageState extends State<PracticePage> {
               color: Colors.blue[400],
               onPressed: () {
                 Get.defaultDialog(
-                  title: 'Streak count'.tr,
+                  title: 'Streak count:'.tr,
                   middleText:
-                      "Number of successive beats that are close to the target BPM."
+                      'Number of successive beats that are close to the target tempo.'
                           .tr,
                   textConfirm: 'OK',
                   onConfirm: () {

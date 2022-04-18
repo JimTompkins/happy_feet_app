@@ -150,31 +150,71 @@ class Groove {
     this.runCount = 0;
   }
 
+
+  String untranslateNoteName(String note) {
+     String result = "-";
+     if (note == 'none'.tr) {
+        result = 'none';
+     } else if (note == 'Bass drum'.tr) {
+        result = 'Bass drum';
+     } else if (note == 'Bass echo'.tr) {
+        result = 'Bass echo';
+     } else if (note == 'Lo tom'.tr) {
+        result = 'Lo tom';
+     } else if (note == 'Hi tom'.tr) {
+        result = 'Hi tom';
+     } else if (note == 'Snare drum'.tr) {
+        result = 'Snare drum';
+     } else if (note == 'Hi-hat cymbal'.tr) {
+        result = 'Hi-hat cymbal';
+     } else if (note == 'Cowbell'.tr) {
+        result = 'Cowbell';
+     } else if (note == 'Tambourine'.tr) {
+        result = 'Tambourine';
+     } else if (note == 'Fingersnap'.tr) {
+        result = 'Fingersnap';
+     } else if (note == 'Rim shot'.tr) {
+        result = 'Rim shot';
+     } else if (note == 'Shaker'.tr) {
+        result = 'Shaker';
+     } else if (note == 'Woodblock'.tr) {
+        result = 'Woodblock';
+     } else if (note == 'Brushes'.tr) {
+        result = 'Brushes';
+     } else if (note == 'Quijada'.tr) {
+        result = 'Quijada';
+     }
+     return result;
+  }
+
   // initialize the groove in single note mode
   initSingle(String name) {
+    String trName = untranslateNoteName(name);
     this.resize(1, 1, 1);
     this.interpolate = false;
-    this.notes[0].oggIndex = oggMap[name];
+    this.notes[0].oggIndex = oggMap[trName];
     this.notes[0].oggNote = 0;
-    this.notes[0].name = name;
-    this.notes[0].initial = initialMap[name];
+    this.notes[0].name = trName;
+    this.notes[0].initial = initialMap[trName];
     this.oneTap = false;
     this.reset();
   }
 
   // initialize the groove in alternating note mode
   initAlternating(String name1, String name2) {
+    String trName1 = untranslateNoteName(name1);
+    String trName2 = untranslateNoteName(name2);
     this.resize(2, 1, 1);
     this.interpolate = false;
-    this.notes[0].oggIndex = oggMap[name1];
+    this.notes[0].oggIndex = oggMap[trName1];
     this.notes[0].oggNote = 0;
-    this.notes[0].name = name1;
-    this.notes[0].initial = initialMap[name1];
+    this.notes[0].name = trName1;
+    this.notes[0].initial = initialMap[trName1];
 
-    this.notes[1].oggIndex = oggMap[name2];
+    this.notes[1].oggIndex = oggMap[trName2];
     this.notes[1].oggNote = 0;
-    this.notes[1].name = name2;
-    this.notes[1].initial = initialMap[name2];
+    this.notes[1].name = trName2;
+    this.notes[1].initial = initialMap[trName2];
 
     this.oneTap = false;
     this.reset();
@@ -182,17 +222,19 @@ class Groove {
 
   // initialize the groove in dual note mode
   initDual(String name1, String name2) {
+    String trName1 = untranslateNoteName(name1);
+    String trName2 = untranslateNoteName(name2);
     this.resize(1, 1, 2);
     this.interpolate = false;
-    this.notes[0].oggIndex = oggMap[name1];
+    this.notes[0].oggIndex = oggMap[trName1];
     this.notes[0].oggNote = 0;
-    this.notes[0].name = name1;
-    this.notes[0].initial = initialMap[name1];
+    this.notes[0].name = trName1;
+    this.notes[0].initial = initialMap[trName1];
 
-    this.notes2[0].oggIndex = oggMap[name2];
+    this.notes2[0].oggIndex = oggMap[trName2];
     this.notes2[0].oggNote = 0;
-    this.notes2[0].name = name2;
-    this.notes2[0].initial = initialMap[name2];
+    this.notes2[0].name = trName2;
+    this.notes2[0].initial = initialMap[trName2];
 
     this.oneTap = false;
     this.reset();
