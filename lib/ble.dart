@@ -534,12 +534,21 @@ class BluetoothBLEService {
         if (data.isNotEmpty) {
           if ((data[0] & 0xFF) == 0xFF) {
             // heartbeat = 0xFF
-//            print("HF: heartbeat notify received");
             heartbeatCount++;
-            if (heartbeatCount >= 360) {
+            print("HF: heartbeat notify $heartbeatCount received");
+            if (heartbeatCount >= 360) {  // 360 = 30min x 60s/min / 5s/heartbeat
               print('HF: timeout error.  No beat received for 30min');
-              Get.snackbar('Bluetooth status'.tr, 'Disconnecting since no beats detected for 30 minutes'.tr, snackPosition: SnackPosition.BOTTOM);
+//              Get.snackbar('Bluetooth status'.tr, 'Disconnecting since no beats detected for 30 minutes'.tr, snackPosition: SnackPosition.BOTTOM);
               disconnectFromDevice();
+              Get.defaultDialog(
+                 title: 'Bluetooth status'.tr,
+                 middleText:
+                   'Disconnecting since no beats detected for 30 minutes'.tr,
+                 textConfirm: 'OK',
+                 onConfirm: () {
+                    Get.back();
+                 },
+              );
             }
 //              Timeline.timeSync("HF: heartbeat received", () {});
           } else if ((data[0] & 0x20) == 0x20) {  // foot-switch notify received
