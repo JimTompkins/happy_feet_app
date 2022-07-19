@@ -238,7 +238,7 @@ class BluetoothBLEService {
       print("HF: connectToDevice: targetDevice is null");
       return;
     } else {
-      print("HF: connectToDevice");
+      print("HF: connectToDevice $targetDevice.id.toString()");
     }
 
     try {
