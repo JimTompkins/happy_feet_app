@@ -306,9 +306,6 @@ class BluetoothBLEService {
       print("HF: connectToDevice");
     }
 
-//  _connectionStateSubject.add(BluetoothConnectionStateDTO(
-//      bluetoothConnectionState: BluetoothConnectionState.DEVICE_CONNECTING));
-
     try {
       await targetDevice!.connect();
       targetDevice!.state.listen((connectionStateUpdate) async {
@@ -316,7 +313,7 @@ class BluetoothBLEService {
           case BluetoothDeviceState.connected:
             if (!isBleConnected()) {
               isConnected(true);
-              print('HF: device connected');
+              print('HF: connection state update: connected');
               Get.snackbar('Bluetooth status'.tr, 'Connected!'.tr,
                   snackPosition: SnackPosition.BOTTOM);
               heartbeatCount = 0;
@@ -325,10 +322,13 @@ class BluetoothBLEService {
             break;
           case BluetoothDeviceState.disconnected:
             isConnected(false);
+            print('HF: connection state update: disconnected');
             break;
           case BluetoothDeviceState.connecting:
+            print('HF: connection state update: connecting');
             break;
           case BluetoothDeviceState.disconnecting:
+            print('HF: connection state update: disconnecting');
             break;
         }
       });
@@ -368,7 +368,7 @@ class BluetoothBLEService {
           print("HF: MTU size: $mtu");
           //await targetDevice!.requestMtu(23);
 
-          await Future.delayed(Duration(milliseconds: 1000));
+          await Future.delayed(Duration(milliseconds: 500));
 
           print("HF: processing characteristics...");
           service.characteristics.forEach((characteristic) async {
@@ -392,6 +392,8 @@ class BluetoothBLEService {
             }
           });
           print("HF: ...done.");
+          await Future.delayed(Duration(milliseconds: 500));
+          processNotifications();
         }
       });
     } catch (e) {
@@ -446,7 +448,6 @@ class BluetoothBLEService {
 
   // clear bit 0 of char6, the beat enable flag
   Future<void> disableBeat() async {
-    //stopProcessingBeats();
     if (_char6 == null) {
       print('HF: disableBeat: error: null characteristic');
       // error
@@ -458,9 +459,6 @@ class BluetoothBLEService {
 
   // set bit 0 of char6, the beat enable flag
   Future<void> enableBeat() async {
-    print("HF: enable processing notifications on char4...");
-    processBeats();
-    await Future.delayed(Duration(milliseconds: 1000));
     if (_char6 == null) {
       print('HF: enableBeat: error: null characteristic');
       // error
@@ -521,8 +519,11 @@ class BluetoothBLEService {
     }
   }
 
-  // method to process beats received as notifications on char4
-  processBeats() async {
+  // method to process notifications on char4.  These are used for:
+  //  i) periodic heartbeat 0xFF
+  //  ii) foot switch: bit 5 set
+  //  iii) beats: otherwise
+  processNotifications() async {
     var _lock = Lock();
     if (_char4 == null) {
       print("HF: processBeats: _char4 is null");
@@ -547,7 +548,7 @@ class BluetoothBLEService {
       _beatSubscription = _char4!.value.listen((data) {
 //        var time = DateTime.now(); // get system time
         if (data.isNotEmpty) {
-          String notifyData = data[0].toRadixString(16).padLeft(4, '0');
+          String notifyData = data[0].toRadixString(16).padLeft(2, '0');
           print('HF:   notify received with data: $notifyData');
 //          var lengthOfData = data.length();
 //          print('HF:   length of data = $lengthOfData');
@@ -591,10 +592,12 @@ class BluetoothBLEService {
               }
             }
           } else {
-            print('HF: playing next note in groove, ${data[0]}');
-            heartbeatCount = 0;
-            // play the next note in the groove
-            groove.play(data[0]);
+            if (_playState.value) {  // if beats are currently on...
+              // play the next note in the groove
+              groove.play(data[0]);
+              print('HF: playing next note in groove, ${data[0]}');
+              heartbeatCount = 0;
+            }
           }
         } else {
           print('HF:  data is empty');

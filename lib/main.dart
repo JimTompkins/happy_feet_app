@@ -152,51 +152,51 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   initPreferences() async {
-      // get the current language
+    // get the current language
     Locale _locale = Get.deviceLocale!;
     var _langCode = _locale.languageCode;
     // convert languageCode to text name of language
     switch (_langCode) {
-       case 'en':
-          {
+      case 'en':
+        {
           language = 'English';
-          }
-          break;
-       case 'fr':
-          {
+        }
+        break;
+      case 'fr':
+        {
           language = 'Français';
-          }
-          break;
-       case 'de':
-          {
+        }
+        break;
+      case 'de':
+        {
           language = 'Deutsch';
-          }
-          break;
-       case 'es':
-          {
+        }
+        break;
+      case 'es':
+        {
           language = 'Español';
-          }
-          break;
-       case 'it':
-          {
+        }
+        break;
+      case 'it':
+        {
           language = 'Italiano';
-          }
-          break;
-       case 'pt':
-          {
+        }
+        break;
+      case 'pt':
+        {
           language = 'Português';
-          }
-          break;
-       case 'nl':
-          {
+        }
+        break;
+      case 'nl':
+        {
           language = 'Nederlands';
-          }
-          break;
-       case 'uk':
-          {
+        }
+        break;
+      case 'uk':
+        {
           language = 'Українська';
-          }
-          break;
+        }
+        break;
     }
 
     // load saved preferences
@@ -208,37 +208,37 @@ class _MyHomePageState extends State<MyHomePage> {
     if (savedLanguage != '') {
       print('HF: found saved language $savedLanguage');
       switch (savedLanguage) {
-         case 'English':
-           _locale = Locale('en', 'US');
-           break;
-         case 'Français':
-           _locale = Locale('fr', 'FR');
-           break;
-         case 'Deutsch':
-           _locale = Locale('de', 'DE');
-           break;
-         case 'Español':
-           _locale = Locale('es', 'ES');
-           break;
-         case 'Italiano':
-           _locale = Locale('it', 'IT');
-           break;
-         case 'Português':
-           _locale = Locale('pt', 'PT');
-           break;
-         case 'Nederlands':
-           _locale = Locale('nl', 'NL');
-           break;
-         case 'Українська':
-           _locale = Locale('uk', 'UK');
-           break;
-         default:
-           _locale = Locale('en', 'US');
-           break;
-         }
-         Get.updateLocale(_locale);
-         language = savedLanguage;
-         print('HF: updating language to $savedLanguage');
+        case 'English':
+          _locale = Locale('en', 'US');
+          break;
+        case 'Français':
+          _locale = Locale('fr', 'FR');
+          break;
+        case 'Deutsch':
+          _locale = Locale('de', 'DE');
+          break;
+        case 'Español':
+          _locale = Locale('es', 'ES');
+          break;
+        case 'Italiano':
+          _locale = Locale('it', 'IT');
+          break;
+        case 'Português':
+          _locale = Locale('pt', 'PT');
+          break;
+        case 'Nederlands':
+          _locale = Locale('nl', 'NL');
+          break;
+        case 'Українська':
+          _locale = Locale('uk', 'UK');
+          break;
+        default:
+          _locale = Locale('en', 'US');
+          break;
+      }
+      Get.updateLocale(_locale);
+      language = savedLanguage;
+      print('HF: updating language to $savedLanguage');
     }
   }
 
@@ -481,49 +481,49 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //                      newValue = untranslate(newValue);
                       if (newValue == 'SingleNote'.tr) {
-                         playMode = Mode.singleNote;
-                         groove.initSingle(note1);
+                        playMode = Mode.singleNote;
+                        groove.initSingle(note1);
                       } else if (newValue == 'Alternating Notes'.tr) {
-                         playMode = Mode.alternatingNotes;
-                         groove.initAlternating(note1, note2);
+                        playMode = Mode.alternatingNotes;
+                        groove.initAlternating(note1, note2);
                       } else if (newValue == 'Dual Notes'.tr) {
-                         playMode = Mode.dualNotes;
-                         groove.initDual(note1, note2);
+                        playMode = Mode.dualNotes;
+                        groove.initDual(note1, note2);
                       } else if (newValue == 'Groove'.tr) {
-                         groove.reset();
-                         if (playMode != Mode.groove) {
-                           groove.clearNotes();
-                         }
-                         playMode = Mode.groove;
-                         groove.oneTap = false;
-                         Get.to(() => groovePage);
+                        groove.reset();
+                        if (playMode != Mode.groove) {
+                          groove.clearNotes();
+                        }
+                        playMode = Mode.groove;
+                        groove.oneTap = false;
+                        Get.to(() => groovePage);
                       } else if (newValue == 'Bass'.tr) {
-                         groove.voices = 1;
-                         groove.reset();
-                         if (playMode != Mode.bass) {
-                           groove.clearNotes();
-                         }
-                         playMode = Mode.bass;
-                         groove.oneTap = false;
-                         Get.to(() => bassPage);
+                        groove.voices = 1;
+                        groove.reset();
+                        if (playMode != Mode.bass) {
+                          groove.clearNotes();
+                        }
+                        playMode = Mode.bass;
+                        groove.oneTap = false;
+                        Get.to(() => bassPage);
                       } else if (newValue == '1-Tap'.tr) {
-                         if (playMode != Mode.groove) {
-                           groove.clearNotes();
-                         }
-                         playMode = Mode.groove;
-                         groove.oneTap = true;
-                         Get.to(() => oneTapPage);
+                        if (playMode != Mode.groove) {
+                          groove.clearNotes();
+                        }
+                        playMode = Mode.groove;
+                        groove.oneTap = true;
+                        Get.to(() => oneTapPage);
                       } else if (newValue == 'Practice'.tr) {
-                         if (playMode != Mode.groove) {
-                           groove.clearNotes();
-                         }
-                         playMode = Mode.groove;
-                         groove.practice = true;
-                         _bluetoothBLEService.disableBeat();
-                         Get.to(() => practicePage);
+                        if (playMode != Mode.groove) {
+                          groove.clearNotes();
+                        }
+                        playMode = Mode.groove;
+                        groove.practice = true;
+                        _bluetoothBLEService.disableBeat();
+                        Get.to(() => practicePage);
                       } else {
-                         playMode = Mode.unknown;
-                         print('HF: error: unknown play mode');
+                        playMode = Mode.unknown;
+                        print('HF: error: unknown play mode');
                       }
                       /*
                       switch (newValue) {
