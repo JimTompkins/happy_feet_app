@@ -10,8 +10,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'mybool.dart';
-import 'ble.dart';   // flutter_reactive_ble version
-//import 'ble2.dart'; // flutter_blue version
+//import 'ble.dart';   // flutter_reactive_ble version
+import 'ble2.dart'; // flutter_blue version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -151,11 +151,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  @override
-  initState() async {
-    groove.initSingle(note1);
-
-    // get the current language
+  initPreferences() async {
+      // get the current language
     Locale _locale = Get.deviceLocale!;
     var _langCode = _locale.languageCode;
     // convert languageCode to text name of language
@@ -243,6 +240,16 @@ class _MyHomePageState extends State<MyHomePage> {
          language = savedLanguage;
          print('HF: updating language to $savedLanguage');
     }
+  }
+
+  @override
+  initState() {
+    groove.initSingle(note1);
+
+    // initialize the saved preferences.  Note that this function call was added to prevent
+    // an error message due to awaits inside initState().  This showed up for the first time
+    // after upgrading to flutter 3.0.1
+    initPreferences();
 
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
