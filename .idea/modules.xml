@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/happy_feet_app.iml" filepath="$PROJECT_DIR$/.idea/happy_feet_app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/happy_feet_app_android.iml" filepath="$PROJECT_DIR$/android/happy_feet_app_android.iml" />
     </modules>
   </component>
 </project>

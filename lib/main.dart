@@ -1920,7 +1920,6 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  int _detectionThreshold = 50;
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   String lang = language;
   var locale = Get.deviceLocale!;
@@ -1940,77 +1939,6 @@ class _MenuPageState extends State<MenuPage> {
       body: Center(
         child: ListView(children: <Widget>[
           Column(children: <Widget>[
-            Row(children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Angle'.tr,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-              ), // Text
-//              Text(' - '), // Text
-              Image.asset(
-                'assets/images/Shallow.png',
-                width: 20,
-                height: 40,
-                color: Colors.deepOrange[400],
-                fit: BoxFit.contain,
-                semanticLabel: 'Shallow',
-              ), // Image
-              Slider(
-                value: _detectionThreshold.toDouble(),
-                min: 0,
-                max: 100,
-                divisions: 10,
-                label: _detectionThreshold.round().toString(),
-                onChanged: (double value) {
-                  setState(() {
-                    _detectionThreshold = value.toInt();
-                  });
-                },
-                onChangeEnd: (double value) {
-                  setState(() {
-                    if (!_bluetoothBLEService.isConnected()) {
-                      // can't reset sensitivity if BLE is not connected
-                      Get.snackbar(
-                          'Error:'.tr, 'You must be connected to adjust.'.tr,
-                          snackPosition: SnackPosition.BOTTOM);
-                    } else {
-                      _detectionThreshold = value.toInt();
-                      _bluetoothBLEService.writeThreshold(_detectionThreshold);
-                    }
-                  });
-                }, // setState, onChanged
-              ),
-//              Text(' + ',), // Text// Slider
-              Image.asset(
-                'assets/images/Steep.png',
-                width: 20,
-                height: 40,
-                color: Colors.deepOrange[400],
-                fit: BoxFit.contain,
-                semanticLabel: 'Steep',
-              ), // Image
-            ]),
-            Row(children: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    if (!_bluetoothBLEService.isConnected()) {
-                      // can't reset sensitivity if BLE is not connected
-                      Get.snackbar('Error:'.tr,
-                          'You must be connected to reset to default.'.tr,
-                          snackPosition: SnackPosition.BOTTOM);
-                    } else {
-                      _detectionThreshold = 50;
-                      _bluetoothBLEService
-                          .writeThreshold(_detectionThreshold & 0xFF);
-                    }
-                  });
-                },
-                child: new Text('Reset sensitivity to default'.tr),
-              ),
-            ]), // Row
             Row(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
