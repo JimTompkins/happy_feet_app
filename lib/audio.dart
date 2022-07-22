@@ -669,7 +669,9 @@ class HfAudio {
         forceLoad: _forceLoad,
         replace: _replace,
       );
-      print('HF: finished loading ogg file 9');
+      if (kDebugMode) {
+        print('HF: finished loading ogg file 9');
+      }
       loadCount++;
     });
     await rootBundle.load('assets/sounds/woodblock2.ogg').then((ogg10) async {
