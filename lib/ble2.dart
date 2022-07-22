@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 //import 'package:get/get_connect/http/src/utils/utils.dart';
@@ -119,36 +120,48 @@ class BluetoothBLEService {
     _ble!.state.listen((status) {
       switch (status) {
         case BluetoothState.unknown:
-          print('HF: BLE status unknown');
+          if (kDebugMode) {
+            print('HF: BLE status unknown');
+          }
           isReady = false;
           break;
         case BluetoothState.unavailable:
-          print('HF: BLE status unsupported');
+          if (kDebugMode) {
+            print('HF: BLE status unsupported');
+          }
           Get.snackbar('Bluetooth status'.tr,
               'This device does not support Bluetooth'.tr,
               snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BluetoothState.unauthorized:
-          print('HF: BLE status unauthorized');
+          if (kDebugMode) {
+            print('HF: BLE status unauthorized');
+          }
           Get.snackbar('Bluetooth status'.tr,
               'Authorize the HappyFeet app to use Bluetooth and location'.tr,
               snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BluetoothState.off:
-          print('HF: BLE status powered off');
+          if (kDebugMode) {
+            print('HF: BLE status powered off');
+          }
           Get.snackbar('Bluetooth status'.tr,
               'Bluetooth is turned off.  Please turn it on'.tr,
               snackPosition: SnackPosition.BOTTOM);
           isReady = false;
           break;
         case BluetoothState.on:
-          print('HF: BLE status ready');
+          if (kDebugMode) {
+            print('HF: BLE status ready');
+          }
           isReady = true;
           break;
         default:
-          print('HF: BLE status unknown');
+          if (kDebugMode) {
+            print('HF: BLE status unknown');
+          }
           break;
       }
     });
@@ -176,26 +189,36 @@ class BluetoothBLEService {
                     String foundDevice = TARGET_DEVICE_NAMES
                         .firstWhere((e) => e == scanResult.device.name);
                     if (foundDevice.isNotEmpty) {
-                      print('HF: HappyFeet found');
+                      if (kDebugMode) {
+                        print('HF: HappyFeet found');
+                      }
                       // if not in multi mode, stop further scanning and
                       // connect to the first device found...
                       if (!multiMode) {
                         stopScan();
                         rssi = scanResult.rssi;
-                        print('HF: found device with RSSI $rssi');
+                        if (kDebugMode) {
+                          print('HF: found device with RSSI $rssi');
+                        }
                         bleAddress = scanResult.device.id.toString();
-                        print('HF: rssi = $rssi, address = $bleAddress');
+                        if (kDebugMode) {
+                          print('HF: rssi = $rssi, address = $bleAddress');
+                        }
                         targetDevice = scanResult.device;
                         connectToDevice();
-                        print(
-                            'HF: connecting to device immediately since not in multi mode');
+                        if (kDebugMode) {
+                          print(
+                              'HF: connecting to device immediately since not in multi mode');
+                        }
                       }
                       // if in multi mode, add the device to a list of devices
                       // and keep scanning
                       else {
                         if (!devicesList.contains(scanResult.device)) {
-                          print(
-                              'HF: adding device to list since in multi mode');
+                          if (kDebugMode) {
+                            print(
+                                'HF: adding device to list since in multi mode');
+                          }
                           devicesList.add(scanResult.device);
                           bleAddress = scanResult.device.id.toString();
                           rssi = scanResult.rssi;
@@ -203,7 +226,9 @@ class BluetoothBLEService {
                           //print('HF: scan result = $scanResult');
                           rssiMap[scanResult.device] = rssi;
                         } else {
-                          print('HF: already on devicesList');
+                          if (kDebugMode) {
+                            print('HF: already on devicesList');
+                          }
                         }
                       }
                     }
@@ -213,10 +238,14 @@ class BluetoothBLEService {
                 },
                 onDone: () => _onDoneScan(),
                 onError: (err) {
-                  print('HF: connection failed 1');
+                  if (kDebugMode) {
+                    print('HF: connection failed 1');
+                  }
                 });
       } catch (err) {
-        print('HF: connection failed 2');
+        if (kDebugMode) {
+          print('HF: connection failed 2');
+        }
       }
     } else {
       connectToDevice();
@@ -245,15 +274,21 @@ class BluetoothBLEService {
                 .tr,
             snackPosition: SnackPosition.BOTTOM);
       } else if (devicesList.length == 1) {
-        print('HF: found 1 HappyFeet, connecting now...');
+        if (kDebugMode) {
+          print('HF: found 1 HappyFeet, connecting now...');
+        }
         bleAddress = devicesList[0].id.toString();
         rssi = rssiMap[devicesList[0]]!;
-        print('HF: rssi = $rssi, address = $bleAddress');
+        if (kDebugMode) {
+          print('HF: rssi = $rssi, address = $bleAddress');
+        }
         targetDevice = devicesList[0];
         connectToDevice();
       } else if (devicesList.length > 1) {
         var n = devicesList.length;
-        print('HF: found $n HappyFeet in multi mode');
+        if (kDebugMode) {
+          print('HF: found $n HappyFeet in multi mode');
+        }
         // sort the devices list by RSSI in descending order i.e. closest first
         devicesList.sort((b, a) => rssiMap[a]!.compareTo(rssiMap[b]!));
         Get.to(() => multiConnectPage);
@@ -265,7 +300,9 @@ class BluetoothBLEService {
   // wait for the scan to complete by checking the scanComplete flag every 500ms
   isScanComplete() async {
     var scanStartTime = DateTime.now(); // get system time at start of scan
-    print('HF: starting scan');
+    if (kDebugMode) {
+      print('HF: starting scan');
+    }
     while (true) {
       if (scanComplete) {
         break;
@@ -274,9 +311,13 @@ class BluetoothBLEService {
       Duration scanDuration =
           now.difference(scanStartTime); // calculate duration of scan so far
       var t = scanDuration.inSeconds.toDouble();
-      print('HF: scan time = $t');
+      if (kDebugMode) {
+        print('HF: scan time = $t');
+      }
       if (t > 10.0) {
-        print('HF: scan timed out');
+        if (kDebugMode) {
+          print('HF: scan timed out');
+        }
         break;
       }
       await Future.delayed(Duration(milliseconds: 500));
@@ -300,10 +341,14 @@ class BluetoothBLEService {
 
   connectToDevice() async {
     if (targetDevice == null) {
-      print("HF: connectToDevice: targetDevice is null");
+      if (kDebugMode) {
+        print("HF: connectToDevice: targetDevice is null");
+      }
       return;
     } else {
-      print("HF: connectToDevice");
+      if (kDebugMode) {
+        print("HF: connectToDevice");
+      }
     }
 
     try {
@@ -313,7 +358,9 @@ class BluetoothBLEService {
           case BluetoothDeviceState.connected:
             if (!isBleConnected()) {
               isConnected(true);
-              print('HF: connection state update: connected');
+              if (kDebugMode) {
+                print('HF: connection state update: connected');
+              }
               Get.snackbar('Bluetooth status'.tr, 'Connected!'.tr,
                   snackPosition: SnackPosition.BOTTOM);
               heartbeatCount = 0;
@@ -322,27 +369,39 @@ class BluetoothBLEService {
             break;
           case BluetoothDeviceState.disconnected:
             isConnected(false);
-            print('HF: connection state update: disconnected');
+            if (kDebugMode) {
+              print('HF: connection state update: disconnected');
+            }
             break;
           case BluetoothDeviceState.connecting:
-            print('HF: connection state update: connecting');
+            if (kDebugMode) {
+              print('HF: connection state update: connecting');
+            }
             break;
           case BluetoothDeviceState.disconnecting:
-            print('HF: connection state update: disconnecting');
+            if (kDebugMode) {
+              print('HF: connection state update: disconnecting');
+            }
             break;
         }
       });
     } catch (err) {
-      print('HF: connection error $err');
+      if (kDebugMode) {
+        print('HF: connection error $err');
+      }
     }
   }
 
   discoverServices() async {
     if (targetDevice == null) {
-      print("HF: discoverServices: targetDevice is null");
+      if (kDebugMode) {
+        print("HF: discoverServices: targetDevice is null");
+      }
       return;
     } else {
-      print("HF: discoverServices: targetDevice is not null");
+      if (kDebugMode) {
+        print("HF: discoverServices: targetDevice is not null");
+      }
     }
 
     try {
@@ -365,12 +424,16 @@ class BluetoothBLEService {
         if (service.uuid.toString() == HF_SERVICE_UUID) {
           // for HappyFeet, set the MTU as small as possible
           final mtu = await targetDevice!.mtu.first;
-          print("HF: MTU size: $mtu");
+          if (kDebugMode) {
+            print("HF: MTU size: $mtu");
+          }
           //await targetDevice!.requestMtu(23);
 
           await Future.delayed(Duration(milliseconds: 500));
 
-          print("HF: processing characteristics...");
+          if (kDebugMode) {
+            print("HF: processing characteristics...");
+          }
           service.characteristics.forEach((characteristic) async {
             if (characteristic.uuid.toString() == CHAR1_CHARACTERISTIC_UUID) {
               _char1 = characteristic;
@@ -391,13 +454,17 @@ class BluetoothBLEService {
               _char6 = characteristic;
             }
           });
-          print("HF: ...done.");
+          if (kDebugMode) {
+            print("HF: ...done.");
+          }
           await Future.delayed(Duration(milliseconds: 500));
           processNotifications();
         }
       });
     } catch (e) {
-      print(e.toString());
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 
@@ -409,11 +476,15 @@ class BluetoothBLEService {
 
     await _beatSubscription?.cancel();
     _beatSubscription = null;
-    print("HF: _beatSubscription is cancelled");
+    if (kDebugMode) {
+      print("HF: _beatSubscription is cancelled");
+    }
 
     await scanSubscription?.cancel();
     scanSubscription = null;
-    print('HF: scanSubscription is cancelled');
+    if (kDebugMode) {
+      print('HF: scanSubscription is cancelled');
+    }
 
     devicesList.clear(); // clear the list of found devices
 
@@ -438,10 +509,14 @@ class BluetoothBLEService {
   Future<void> setDisconnectFlag() async {
     stopProcessingBeats();
     if (_char6 == null) {
-      print('HF: setDisconnectFlag: error: null characteristic');
+      if (kDebugMode) {
+        print('HF: setDisconnectFlag: error: null characteristic');
+      }
       // error
     } else {
-      print('HF: set disconnect flag');
+      if (kDebugMode) {
+        print('HF: set disconnect flag');
+      }
       await _char6!.write([0x40]);
     }
   }
@@ -449,10 +524,14 @@ class BluetoothBLEService {
   // clear bit 0 of char6, the beat enable flag
   Future<void> disableBeat() async {
     if (_char6 == null) {
-      print('HF: disableBeat: error: null characteristic');
+      if (kDebugMode) {
+        print('HF: disableBeat: error: null characteristic');
+      }
       // error
     } else {
-      print('HF: disabling beats');
+      if (kDebugMode) {
+        print('HF: disabling beats');
+      }
       await _char6!.write([0x00]);
     }
   }
@@ -460,10 +539,14 @@ class BluetoothBLEService {
   // set bit 0 of char6, the beat enable flag
   Future<void> enableBeat() async {
     if (_char6 == null) {
-      print('HF: enableBeat: error: null characteristic');
+      if (kDebugMode) {
+        print('HF: enableBeat: error: null characteristic');
+      }
       // error
     } else {
-      print('HF: enabling beats');
+      if (kDebugMode) {
+        print('HF: enabling beats');
+      }
       await _char6!.write([0x01]);
     }
   }
@@ -471,10 +554,14 @@ class BluetoothBLEService {
   // set bit 7 of char6, the beat enable flag
   Future<void> enableTestMode() async {
     if (_char6 == null) {
-      print('HF: enableTestMode: error: null characteristic');
+      if (kDebugMode) {
+        print('HF: enableTestMode: error: null characteristic');
+      }
       // error
     } else {
-      print('HF: enabling test mode: HF will send beats at a fixed rate');
+      if (kDebugMode) {
+        print('HF: enabling test mode: HF will send beats at a fixed rate');
+      }
       await _char6!.write([0x80]);
     }
   }
@@ -483,7 +570,9 @@ class BluetoothBLEService {
   // from a slider that varies between 0 and 100.
   Future<void> writeThreshold(int threshold) async {
     if (_char3 == null) {
-      print('HF: writeThreshold: error: null characteristic');
+      if (kDebugMode) {
+        print('HF: writeThreshold: error: null characteristic');
+      }
       // error
     } else {
       int value = 0;
@@ -495,7 +584,9 @@ class BluetoothBLEService {
       } else {
         value = threshold;
       }
-      print('HF: writeThreshold: threshold = $threshold, value = $value');
+      if (kDebugMode) {
+        print('HF: writeThreshold: threshold = $threshold, value = $value');
+      }
       await _char3!.write([value]);
     }
   }
@@ -508,13 +599,19 @@ class BluetoothBLEService {
       try {
         List<int> value = await _char2!.read();
         if (value[0] == 0x44) {
-          print("HF: correct whoAmI value was read");
+          if (kDebugMode) {
+            print("HF: correct whoAmI value was read");
+          }
         } else {
-          print("HF: *** incorrect whoAmI value was read");
+          if (kDebugMode) {
+            print("HF: *** incorrect whoAmI value was read");
+          }
         }
       } catch (err) {
-        print("HF: error readWhoAmI");
-        print(err);
+        if (kDebugMode) {
+          print("HF: error readWhoAmI");
+          print(err);
+        }
       }
     }
   }
@@ -526,17 +623,25 @@ class BluetoothBLEService {
   processNotifications() async {
     var _lock = Lock();
     if (_char4 == null) {
-      print("HF: processBeats: _char4 is null");
+      if (kDebugMode) {
+        print("HF: processBeats: _char4 is null");
+      }
       return;
     } else {
-      print('HF: process beats _char4 = $_char4');
+      if (kDebugMode) {
+        print('HF: process beats _char4 = $_char4');
+      }
     }
 
     await _beatSubscription?.cancel();
     if (_char4!.isNotifying) {
-      print('HF: char4 is notifying');
+      if (kDebugMode) {
+        print('HF: char4 is notifying');
+      }
     } else {
-      print('HF: char4 is NOT notifying');
+      if (kDebugMode) {
+        print('HF: char4 is NOT notifying');
+      }
     }
     // see flutter_blue issues #295
     await _lock.synchronized(
@@ -549,7 +654,9 @@ class BluetoothBLEService {
 //        var time = DateTime.now(); // get system time
         if (data.isNotEmpty) {
           String notifyData = data[0].toRadixString(16).padLeft(2, '0');
-          print('HF:   notify received with data: $notifyData');
+          if (kDebugMode) {
+            print('HF:   notify received with data: $notifyData');
+          }
 //          var lengthOfData = data.length();
 //          print('HF:   length of data = $lengthOfData');
 
@@ -558,7 +665,9 @@ class BluetoothBLEService {
 //            print("HF: heartbeat notify received");
             heartbeatCount++;
             if (heartbeatCount >= 360) {
-              print('HF: timeout error.  No beat received for 30min');
+              if (kDebugMode) {
+                print('HF: timeout error.  No beat received for 30min');
+              }
               Get.snackbar('Bluetooth status'.tr,
                   'Disconnecting since no beats detected for 30 minutes'.tr,
                   snackPosition: SnackPosition.BOTTOM);
@@ -569,9 +678,13 @@ class BluetoothBLEService {
             if (footSwitch) {
               // only take action if the foot-switch is enabled
               //  bit 5
-              print('HF: foot-switch toggle notify received');
+              if (kDebugMode) {
+                print('HF: foot-switch toggle notify received');
+              }
               if (_playState.value) {
-                print('HF: beats currently on, being disabled');
+                if (kDebugMode) {
+                  print('HF: beats currently on, being disabled');
+                }
                 // disable beats
                 this.disableBeat();
                 _playState.value = false;
@@ -581,7 +694,9 @@ class BluetoothBLEService {
                     duration: Duration(milliseconds: 1000));
               } else {
                 // enable beats
-                print('HF: beats currently off, being enabled');
+                if (kDebugMode) {
+                  print('HF: beats currently off, being enabled');
+                }
                 groove.reset();
                 this.enableBeat();
                 _playState.value = true;
@@ -592,21 +707,30 @@ class BluetoothBLEService {
               }
             }
           } else {
-            if (_playState.value) {  // if beats are currently on...
+            if (_playState.value) {
+              // if beats are currently on...
               // play the next note in the groove
               groove.play(data[0]);
-              print('HF: playing next note in groove, ${data[0]}');
+              if (kDebugMode) {
+                print('HF: playing next note in groove, ${data[0]}');
+              }
               heartbeatCount = 0;
             }
           }
         } else {
-          print('HF:  data is empty');
+          if (kDebugMode) {
+            print('HF:  data is empty');
+          }
         }
       }, onError: (dynamic err) {
-        print('HF: error on char4 subscription: $err');
+        if (kDebugMode) {
+          print('HF: error on char4 subscription: $err');
+        }
       });
     } catch (err) {
-      print('HF:  beat subscription error: $err');
+      if (kDebugMode) {
+        print('HF:  beat subscription error: $err');
+      }
     }
   }
 
@@ -625,18 +749,26 @@ class BluetoothBLEService {
     } else {
       // connected
       if (_modelNumber == null) {
-        print('HF: readModelNumber: _modelNumber is null');
+        if (kDebugMode) {
+          print('HF: readModelNumber: _modelNumber is null');
+        }
         return result;
       } else {
         try {
-          print('HF: reading model number...');
+          if (kDebugMode) {
+            print('HF: reading model number...');
+          }
           List<int> value = await _modelNumber!.read();
           // convert list of character codes to string
           var valString = String.fromCharCodes(value);
-          print('HF: readModelNumber: read result = $valString');
+          if (kDebugMode) {
+            print('HF: readModelNumber: read result = $valString');
+          }
           return String.fromCharCodes(value);
         } catch (e) {
-          print("HF: error readModelNumber $e");
+          if (kDebugMode) {
+            print("HF: error readModelNumber $e");
+          }
           return ('Error'.tr);
         }
       }
@@ -653,18 +785,26 @@ class BluetoothBLEService {
     } else {
       // connected
       if (_firmwareRev == null) {
-        print('HF: readFirmwareRevision: _firmwareRev is null');
+        if (kDebugMode) {
+          print('HF: readFirmwareRevision: _firmwareRev is null');
+        }
         return result;
       } else {
         try {
-          print('HF: reading firmware revision...');
+          if (kDebugMode) {
+            print('HF: reading firmware revision...');
+          }
           List<int> value = await _firmwareRev!.read();
           // convert list of character codes to string
           var valString = String.fromCharCodes(value);
-          print('HF: readFirmwareRev: read result = $valString');
+          if (kDebugMode) {
+            print('HF: readFirmwareRev: read result = $valString');
+          }
           return String.fromCharCodes(value);
         } catch (e) {
-          print("HF: error readFirmwareRev $e");
+          if (kDebugMode) {
+            print("HF: error readFirmwareRev $e");
+          }
           return ('Error'.tr);
         }
       }
@@ -702,20 +842,28 @@ class BluetoothBLEService {
   // read char6 to see if beat sending is enabled or not
   Future<bool>? readBeatEnable() async {
     if (_char6 == null) {
-      print('HF: readBeatEnable: _char6 is null');
+      if (kDebugMode) {
+        print('HF: readBeatEnable: _char6 is null');
+      }
       return (false);
     } else {
       try {
         List<int> value = await _char6!.read();
         if (value[0] == 0x00) {
-          print("HF: beats currently disabled.  Value = $value[0]");
+          if (kDebugMode) {
+            print("HF: beats currently disabled.  Value = $value[0]");
+          }
           return (false);
         } else {
-          print("HF: beats currently enabled.  Value = $value[0]");
+          if (kDebugMode) {
+            print("HF: beats currently enabled.  Value = $value[0]");
+          }
           return (true);
         }
       } catch (err) {
-        print("HF: error readBeatEnable");
+        if (kDebugMode) {
+          print("HF: error readBeatEnable");
+        }
         print(err);
         return (false);
       }
@@ -731,12 +879,16 @@ class BluetoothBLEService {
   // So the min battery voltage as a percentage is 2.51V/3.273V = 76%.
   Future<int>? readBatteryVoltage() async {
     if (_char1 == null) {
-      print('HF: readBatteryVoltage: _char1 is null');
+      if (kDebugMode) {
+        print('HF: readBatteryVoltage: _char1 is null');
+      }
       return (0);
     } else {
       try {
         List<int> value = await _char1!.read();
-        print("HF: battery voltage .  Value = $value[0]");
+        if (kDebugMode) {
+          print("HF: battery voltage .  Value = $value[0]");
+        }
         batteryVoltage = value[0];
         // scale batteryVoltage to convert the range 76:100 to 0:100
         if (batteryVoltage > 100) {
@@ -749,8 +901,10 @@ class BluetoothBLEService {
         }
         return (batteryVoltage);
       } catch (err) {
-        print("HF: error readBatteryVoltage");
-        print(err);
+        if (kDebugMode) {
+          print("HF: error readBatteryVoltage");
+          print(err);
+        }
         return (0);
       }
     }
@@ -760,12 +914,16 @@ class BluetoothBLEService {
   // accelerometer's whoAmi register.
   Future<String>? readAccStatus() async {
     if (_char2 == null) {
-      print('HF: readAccStatus: _char2 is null');
+      if (kDebugMode) {
+        print('HF: readAccStatus: _char2 is null');
+      }
       return ('not connected');
     } else {
       try {
         List<int> value = await _char2!.read();
-        print("HF: accelerometer status .  Value = $value[0]");
+        if (kDebugMode) {
+          print("HF: accelerometer status .  Value = $value[0]");
+        }
         if (value[0] == 0x59) {
           // Y = 0x59
           return ('OK');
@@ -773,8 +931,10 @@ class BluetoothBLEService {
           return ('NOK');
         }
       } catch (err) {
-        print("HF: error readAccStatus");
-        print(err);
+        if (kDebugMode) {
+          print("HF: error readAccStatus");
+          print(err);
+        }
         return ('Error');
       }
     }
@@ -782,6 +942,8 @@ class BluetoothBLEService {
 
   Future<void> dispose() async {
     await disconnectFromDevice();
-    print("HF: BluetoothBLE is disposed.");
+    if (kDebugMode) {
+      print("HF: BluetoothBLE is disposed.");
+    }
   }
 }

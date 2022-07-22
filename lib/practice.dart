@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -172,11 +173,15 @@ class _PracticePageState extends State<PracticePage> {
                   final _prefs = await SharedPreferences.getInstance();
                   await _prefs.setBool('metronomeFlag', value);
                   if (metronomeFlag) {
-                    print('HF: metronome enabled');
+                    if (kDebugMode) {
+                      print('HF: metronome enabled');
+                    }
                     Get.snackbar('Status'.tr, 'Metronome enabled.'.tr,
                         snackPosition: SnackPosition.BOTTOM);
                   } else {
-                    print('HF: metronome disabled');
+                    if (kDebugMode) {
+                      print('HF: metronome disabled');
+                    }
                     Get.snackbar('Status'.tr, 'Metronome disabled.'.tr,
                         snackPosition: SnackPosition.BOTTOM);
                   }
@@ -193,7 +198,8 @@ class _PracticePageState extends State<PracticePage> {
                 Get.defaultDialog(
                   title: 'Metronome'.tr,
                   middleText:
-                      'When enabled, a tone will be played at the selected tempo.'.tr,
+                      'When enabled, a tone will be played at the selected tempo.'
+                          .tr,
                   textConfirm: 'OK',
                   onConfirm: () {
                     Get.back();

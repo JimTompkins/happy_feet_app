@@ -1,4 +1,7 @@
+import 'package:/flutter/foundation.dart';
+
 // list of key names for dropdown button.  Note that we start with E since it's the lowest
+
 // note on an electric bass.
 List pianoKeys = <String>[
   'C',
@@ -37,7 +40,9 @@ String pianoChords(String? key, KeyType? type) {
   // find the key in the list of keys (which is also a list of notes)
   int keyIndex = pianoKeys.indexWhere((element) => element == key);
 
-  print('HF: pianoChords: key=$key, keyIndex=$keyIndex');
+  if (kDebugMode) {
+    print('HF: pianoChords: key=$key, keyIndex=$keyIndex');
+  }
 
   String result = '';
   for (int i = 0; i < 7; i++) {
@@ -51,7 +56,9 @@ String pianoChords(String? key, KeyType? type) {
     }
   }
 
-  print('HF: pianoChords: result=$result');
+  if (kDebugMode) {
+    print('HF: pianoChords: result=$result');
+  }
 
   return result;
 }

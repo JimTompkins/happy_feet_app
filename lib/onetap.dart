@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
@@ -61,7 +62,9 @@ class _OneTapPageState extends State<OneTapPage> {
     int i = 0;
     switch (type) {
       case RhythmType.rock1:
-        print('HF: 1-tap: rock1');
+        if (kDebugMode) {
+          print('HF: 1-tap: rock1');
+        }
         Get.snackbar('Status'.tr, '1-tap rhythm: rock1'.tr,
             snackPosition: SnackPosition.BOTTOM);
 
@@ -80,7 +83,9 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       case RhythmType.rock2:
-        print('HF: 1-tap: rock2');
+        if (kDebugMode) {
+          print('HF: 1-tap: rock2');
+        }
         Get.snackbar('Status'.tr, '1-tap rhythm: rock2'.tr,
             snackPosition: SnackPosition.BOTTOM);
 
@@ -109,7 +114,9 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       case RhythmType.jazz1:
-        print('HF: 1-tap: jazz1');
+        if (kDebugMode) {
+          print('HF: 1-tap: jazz1');
+        }
         Get.snackbar('Status'.tr, '1-tap rhythm: jazz1'.tr,
             snackPosition: SnackPosition.BOTTOM);
 
@@ -127,7 +134,9 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       case RhythmType.bossanova:
-        print('HF: 1-tap: bossa nova groove');
+        if (kDebugMode) {
+          print('HF: 1-tap: bossa nova groove');
+        }
         Get.snackbar('Status'.tr, '1-tap rhythm: Bossa Nova'.tr,
             snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
@@ -150,9 +159,9 @@ class _OneTapPageState extends State<OneTapPage> {
         // woodblock pattern:   2,       3+,    1, 2+,    4
         // note 1 and 2+ in second measure both have notes.  Since
         // we're limited to two voices, we'll leave out the some notes
-        
-        groove.addInitialNote(8,  'b'); // 1
-        groove.addInitialNote(9,  '-'); // +
+
+        groove.addInitialNote(8, 'b'); // 1
+        groove.addInitialNote(9, '-'); // +
         groove.addInitialNote(10, 'W'); // 2
         groove.addInitialNote(11, 'b'); // +
         groove.addInitialNote(12, 'b'); // 3
@@ -179,7 +188,9 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       case RhythmType.merengue:
-        print('HF: 1-tap: merengue');
+        if (kDebugMode) {
+          print('HF: 1-tap: merengue');
+        }
         Get.snackbar('Status'.tr, '1-tap rhythm: merengue'.tr,
             snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 1, 2); // 8 beats per measure, 1 measures, 2 voices
@@ -214,7 +225,9 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       case RhythmType.afrocuban68:
-        print('HF: 1-tap: AfroCuban 6/8');
+        if (kDebugMode) {
+          print('HF: 1-tap: AfroCuban 6/8');
+        }
         Get.snackbar('Status'.tr, '1-tap rhythm: Afro-Cuban 6/8'.tr,
             snackPosition: SnackPosition.BOTTOM);
         groove.initialize(6, 2, 2); // 6 beats per measure, 2 measures, 2 voices
@@ -260,7 +273,9 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       case RhythmType.samba:
-        print('HF: 1-tap: samba');
+        if (kDebugMode) {
+          print('HF: 1-tap: samba');
+        }
         Get.snackbar('Status'.tr, '1-tap rhythm: samba'.tr,
             snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
@@ -329,7 +344,9 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       default:
-        print('HF: error: undefined 1-tap rhythm type');
+        if (kDebugMode) {
+          print('HF: error: undefined 1-tap rhythm type');
+        }
         _tab.clear();
         _tab.add(0, '???');
         break;
@@ -342,8 +359,8 @@ class _OneTapPageState extends State<OneTapPage> {
       appBar: AppBar(
         title: Text('Happy Feet - 1-tap Menu'.tr),
       ),
-      floatingActionButton: Obx(() =>
-        FloatingActionButton(
+      floatingActionButton: Obx(
+        () => FloatingActionButton(
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: () {
@@ -442,10 +459,14 @@ class _OneTapPageState extends State<OneTapPage> {
                           createGroove(type);
                           break;
                         default:
-                          print('HF: unknown 1-tap rhythm type');
+                          if (kDebugMode) {
+                            print('HF: unknown 1-tap rhythm type');
+                          }
                           break;
                       }
-                      print("HF: 1-tap rhythm changed to $newValue");
+                      if (kDebugMode) {
+                        print("HF: 1-tap rhythm changed to $newValue");
+                      }
                     });
                     _rhythmName = newValue!;
                   },

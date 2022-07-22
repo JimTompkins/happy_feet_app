@@ -2,6 +2,7 @@ import 'audio.dart';
 import 'dart:async';
 import 'bass.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
 import 'dart:io' show Platform;
@@ -150,41 +151,40 @@ class Groove {
     this.runCount = 0;
   }
 
-
   String untranslateNoteName(String note) {
-     String result = "-";
-     if (note == 'none'.tr) {
-        result = 'none';
-     } else if (note == 'Bass drum'.tr) {
-        result = 'Bass drum';
-     } else if (note == 'Bass echo'.tr) {
-        result = 'Bass echo';
-     } else if (note == 'Lo tom'.tr) {
-        result = 'Lo tom';
-     } else if (note == 'Hi tom'.tr) {
-        result = 'Hi tom';
-     } else if (note == 'Snare drum'.tr) {
-        result = 'Snare drum';
-     } else if (note == 'Hi-hat cymbal'.tr) {
-        result = 'Hi-hat cymbal';
-     } else if (note == 'Cowbell'.tr) {
-        result = 'Cowbell';
-     } else if (note == 'Tambourine'.tr) {
-        result = 'Tambourine';
-     } else if (note == 'Fingersnap'.tr) {
-        result = 'Fingersnap';
-     } else if (note == 'Rim shot'.tr) {
-        result = 'Rim shot';
-     } else if (note == 'Shaker'.tr) {
-        result = 'Shaker';
-     } else if (note == 'Woodblock'.tr) {
-        result = 'Woodblock';
-     } else if (note == 'Brushes'.tr) {
-        result = 'Brushes';
-     } else if (note == 'Quijada'.tr) {
-        result = 'Quijada';
-     }
-     return result;
+    String result = "-";
+    if (note == 'none'.tr) {
+      result = 'none';
+    } else if (note == 'Bass drum'.tr) {
+      result = 'Bass drum';
+    } else if (note == 'Bass echo'.tr) {
+      result = 'Bass echo';
+    } else if (note == 'Lo tom'.tr) {
+      result = 'Lo tom';
+    } else if (note == 'Hi tom'.tr) {
+      result = 'Hi tom';
+    } else if (note == 'Snare drum'.tr) {
+      result = 'Snare drum';
+    } else if (note == 'Hi-hat cymbal'.tr) {
+      result = 'Hi-hat cymbal';
+    } else if (note == 'Cowbell'.tr) {
+      result = 'Cowbell';
+    } else if (note == 'Tambourine'.tr) {
+      result = 'Tambourine';
+    } else if (note == 'Fingersnap'.tr) {
+      result = 'Fingersnap';
+    } else if (note == 'Rim shot'.tr) {
+      result = 'Rim shot';
+    } else if (note == 'Shaker'.tr) {
+      result = 'Shaker';
+    } else if (note == 'Woodblock'.tr) {
+      result = 'Woodblock';
+    } else if (note == 'Brushes'.tr) {
+      result = 'Brushes';
+    } else if (note == 'Quijada'.tr) {
+      result = 'Quijada';
+    }
+    return result;
   }
 
   // initialize the groove in single note mode
@@ -289,8 +289,10 @@ class Groove {
     String _name = '-';
     int _voices = this.voices;
 
-    print(
-        'HF: addInitialNote: index = $index, initial = $initial, _voices = $_voices');
+    if (kDebugMode) {
+      print(
+          'HF: addInitialNote: index = $index, initial = $initial, _voices = $_voices');
+    }
 
     switch (initial) {
       case '-':
@@ -411,24 +413,32 @@ class Groove {
       this.notes[index].oggNote = _oggNote;
       this.notes[index].name = _name;
       this.notes[index].initial = initial;
-      print(
-          'HF: addInitialNote single voice: index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+      if (kDebugMode) {
+        print(
+            'HF: addInitialNote single voice: index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+      }
     } else if (this.voices == 2) {
       var _measure = index ~/ this.bpm;
       var _beat = index % this.bpm;
       var _i = (_measure ~/ 2) * this.bpm + _beat;
-      print(
-          'HF: addInitialNote dual voice: _measure = $_measure, _beat = $_beat, _i = $_i');
-      if (_measure.isEven) {
+      if (kDebugMode) {
         print(
-            'HF: addInitialNote dual voice: notes _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+            'HF: addInitialNote dual voice: _measure = $_measure, _beat = $_beat, _i = $_i');
+      }
+      if (_measure.isEven) {
+        if (kDebugMode) {
+          print(
+              'HF: addInitialNote dual voice: notes _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+        }
         this.notes[_i].oggIndex = _oggIndex;
         this.notes[_i].oggNote = _oggNote;
         this.notes[_i].name = _name;
         this.notes[_i].initial = initial;
       } else {
-        print(
-            'HF: addInitialNote dual voice: notes2 _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+        if (kDebugMode) {
+          print(
+              'HF: addInitialNote dual voice: notes2 _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+        }
         this.notes2[_i].oggIndex = _oggIndex;
         this.notes2[_i].oggNote = _oggNote;
         this.notes2[_i].name = _name;
@@ -478,7 +488,9 @@ class Groove {
 
       // get the index of the keyName
       int keyIndex = keys.indexWhere((element) => element == keyName);
-      print('HF: addBassNote: keyName = $keyName, keyIndex = $keyIndex');
+      if (kDebugMode) {
+        print('HF: addBassNote: keyName = $keyName, keyIndex = $keyIndex');
+      }
 
       // get the index of the roman numeral
       if (arabic == 'none') {
@@ -486,11 +498,15 @@ class Groove {
       }
       int arabicIndex =
           scaleTonesArabic.indexWhere((element) => element == arabic);
-      print('HF: addBassNote: arabic = $arabic');
-      print('HF: addBassNote: arabicIndex = $arabicIndex');
+      if (kDebugMode) {
+        print('HF: addBassNote: arabic = $arabic');
+        print('HF: addBassNote: arabicIndex = $arabicIndex');
+      }
 
       int offset = scaleTonesIndex[arabicIndex];
-      print('HF: addBassNote: offset = $offset');
+      if (kDebugMode) {
+        print('HF: addBassNote: offset = $offset');
+      }
 
       if (Platform.isAndroid) {
         //this.notes[index].oggIndex = 6;
@@ -553,16 +569,22 @@ class Groove {
   // check the type of this groove and change it if necessary.  If changing the
   // groove type, clear all of the notes
   void checkType(String type) {
-    print('HF: checkType: type = $type');
+    if (kDebugMode) {
+      print('HF: checkType: type = $type');
+    }
     if ((type == 'percussion') && (this.type != GrooveType.percussion)) {
       this.type = GrooveType.percussion;
-      print('HF: checkType: changing type to percussion');
+      if (kDebugMode) {
+        print('HF: checkType: changing type to percussion');
+      }
       this.clearNotes();
       hfaudio.init();
     }
     if ((type == 'bass') && (this.type != GrooveType.bass)) {
       this.type = GrooveType.bass;
-      print('HF: checkType: changing type to bass');
+      if (kDebugMode) {
+        print('HF: checkType: changing type to bass');
+      }
       this.clearNotes();
       this.interpolate = false; // turn off backbeat mode when change to bass
       hfaudio.init();
@@ -621,7 +643,9 @@ class Groove {
         }
       }
     }
-    print('HF: getInitials: initialList = $initialList');
+    if (kDebugMode) {
+      print('HF: getInitials: initialList = $initialList');
+    }
     return initialList;
   }
 
@@ -642,8 +666,10 @@ class Groove {
       var numToRemove = this.notes.length - beats;
       var notesLength = this.notes.length;
       var notes2Length = this.notes2.length;
-      print(
-          "HF: resize groove removing $numToRemove notes, beat = $beat, measure = $measure, notes length = $notesLength, notes2 length = $notes2Length");
+      if (kDebugMode) {
+        print(
+            "HF: resize groove removing $numToRemove notes, beat = $beat, measure = $measure, notes length = $notesLength, notes2 length = $notes2Length");
+      }
       // remove the extra items
       this.notes.removeRange(beats - 1, this.notes.length - 1);
       this.notes2.removeRange(beats - 1, this.notes2.length - 1);
@@ -652,19 +678,29 @@ class Groove {
       var numToAdd = beats - this.notes.length;
       var notesLength = this.notes.length;
       var notes2Length = this.notes2.length;
-      print(
-          "HF: resize groove adding $numToAdd notes, beat = $beat, measure = $measure, notes length = $notesLength, notes2 length = $notes2Length");
+      if (kDebugMode) {
+        print(
+            "HF: resize groove adding $numToAdd notes, beat = $beat, measure = $measure, notes length = $notesLength, notes2 length = $notes2Length");
+      }
       for (var i = 0; i < numToAdd; i++) {
         // add items to the list
-        print('    i = $i');
+        if (kDebugMode) {
+          print('    i = $i');
+        }
         this.notes.add(Note(-1, "-"));
-        print('    ... added to Note');
+        if (kDebugMode) {
+          print('    ... added to Note');
+        }
         this.notes2.add(Note(-1, "-"));
-        print('    ... added to Note2');
+        if (kDebugMode) {
+          print('    ... added to Note2');
+        }
       }
       // if adding measures...
       if (measure > origMeasures) {
-        print('HF:  resize: adding measures');
+        if (kDebugMode) {
+          print('HF:  resize: adding measures');
+        }
         var measuresToAdd = measure - origMeasures;
         var copyFromStart = (origMeasures - 1) * origBpm;
         for (int i = 0; i < measuresToAdd; i++) {
@@ -674,7 +710,9 @@ class Groove {
             var dest = copyToStart + n;
             this.notes[dest].copyFrom(this.notes[src]);
             this.notes2[dest].copyFrom(this.notes2[src]);
-            print('HF: resize: copying from $src to $dest');
+            if (kDebugMode) {
+              print('HF: resize: copying from $src to $dest');
+            }
           }
         }
       }
@@ -767,7 +805,6 @@ class Groove {
     } else {
       this.practiceStreak5.value = 0;
     }
-    
   }
 
   // play the next note in the groove
@@ -786,7 +823,9 @@ class Groove {
         Get.snackbar('Sequence error:',
             'A beat was missed, possibly due to a lost Bluetooth notify message',
             snackPosition: SnackPosition.BOTTOM);
-        print('HF: sequence error');
+        if (kDebugMode) {
+          print('HF: sequence error');
+        }
 
         // increment pointer to skip one note
         this.incrementIndex();
@@ -822,7 +861,9 @@ class Groove {
     } else if (groove.interpolate && (groove.leadInCount > 0)) {
       this.leadInCount--;
       this.leadInString.value = this.leadInCount.toString();
-      print('HF:  lead-in count decremented to $this.leadInCount');
+      if (kDebugMode) {
+        print('HF:  lead-in count decremented to $this.leadInCount');
+      }
     }
 
     // calculate Beats Per Minute using system time
@@ -857,8 +898,10 @@ class Groove {
     // print comma separated data for later analysis in Excel
     //    latest beat period,latest BPM,mean beat period,mean BPM,variation
     //    run count, status
-    print(
-        'HF: groove.play.csv,${beatPeriod.toStringAsFixed(0)},${sysLatestBPM.toStringAsFixed(1)},${mean2.toStringAsFixed(0)},${sysFilteredBPM.toStringAsFixed(1)},${variation.toStringAsFixed(1)}%,$runCount,$_status');
+    if (kDebugMode) {
+      print(
+          'HF: groove.play.csv,${beatPeriod.toStringAsFixed(0)},${sysLatestBPM.toStringAsFixed(1)},${mean2.toStringAsFixed(0)},${sysFilteredBPM.toStringAsFixed(1)},${variation.toStringAsFixed(1)}%,$runCount,$_status');
+    }
     lastBeatTime = now;
 
     // interpolate mode: schedule a note to be played at a future time if these conditions are met:
@@ -868,8 +911,10 @@ class Groove {
     if (groove.interpolate && (groove.leadInCount == 0)) {
       // the index should only be odd at this point.  If not, print an error message
       if (this.index.isEven) {
-        print(
-            'HF: ERROR: index should only be odd for backbeat!  Incrementing...');
+        if (kDebugMode) {
+          print(
+              'HF: ERROR: index should only be odd for backbeat!  Incrementing...');
+        }
         this.incrementIndex();
       }
       // schedule the next note using a timer.  1/2 of the mean beat interval will be used to
@@ -887,8 +932,10 @@ class Groove {
               this.notes2[this.index].oggNote);
         }
         var _interpolateNow = DateTime.now(); // get system time
-        print(
-            'HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this.index}, Name1: ${this.notes[this.index].name}, Name2: ${this.notes2[this.index].name}');
+        if (kDebugMode) {
+          print(
+              'HF:   Interpolate time: $_interpolateNow, T/2: $halfPeriodInMs ms, groove index: ${this.index}, Name1: ${this.notes[this.index].name}, Name2: ${this.notes2[this.index].name}');
+        }
         // increment pointer to the next note
         this.incrementIndex();
       });
@@ -903,8 +950,10 @@ class Groove {
         if (leadInCount > 0) {
           // display 4..1 as the leadInCount decrements from 4 to 1
           leadInString.value = (5 - leadInCount).toString();
-          print(
-              'HF: oneTap play, lead-in-count = $leadInCount, index=${this.index}, ');
+          if (kDebugMode) {
+            print(
+                'HF: oneTap play, lead-in-count = $leadInCount, index=${this.index}, ');
+          }
         } else {
           leadInString.value = "---";
         }
@@ -912,14 +961,18 @@ class Groove {
       } else {
         // we should be at beat one (index = 0)
         if (this.index % this.bpm != 0) {
-          print('HF: 1-tap: error not at beat 1');
+          if (kDebugMode) {
+            print('HF: 1-tap: error not at beat 1');
+          }
           // reset the index to the next beat 1
           this.nextBeat1();
         }
         // play the beat one note
         String _now = DateTime.now().toString();
-        print(
-            'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
+        if (kDebugMode) {
+          print(
+              'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
+        }
         hfaudio.play(
             this.voices,
             this.notes[this.index].oggIndex,
@@ -940,7 +993,9 @@ class Groove {
         } else {
           beatSubdivisionInMs = beatPeriod / this.bpm;
         }
-        print('HF: 1-tap: beat subdivision = $beatSubdivisionInMs ms');
+        if (kDebugMode) {
+          print('HF: 1-tap: beat subdivision = $beatSubdivisionInMs ms');
+        }
 
         // schedule the remaining notes to be played using timers
         for (int i = 1; i < this.bpm; i++) {
@@ -953,8 +1008,10 @@ class Groove {
                 this.notes2[this.index].oggNote);
             updateBABInfo();
             _now = DateTime.now().toString();
-            print(
-                'HF: $_now 1-tap: playing beat ${i + 1}, index=${this.index}');
+            if (kDebugMode) {
+              print(
+                  'HF: $_now 1-tap: playing beat ${i + 1}, index=${this.index}');
+            }
             // increment pointer to the next note
             this.incrementIndex();
           });
@@ -1099,15 +1156,21 @@ class Groove {
     int _interp;
     String _key;
 
-    print('HF groove.fromCSV : number of fields = $numFields');
+    if (kDebugMode) {
+      print('HF groove.fromCSV : number of fields = $numFields');
+    }
 
     _format = fields[0];
     if (_format == grooveFormatVersion) {
       // same version
-      print('HF: loading same groove format version');
+      if (kDebugMode) {
+        print('HF: loading same groove format version');
+      }
     } else {
       // different version
-      print('HF: loading different groove format version');
+      if (kDebugMode) {
+        print('HF: loading different groove format version');
+      }
     }
     _description = fields[1];
     this.description = _description;
@@ -1145,8 +1208,10 @@ class Groove {
     }
     this.key = fields[7];
     _key = this.key;
-    print(
-        'HF groove.fromCSV : description = $_description, number of beats = $beats, voices = $_voices, type = $_type, key = $_key');
+    if (kDebugMode) {
+      print(
+          'HF groove.fromCSV : description = $_description, number of beats = $beats, voices = $_voices, type = $_type, key = $_key');
+    }
 
     // for each note
     for (int i = 0; i < beats; i++) {
@@ -1162,7 +1227,9 @@ class Groove {
           ',' +
           this.notes[i].initial +
           ',';
-      print('HF: groove.fromCSV notes: $note');
+      if (kDebugMode) {
+        print('HF: groove.fromCSV notes: $note');
+      }
     }
 
     // for each note in the 2nd voice
@@ -1180,7 +1247,9 @@ class Groove {
           ',' +
           this.notes2[i].initial +
           ',';
-      print('HF: groove.fromCSV notes2: $note');
+      if (kDebugMode) {
+        print('HF: groove.fromCSV notes2: $note');
+      }
     }
 
     return;
@@ -1212,11 +1281,15 @@ class Groove {
         break;
     }
 
-    print(
-        'HF: print groove: BPM = $_bpm, num measures = $_numMeasures, voices = $_voices, key = $_key, type = $type');
+    if (kDebugMode) {
+      print(
+          'HF: print groove: BPM = $_bpm, num measures = $_numMeasures, voices = $_voices, key = $_key, type = $type');
+    }
 
     if (this.description != '') {
-      print('HF: print groove: $this.description');
+      if (kDebugMode) {
+        print('HF: print groove: $this.description');
+      }
     }
 
     // for each note
@@ -1229,7 +1302,9 @@ class Groove {
           ',' +
           this.notes[i].initial +
           ',';
-      print('HF: print groove voice 1 note [$i]: $note');
+      if (kDebugMode) {
+        print('HF: print groove voice 1 note [$i]: $note');
+      }
     }
     // if there are two voices...
     if (this.voices == 2) {
@@ -1242,7 +1317,9 @@ class Groove {
             ',' +
             this.notes2[i].initial +
             ',';
-        print('HF: print groove voice 2 note [$i]: $note');
+        if (kDebugMode) {
+          print('HF: print groove voice 2 note [$i]: $note');
+        }
       }
     }
   }

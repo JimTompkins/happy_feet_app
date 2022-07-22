@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'groove.dart';
@@ -25,7 +26,9 @@ class GrooveStorage {
   // get list of .csv files in the applications doc directory
   Future<List> listOfSavedGrooves() async {
     String dir = await _localPath;
-    print('HF: application documents directory = $dir');
+    if (kDebugMode) {
+      print('HF: application documents directory = $dir');
+    }
 //    List<FileSystemEntity> files = Directory(dir).listSync(recursive: false);
     final List<FileSystemEntity> entities =
         await Directory(dir).list().toList();
@@ -36,25 +39,33 @@ class GrooveStorage {
         var grooveName = file.path.replaceAll(dir, '');
         grooveName = grooveName.replaceAll('/', '');
         grooveName = grooveName.replaceAll('.csv', '');
-        print('HF: found saved groove $grooveName');
+        if (kDebugMode) {
+          print('HF: found saved groove $grooveName');
+        }
         this.grooveFileNames.add(grooveName);
       }
     }
     var len = this.grooveFileNames.length;
-    print('HF: listOfSavedGrooves: found $len saved grooves');
+    if (kDebugMode) {
+      print('HF: listOfSavedGrooves: found $len saved grooves');
+    }
     return this.grooveFileNames;
   }
 
   Future<void> readGroove(String filename) async {
     final path = await _localPath;
     String fileNameAndPath = path + '/' + filename + '.csv';
-    print('HF: reading groove from file $fileNameAndPath');
+    if (kDebugMode) {
+      print('HF: reading groove from file $fileNameAndPath');
+    }
 
     File file = File(fileNameAndPath);
     try {
       // Read the file
       final contents = await file.readAsString();
-      print('HF: reading from file $filename= $contents');
+      if (kDebugMode) {
+        print('HF: reading from file $filename= $contents');
+      }
 
       // parse the file and populate the groove
       groove.fromCSV(contents);
@@ -62,7 +73,9 @@ class GrooveStorage {
       return;
     } catch (e) {
       // If encountering an error, return 0
-      print('HF: readGroove readAsString error: $e');
+      if (kDebugMode) {
+        print('HF: readGroove readAsString error: $e');
+      }
       return;
     }
   }
@@ -71,14 +84,18 @@ class GrooveStorage {
     final path = await _localPath;
     String fileNameAndPath = path + '/' + filename + '.csv';
     String message = 'Groove written to file ' + filename + '.csv';
-    print('HF: writing groove to file $fileNameAndPath');
+    if (kDebugMode) {
+      print('HF: writing groove to file $fileNameAndPath');
+    }
 
     File file = File(fileNameAndPath);
 
     // convert the currently defined groove to a string
     String grooveString = groove.toCSV(description);
 
-    print('HF: writing groove to file as CSV text: $grooveString');
+    if (kDebugMode) {
+      print('HF: writing groove to file as CSV text: $grooveString');
+    }
 
     // Write the file
     try {
@@ -87,7 +104,9 @@ class GrooveStorage {
           snackPosition: SnackPosition.BOTTOM);
       return;
     } catch (e) {
-      print('HF: writeGroove writeAsString error: $e');
+      if (kDebugMode) {
+        print('HF: writeGroove writeAsString error: $e');
+      }
     }
   }
 }

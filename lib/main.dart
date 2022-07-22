@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
-//import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:device_display_brightness/device_display_brightness.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -206,7 +206,9 @@ class _MyHomePageState extends State<MyHomePage> {
     footSwitch = prefs.getBool('footSwitch') ?? false;
     savedLanguage = prefs.getString('language') ?? '';
     if (savedLanguage != '') {
-      print('HF: found saved language $savedLanguage');
+      if (kDebugMode) {
+        print('HF: found saved language $savedLanguage');
+      }
       switch (savedLanguage) {
         case 'English':
           _locale = Locale('en', 'US');
@@ -238,7 +240,9 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       Get.updateLocale(_locale);
       language = savedLanguage;
-      print('HF: updating language to $savedLanguage');
+      if (kDebugMode) {
+        print('HF: updating language to $savedLanguage');
+      }
     }
   }
 
@@ -378,9 +382,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           _bluetoothBLEService.startConnection();
                           if (multiMode) {
                             // wait for the scan to complete
-                            print('HF: waiting for scan to complete...');
+                            if (kDebugMode) {
+                              print('HF: waiting for scan to complete...');
+                            }
                             _bluetoothBLEService.isScanComplete();
-                            print('HF: ...done');
+                            if (kDebugMode) {
+                              print('HF: ...done');
+                            }
                             // if more than one device was found during the scan
                             if (_bluetoothBLEService.devicesList.length > 1) {
                               // go to the multi-connect screen...
@@ -464,17 +472,24 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: Theme.of(context).textTheme.headline4,
                   onChanged: (String? newValue) {
                     setState(() {
-                      print('HF: changed playmode to $newValue');
+                      if (kDebugMode) {
+                        print('HF: changed playmode to $newValue');
+                      }
                       playModeString = newValue;
                       // if changing from bass mode to another mode...
                       if (newValue != 'Bass' && playMode == Mode.bass) {
                         _audioInitNeeded = true;
-                        print(
-                            'HF: audio init needed... changing from bass mode');
+                        if (kDebugMode) {
+                          print(
+                              'HF: audio init needed... changing from bass mode');
+                        }
                         // or if changing to bass mode from another mode
                       } else if (newValue == 'Bass' && playMode != Mode.bass) {
                         _audioInitNeeded = true;
-                        print('HF: audio init needed... changing to bass mode');
+                        if (kDebugMode) {
+                          print(
+                              'HF: audio init needed... changing to bass mode');
+                        }
                       } else {
                         _audioInitNeeded = false;
                       }
@@ -523,7 +538,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         Get.to(() => practicePage);
                       } else {
                         playMode = Mode.unknown;
-                        print('HF: error: unknown play mode');
+                        if (kDebugMode) {
+                          print('HF: error: unknown play mode');
+                        }
                       }
                       /*
                       switch (newValue) {
@@ -601,7 +618,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         _audioInitNeeded = false;
                       }
                       String text = groove.toCSV('after changing play mode');
-                      print("HF: $text");
+                      if (kDebugMode) {
+                        print("HF: $text");
+                      }
                     });
                   },
                   items: <String>[
@@ -672,7 +691,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         break;
                     }
                     String text = groove.toCSV('after changing note 1');
-                    print("HF: $text");
+                    if (kDebugMode) {
+                      print("HF: $text");
+                    }
                   });
                 },
                 items: <String>[
@@ -735,7 +756,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         break;
                     }
                     String text = groove.toCSV('after changing note 2');
-                    print("HF: $text");
+                    if (kDebugMode) {
+                      print("HF: $text");
+                    }
                   });
                 },
                 items: <String>[
@@ -813,7 +836,9 @@ class _GroovePageState extends State<GroovePage> {
     _interpolate = groove.interpolate;
     if (_interpolate) {
       groove.leadInCount = 4;
-      print('HF: set lead-in counter to 4');
+      if (kDebugMode) {
+        print('HF: set lead-in counter to 4');
+      }
     } else {
       groove.leadInCount = 0;
     }
@@ -945,8 +970,10 @@ class _GroovePageState extends State<GroovePage> {
                           _beatsPerMeasure, _numberOfMeasures, _voices);
                       _totalBeats =
                           _beatsPerMeasure * _numberOfMeasures * _voices;
-                      print(
-                          'HF: changing number of beats per measure, _beatsPerMeasure = $_beatsPerMeasure, _totalBeats = $_totalBeats');
+                      if (kDebugMode) {
+                        print(
+                            'HF: changing number of beats per measure, _beatsPerMeasure = $_beatsPerMeasure, _totalBeats = $_totalBeats');
+                      }
                       dropdownValue = groove.getInitials();
                     });
                   }, // setState, onChanged
@@ -970,8 +997,10 @@ class _GroovePageState extends State<GroovePage> {
                           _beatsPerMeasure, _numberOfMeasures, _voices);
                       _totalBeats =
                           _beatsPerMeasure * _numberOfMeasures * _voices;
-                      print(
-                          'HF: changing number of measures, _numberOfMeasures = $_numberOfMeasures, _totalBeats = $_totalBeats');
+                      if (kDebugMode) {
+                        print(
+                            'HF: changing number of measures, _numberOfMeasures = $_numberOfMeasures, _totalBeats = $_totalBeats');
+                      }
                       dropdownValue = groove.getInitials();
                     });
                   }, // setState, onChanged
@@ -991,8 +1020,10 @@ class _GroovePageState extends State<GroovePage> {
                           _beatsPerMeasure, _numberOfMeasures, _voices);
                       _totalBeats =
                           _beatsPerMeasure * _numberOfMeasures * _voices;
-                      print(
-                          'HF: changing to 1 voice, _totalBeats = $_totalBeats');
+                      if (kDebugMode) {
+                        print(
+                            'HF: changing to 1 voice, _totalBeats = $_totalBeats');
+                      }
                       dropdownValue = groove.getInitials();
                     });
                   },
@@ -1009,8 +1040,10 @@ class _GroovePageState extends State<GroovePage> {
                           _beatsPerMeasure, _numberOfMeasures, _voices);
                       _totalBeats =
                           _beatsPerMeasure * _numberOfMeasures * _voices;
-                      print(
-                          'HF: changing to 2 voices, _totalBeats = $_totalBeats');
+                      if (kDebugMode) {
+                        print(
+                            'HF: changing to 2 voices, _totalBeats = $_totalBeats');
+                      }
                       dropdownValue = groove.getInitials();
                     });
                   },
@@ -1219,13 +1252,17 @@ class _BassPageState extends State<BassPage> {
     _interpolate = groove.interpolate;
     if (_interpolate) {
       groove.leadInCount = 4;
-      print('HF: set lead-in counter to 4');
+      if (kDebugMode) {
+        print('HF: set lead-in counter to 4');
+      }
     } else {
       groove.leadInCount = 0;
     }
     groove.checkType('bass');
     dropdownValue = groove.getInitials();
-    print('HF: dropdownValue = $dropdownValue');
+    if (kDebugMode) {
+      print('HF: dropdownValue = $dropdownValue');
+    }
     groove.printGroove();
   }
 
@@ -1991,7 +2028,9 @@ class _MenuPageState extends State<MenuPage> {
                       Get.updateLocale(locale);
                       final _prefs = await SharedPreferences.getInstance();
                       await _prefs.setString('language', newValue);
-                      print("HF: saved language changed to $newValue");
+                      if (kDebugMode) {
+                        print("HF: saved language changed to $newValue");
+                      }
                     });
                   },
                   items: <String>[
@@ -2039,11 +2078,15 @@ class _MenuPageState extends State<MenuPage> {
                       final _prefs = await SharedPreferences.getInstance();
                       await _prefs.setBool('audioTestMode', value);
                       if (audioTestMode) {
-                        print('HF: audio test mode enabled');
+                        if (kDebugMode) {
+                          print('HF: audio test mode enabled');
+                        }
                         Get.snackbar('Status'.tr, 'Audio test mode enabled.'.tr,
                             snackPosition: SnackPosition.BOTTOM);
                       } else {
-                        print('HF: audio test mode disabled');
+                        if (kDebugMode) {
+                          print('HF: audio test mode disabled');
+                        }
                         Get.snackbar(
                             'Status'.tr, 'Audio test mode disabled.'.tr,
                             snackPosition: SnackPosition.BOTTOM);
@@ -2092,11 +2135,15 @@ class _MenuPageState extends State<MenuPage> {
                     final _prefs = await SharedPreferences.getInstance();
                     await _prefs.setBool('multiMode', value);
                     if (multiMode) {
-                      print('HF: multi mode enabled');
+                      if (kDebugMode) {
+                        print('HF: multi mode enabled');
+                      }
                       Get.snackbar('Status'.tr, 'Multi mode enabled.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
-                      print('HF: multi mode disabled');
+                      if (kDebugMode) {
+                        print('HF: multi mode disabled');
+                      }
                       Get.snackbar('Status'.tr, 'Multi mode disabled.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     }
@@ -2143,11 +2190,15 @@ class _MenuPageState extends State<MenuPage> {
                     final _prefs = await SharedPreferences.getInstance();
                     await _prefs.setBool('footSwitch', value);
                     if (footSwitch) {
-                      print('HF: foot switch enabled');
+                      if (kDebugMode) {
+                        print('HF: foot switch enabled');
+                      }
                       Get.snackbar('Status'.tr, 'Foot switch enabled.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
-                      print('HF: foot switch disabled');
+                      if (kDebugMode) {
+                        print('HF: foot switch disabled');
+                      }
                       Get.snackbar('Status'.tr, 'Foot switch disabled.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     }
@@ -2435,8 +2486,10 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                             _bluetoothBLEService.rssi =
                                 _bluetoothBLEService.rssiMap[
                                     _bluetoothBLEService.devicesList[index]]!;
-                            print(
-                                'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
+                            if (kDebugMode) {
+                              print(
+                                  'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
+                            }
                             Get.snackbar('Bluetooth status'.tr,
                                 'connecting to Bluetooth '.tr,
                                 snackPosition: SnackPosition.BOTTOM);
