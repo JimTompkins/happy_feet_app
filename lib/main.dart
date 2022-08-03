@@ -20,7 +20,7 @@ import 'practice.dart';
 import 'saveAndLoad.dart';
 import 'localization.g.dart';
 
-_launchURL() async {
+_launchHomePage() async {
   const url = 'https://happyfeet-music.com';
   if (await canLaunch(url)) {
     await launch(url);
@@ -29,6 +29,14 @@ _launchURL() async {
   }
 }
 
+_launchPrivacyPage() async {
+  const url = 'https://happyfeet-music.com/app-privacy/';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+}
 void main() {
   /*
   LicenseRegistry.addLicense(() async* {
@@ -1936,6 +1944,14 @@ class _InfoPageState extends State<InfoPage> {
                   ElevatedButton(
                     onPressed: _launchURL,
                     child: new Text('Show HappyFeet homepage'.tr),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: _launchURL,
+                    child: new Text('Show privacy policy'.tr),
                   ),
                 ],
               )
