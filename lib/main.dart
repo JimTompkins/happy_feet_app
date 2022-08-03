@@ -20,7 +20,7 @@ import 'practice.dart';
 import 'saveAndLoad.dart';
 import 'localization.g.dart';
 
-_launchHomePage() async {
+_launchURLHomePage() async {
   const url = 'https://happyfeet-music.com';
   if (await canLaunch(url)) {
     await launch(url);
@@ -29,7 +29,7 @@ _launchHomePage() async {
   }
 }
 
-_launchPrivacyPage() async {
+_launchURLPrivacyPage() async {
   const url = 'https://happyfeet-music.com/app-privacy/';
   if (await canLaunch(url)) {
     await launch(url);
@@ -37,6 +37,7 @@ _launchPrivacyPage() async {
     throw 'Could not launch $url';
   }
 }
+
 void main() {
   /*
   LicenseRegistry.addLicense(() async* {
@@ -120,12 +121,18 @@ String language = '';
 // threshold between 0 and 100 for beat detection sensitivity
 int beatThreshold = 50;
 
+// flag used to enable auto mode in 1-tap mode.  When auto mode is enabled,
+// 1-tap mode only needs you to do the 4 beat lead-in and then tap the first 1.
+// It will play the selected groove automatically using the tempo set during
+// the lead-in.
+bool autoMode = false;
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   String note1 = 'Bass drum';
   int index1 = 0;
   String note2 = 'none';
@@ -212,6 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
     audioTestMode = prefs.getBool('audioTestMode') ?? false;
     multiMode = prefs.getBool('multiMode') ?? false;
     footSwitch = prefs.getBool('footSwitch') ?? false;
+    autoMode = prefs.getBool('autoMode') ?? false;
     savedLanguage = prefs.getString('language') ?? '';
     if (savedLanguage != '') {
       if (kDebugMode) {
@@ -256,6 +264,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
     groove.initSingle(note1);
 
     // initialize the saved preferences.  Note that this function call was added to prevent
@@ -279,8 +289,43 @@ class _MyHomePageState extends State<MyHomePage> {
       // initialize BLE
       _bluetoothBLEService.init();
     }
+  }
 
-    super.initState();
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.inactive) return;
+
+    // close BLE connection when the app is detached
+    if (state == AppLifecycleState.detached) {
+      if (_bluetoothBLEService.isBleConnected()) {
+        _bluetoothBLEService.disconnectFromDevice();
+        _playState.value = false;
+      }
+       return;
+    }
+
+    final isBackground = state == AppLifecycleState.paused;
+
+    if (isBackground) {
+      // when the app moves to the background...
+      if (kDebugMode) {
+      print('HF: saving preferences when app goes to background');
+      }
+
+      final _prefs = await SharedPreferences.getInstance();
+      _prefs.setString('language', language);
+      _prefs.setBool('audioTestMode', audioTestMode);
+      _prefs.setBool('multiMode', multiMode);
+      _prefs.setBool('autoMode', autoMode);
+      _prefs.setBool('footSwitch', footSwitch);
+    }
+
   }
 
   @override
@@ -501,8 +546,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         _audioInitNeeded = false;
                       }
-
-//                      newValue = untranslate(newValue);
                       if (newValue == 'SingleNote'.tr) {
                         playMode = Mode.singleNote;
                         groove.initSingle(note1);
@@ -529,10 +572,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         playMode = Mode.bass;
                         groove.oneTap = false;
                         Get.to(() => bassPage);
-                      } else if (newValue == '1-Tap'.tr) {
-                        if (playMode != Mode.groove) {
-                          groove.clearNotes();
-                        }
+                      } else if (newValue == '1-tap'.tr) {
+                        groove.clearNotes();
                         playMode = Mode.groove;
                         groove.oneTap = true;
                         Get.to(() => oneTapPage);
@@ -550,77 +591,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           print('HF: error: unknown play mode');
                         }
                       }
-                      /*
-                      switch (newValue) {
-                        case 'Single Note':
-                          {
-                            playMode = Mode.singleNote;
-                            groove.initSingle(note1);
-                          }
-                          break;
-                        case 'Alternating Notes':
-                          {
-                            playMode = Mode.alternatingNotes;
-                            groove.initAlternating(note1, note2);
-                          }
-                          break;
-                        case 'Dual Notes':
-                          {
-                            playMode = Mode.dualNotes;
-                            groove.initDual(note1, note2);
-                          }
-                          break;
-                        case 'Groove':
-                          {
-                            groove.reset();
-                            if (playMode != Mode.groove) {
-                              groove.clearNotes();
-                            }
-                            playMode = Mode.groove;
-                            groove.oneTap = false;
-                            Get.to(() => groovePage);
-                          }
-                          break;
-                        case 'Bass':
-                          {
-                            groove.voices = 1;
-                            groove.reset();
-                            if (playMode != Mode.bass) {
-                              groove.clearNotes();
-                            }
-                            playMode = Mode.bass;
-                            groove.oneTap = false;
-                            Get.to(() => bassPage);
-                          }
-                          break;
-                        case '1-tap':
-                          {
-                            if (playMode != Mode.groove) {
-                              groove.clearNotes();
-                            }
-                            playMode = Mode.groove;
-                            groove.oneTap = true;
-                            Get.to(() => oneTapPage);
-                            break;
-                          }
-                        case 'Practice':
-                          {
-                            if (playMode != Mode.groove) {
-                              groove.clearNotes();
-                            }
-                            playMode = Mode.groove;
-                            groove.practice = true;
-                            _bluetoothBLEService.disableBeat();
-                            Get.to(() => practicePage);
-                            break;
-                          }
-                        default:
-                          {
-                            playMode = Mode.unknown;
-                            print('HF: error: unknown play mode');
-                          }
-                      }
-                      */
                       if (_audioInitNeeded) {
                         hfaudio.init();
                         _audioInitNeeded = false;
@@ -1942,7 +1912,7 @@ class _InfoPageState extends State<InfoPage> {
               Row(
                 children: <Widget>[
                   ElevatedButton(
-                    onPressed: _launchURL,
+                    onPressed: _launchURLHomePage,
                     child: new Text('Show HappyFeet homepage'.tr),
                   ),
                 ],
@@ -1950,11 +1920,11 @@ class _InfoPageState extends State<InfoPage> {
               Row(
                 children: <Widget>[
                   ElevatedButton(
-                    onPressed: _launchURL,
+                    onPressed: _launchURLPrivacyPage,
                     child: new Text('Show privacy policy'.tr),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ]),
@@ -2009,7 +1979,7 @@ class _MenuPageState extends State<MenuPage> {
                   elevation: 24,
                   style: Theme.of(context).textTheme.headline4,
                   onChanged: (String? newValue) {
-                    setState(() async {
+                    setState(() {
                       switch (newValue) {
                         case 'English':
                           locale = Locale('en', 'US');
@@ -2042,8 +2012,8 @@ class _MenuPageState extends State<MenuPage> {
                       lang = newValue!;
                       language = lang;
                       Get.updateLocale(locale);
-                      final _prefs = await SharedPreferences.getInstance();
-                      await _prefs.setString('language', newValue);
+//                      final _prefs = await SharedPreferences.getInstance();
+//                      await _prefs.setString('language', newValue);
                       if (kDebugMode) {
                         print("HF: saved language changed to $newValue");
                       }
@@ -2083,7 +2053,7 @@ class _MenuPageState extends State<MenuPage> {
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
-                  setState(() async {
+                  setState(() {
                     if (_bluetoothBLEService.isConnected() && value) {
                       // can't turn on audio test mode if BLE is connected
                       Get.snackbar('Error:'.tr,
@@ -2091,8 +2061,8 @@ class _MenuPageState extends State<MenuPage> {
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
                       audioTestMode = value;
-                      final _prefs = await SharedPreferences.getInstance();
-                      await _prefs.setBool('audioTestMode', value);
+//                      final _prefs = await SharedPreferences.getInstance();
+//                      await _prefs.setBool('audioTestMode', value);
                       if (audioTestMode) {
                         if (kDebugMode) {
                           print('HF: audio test mode enabled');
@@ -2146,10 +2116,10 @@ class _MenuPageState extends State<MenuPage> {
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
-                  setState(() async {
+                  setState(() {
                     multiMode = value;
-                    final _prefs = await SharedPreferences.getInstance();
-                    await _prefs.setBool('multiMode', value);
+//                    final _prefs = await SharedPreferences.getInstance();
+//                    await _prefs.setBool('multiMode', value);
                     if (multiMode) {
                       if (kDebugMode) {
                         print('HF: multi mode enabled');
@@ -2201,10 +2171,10 @@ class _MenuPageState extends State<MenuPage> {
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
-                  setState(() async {
+                  setState(() {
                     footSwitch = value;
-                    final _prefs = await SharedPreferences.getInstance();
-                    await _prefs.setBool('footSwitch', value);
+//                    final _prefs = await SharedPreferences.getInstance();
+//                    await _prefs.setBool('footSwitch', value);
                     if (footSwitch) {
                       if (kDebugMode) {
                         print('HF: foot switch enabled');
@@ -2232,6 +2202,61 @@ class _MenuPageState extends State<MenuPage> {
                     title: 'Foot switch'.tr,
                     middleText:
                         'When the foot switch is enabled, you can enable or disable beats by moving your foot quickly to either side while flat on the floor.'
+                            .tr,
+                    textConfirm: 'OK',
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+            ]),
+            Row(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Auto mode'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              Switch(
+                value: autoMode,
+                activeColor: Colors.deepOrange[400],
+                activeTrackColor: Colors.deepOrange[200],
+                inactiveThumbColor: Colors.grey[600],
+                inactiveTrackColor: Colors.grey[400],
+                onChanged: (value) {
+                  setState(() {
+                    autoMode = value;
+//                    final _prefs = await SharedPreferences.getInstance();
+//                    await _prefs.setBool('autoMode', value);
+                    if (autoMode) {
+                      if (kDebugMode) {
+                        print('HF: auto mode enabled');
+                      }
+                      Get.snackbar('Status'.tr, 'Auto mode enabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      if (kDebugMode) {
+                        print('HF: auto mode disabled');
+                      }
+                      Get.snackbar('Status'.tr, 'Auto mode disabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    }
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.help,
+                ),
+                iconSize: 30,
+                color: Colors.blue[400],
+                onPressed: () {
+                  Get.defaultDialog(
+                    title: 'Auto mode'.tr,
+                    middleText:
+                        'When auto mode is enabled, in 1-tap mode you only have to tap your foot on the first 1, and the groove plays automatically.'
                             .tr,
                     textConfirm: 'OK',
                     onConfirm: () {
@@ -2519,4 +2544,3 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
     );
   } // Widget
 } // class
-

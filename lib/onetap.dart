@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:happy_feet_app/main.dart';
 //import 'ble.dart';   // flutter_reactive_ble version
 import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
@@ -65,8 +66,8 @@ class _OneTapPageState extends State<OneTapPage> {
         if (kDebugMode) {
           print('HF: 1-tap: rock1');
         }
-        Get.snackbar('Status'.tr, '1-tap rhythm: rock1'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: rock1'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
 
         // rock groove1: 4 beats per measure, 1 measure, 1 voice
         groove.initialize(4, 1, 1);
@@ -86,8 +87,8 @@ class _OneTapPageState extends State<OneTapPage> {
         if (kDebugMode) {
           print('HF: 1-tap: rock2');
         }
-        Get.snackbar('Status'.tr, '1-tap rhythm: rock2'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: rock2'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
 
         // rock groove1: 8 beats per measure, 1 measure, 2 voices
         groove.initialize(8, 1, 2);
@@ -117,8 +118,8 @@ class _OneTapPageState extends State<OneTapPage> {
         if (kDebugMode) {
           print('HF: 1-tap: jazz1');
         }
-        Get.snackbar('Status'.tr, '1-tap rhythm: jazz1'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: jazz1'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
 
         // jazz groove 1: 4 beats per measure, 1 measure, 1 voice
         groove.resize(4, 1, 1);
@@ -137,8 +138,8 @@ class _OneTapPageState extends State<OneTapPage> {
         if (kDebugMode) {
           print('HF: 1-tap: bossa nova groove');
         }
-        Get.snackbar('Status'.tr, '1-tap rhythm: Bossa Nova'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: Bossa Nova'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
         groove.reset();
         //measure 1, voice 1: 0-7
@@ -191,8 +192,8 @@ class _OneTapPageState extends State<OneTapPage> {
         if (kDebugMode) {
           print('HF: 1-tap: merengue');
         }
-        Get.snackbar('Status'.tr, '1-tap rhythm: merengue'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: merengue'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 1, 2); // 8 beats per measure, 1 measures, 2 voices
         groove.reset();
 
@@ -228,8 +229,8 @@ class _OneTapPageState extends State<OneTapPage> {
         if (kDebugMode) {
           print('HF: 1-tap: AfroCuban 6/8');
         }
-        Get.snackbar('Status'.tr, '1-tap rhythm: Afro-Cuban 6/8'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: Afro-Cuban 6/8'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
         groove.initialize(6, 2, 2); // 6 beats per measure, 2 measures, 2 voices
         groove.reset();
 
@@ -276,8 +277,8 @@ class _OneTapPageState extends State<OneTapPage> {
         if (kDebugMode) {
           print('HF: 1-tap: samba');
         }
-        Get.snackbar('Status'.tr, '1-tap rhythm: samba'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: samba'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
         groove.reset();
 
@@ -329,8 +330,8 @@ class _OneTapPageState extends State<OneTapPage> {
         break;
 
       case RhythmType.salsa:
-        Get.snackbar('Status'.tr, '1-tap rhythm: salsa'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        //Get.snackbar('Status'.tr, '1-tap rhythm: salsa'.tr,
+        //    snackPosition: SnackPosition.BOTTOM);
         groove.initialize(8, 2, 2); // 8 beats per measure, 2 measures, 2 voices
         groove.reset();
 
@@ -402,9 +403,11 @@ class _OneTapPageState extends State<OneTapPage> {
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
+                  child: Text(autoMode ? 
+                    '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the first 1'
+                        .tr:     
                     '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
-                        .tr,
+                        .tr ,
                     softWrap: true,
                     style: TextStyle(color: Colors.blue, fontSize: 20),
                   ),

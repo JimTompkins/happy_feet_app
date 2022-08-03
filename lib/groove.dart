@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
 import 'dart:io' show Platform;
+import 'package:happy_feet_app/main.dart';
 
 Note note = new Note(0, "Bass drum");
 Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
@@ -80,6 +81,7 @@ class Groove {
   double sum = 0;
   double sum2 = 0;
   double variation = 0.0;
+  double beatPeriod = 1000.0; // default to 60 BPM i.e. 1000ms per beat
   double beatSubdivisionInMs = 0.0;
   List notes = <Note>[]; // list of notes
   List notes2 = <Note>[]; // list of notes
@@ -835,8 +837,7 @@ class Groove {
 
     // calculate this beat interval i.e. the time between this beat and the previous
     Duration beatInterval = now.difference(lastBeatTime);
-    var beatPeriod =
-        beatInterval.inMilliseconds.toDouble(); // convert period to ms
+    beatPeriod = beatInterval.inMilliseconds.toDouble(); // convert period to ms
 
     // update info used by practice mode
     practiceBPM.value = 1000.0 / beatPeriod * 60;
@@ -846,7 +847,7 @@ class Groove {
     // i) not in interpolate or 1-tap mode, or
     // ii) in interpolate mode, and
     //     past the lead-in as indicated by leadInCount == 0
-    //     index is even i.e. not a back beat
+    //     index is even i.e. not an off beat
     if ((!groove.interpolate && !groove.oneTap) ||
         (groove.interpolate && (groove.leadInCount == 0)) &&
             (groove.index.isEven)) {
@@ -892,9 +893,6 @@ class Groove {
       runCount++;
     }
 
-//    print(
-//        'HF: groove.play: inst period = ${beatPeriod.toStringAsFixed(0)}ms, inst BPM = ${sysLatestBPM.toStringAsFixed(1)}, mean period = ${mean2.toStringAsFixed(0)}ms, mean BPM = ${sysFilteredBPM.toStringAsFixed(1)}, variation = ${variation.toStringAsFixed(1)}%, $_status');
-
     // print comma separated data for later analysis in Excel
     //    latest beat period,latest BPM,mean beat period,mean BPM,variation
     //    run count, status
@@ -917,9 +915,8 @@ class Groove {
         }
         this.incrementIndex();
       }
-      // schedule the next note using a timer.  1/2 of the mean beat interval will be used to
+      // schedule the next note using a timer.  1/2 of the beat interval will be used to
       // schedule the note at the expected mid-point of the beat.
-//      var halfPeriodInMs = mean2.toInt() ~/ 2;
       var halfPeriodInMs = beatPeriod.toInt() ~/ 2;
       Timer(Duration(milliseconds: halfPeriodInMs), () {
         if (variation.abs() <= 40.0) {
@@ -959,20 +956,75 @@ class Groove {
         }
         leadInCount--;
       } else {
-        // we should be at beat one (index = 0)
-        if (this.index % this.bpm != 0) {
-          if (kDebugMode) {
-            print('HF: 1-tap: error not at beat 1');
-          }
-          // reset the index to the next beat 1
-          this.nextBeat1();
+        if (!autoMode) {
+          oneTapBeat1();
+        } else {
+          // if no periodic timer is running, start one
+          // else, stop the periodic timer
+          // use timer.periodic to schedule repetitive calls to oneTapbeat1
+          final grooveTimer = Timer.periodic(
+              Duration(milliseconds: (beatSubdivisionInMs * this.bpm).toInt()),
+              (timer) {
+                oneTapBeat1();
+                },
+              );
         }
-        // play the beat one note
-        String _now = DateTime.now().toString();
-        if (kDebugMode) {
-          print(
-              'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
-        }
+      }
+    }
+
+    if (!oneTap) {
+      updateBABInfo();
+    }
+  }
+
+  // 1-tap beat 1: in 1-tap mode, this function is called to invoke
+  // these action on beat 1:
+  //    - play the first note in the groove
+  //    - schedules the other notes in the groove using timers
+  void oneTapBeat1() {
+    // we should be at beat one (index = 0)
+    if (this.index % this.bpm != 0) {
+      if (kDebugMode) {
+        print('HF: 1-tap: error not at beat 1');
+      }
+      // reset the index to the next beat 1
+      this.nextBeat1();
+    }
+    // play the beat one note
+    String _now = DateTime.now().toString();
+    if (kDebugMode) {
+      print(
+          'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
+    }
+    hfaudio.play(
+        this.voices,
+        this.notes[this.index].oggIndex,
+        this.notes[this.index].oggNote,
+        this.notes2[this.index].oggIndex,
+        this.notes2[this.index].oggNote);
+    updateBABInfo();
+    // increment pointer to the next note
+    this.incrementIndex();
+
+    // calculate the duration between beats assuming that the lead-in
+    // was in 1/4 notes.  If this is the first beat of a 1-tap groove, the
+    // beat period is in 1/4 notes from the lead-in.  If this is not the first
+    // beat, then the beat period is for the entire measure.
+    if (firstBeat) {
+      beatSubdivisionInMs = beatPeriod / (this.bpm / 4);
+      firstBeat = false;
+    } else {
+      if (!autoMode) {
+        beatSubdivisionInMs = beatPeriod / this.bpm;
+      }
+    }
+    if (kDebugMode) {
+      print('HF: 1-tap: beat subdivision = $beatSubdivisionInMs ms');
+    }
+
+    // schedule the remaining notes to be played using timers
+    for (int i = 1; i < this.bpm; i++) {
+      Timer(Duration(milliseconds: (beatSubdivisionInMs * i).toInt()), () {
         hfaudio.play(
             this.voices,
             this.notes[this.index].oggIndex,
@@ -980,47 +1032,13 @@ class Groove {
             this.notes2[this.index].oggIndex,
             this.notes2[this.index].oggNote);
         updateBABInfo();
+        _now = DateTime.now().toString();
+        if (kDebugMode) {
+          print('HF: $_now 1-tap: playing beat ${i + 1}, index=${this.index}');
+        }
         // increment pointer to the next note
         this.incrementIndex();
-
-        // calculate the duration between beats assuming that the lead-in
-        // was in 1/4 notes.  If this is the first beat of a 1-tap groove, the
-        // beat period is in 1/4 notes from the lead-in.  If this is not the first
-        // beat, then the beat period is for the entire measure.
-        if (firstBeat) {
-          beatSubdivisionInMs = beatPeriod / (this.bpm / 4);
-          firstBeat = false;
-        } else {
-          beatSubdivisionInMs = beatPeriod / this.bpm;
-        }
-        if (kDebugMode) {
-          print('HF: 1-tap: beat subdivision = $beatSubdivisionInMs ms');
-        }
-
-        // schedule the remaining notes to be played using timers
-        for (int i = 1; i < this.bpm; i++) {
-          Timer(Duration(milliseconds: (beatSubdivisionInMs * i).toInt()), () {
-            hfaudio.play(
-                this.voices,
-                this.notes[this.index].oggIndex,
-                this.notes[this.index].oggNote,
-                this.notes2[this.index].oggIndex,
-                this.notes2[this.index].oggNote);
-            updateBABInfo();
-            _now = DateTime.now().toString();
-            if (kDebugMode) {
-              print(
-                  'HF: $_now 1-tap: playing beat ${i + 1}, index=${this.index}');
-            }
-            // increment pointer to the next note
-            this.incrementIndex();
-          });
-        }
-      }
-    }
-
-    if (!oneTap) {
-      updateBABInfo();
+      });
     }
   }
 
