@@ -9,12 +9,12 @@ This page gives an overview of the construction of the app.
 ## Main Packages Used
 | Purpose  | Android package used | iOS package used |
 |----------|----------------------|------------------|
-| BLE interface | flutter_reactive_ble | flutter_blue_plus <sup>1</sup> |
-| audio player  | flutter_ogg_piano | soundpool <sup>2</sup> |
+| audio player  | flutter_ogg_piano | soundpool <sup>1</sup> |
+
+The BLE interface is implemented using flutter_blue_plus.
 
 ### Notes
-1. flutter_reactive_ble did not work on iOS.  It would scan, connect and do writes but notifies did not work.  So we changed to flutter_blue and then flutter_blue_plus.
-2. flutter_ogg_piano did not work for iOS.  Also tried audioplayers/audiocache for iOS but the latency was too long.  Even with soundpool,
+1. flutter_ogg_piano did not work for iOS.  Also tried audioplayers/audiocache for iOS but the latency was too long.  Even with soundpool,
    the latency is 70ms (on iPhone 6).
 
 ## BLE Interface
