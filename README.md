@@ -36,7 +36,7 @@ The app interfaces to HappyFeet over Bluetooth Low Energy (BLE) using a service 
 - the heartbeat flag indicates that this notify is a regular heartbeat used to keep the BLE connection alive.  Heartbeats are sent every 5s
   if no beats are happening.
 - the enable beats flag turns on (1) and off (0) the sending of notifies.
-- the foot-tapping style bit tells the embedded hardwar to assume toe-tapping (0, the default) or
+- the foot-tapping style bit tells the embedded hardware to assume either toe-tapping (0, the default) or
   heel-tapping (1).
 - the disconnect bit causes a BLE disconnect when set to 1.  This is currently not used since it would not re-connect after disconnecting using this method.
 - the enable test mode flag turns on (1) and off (0) a test mode.  When test mode is enabled, Happy Feet will send a notify every 500ms regardless
