@@ -92,6 +92,7 @@ class Groove {
   var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
   var leadInString = '0'.obs;
+  bool leadInDone = false;
   // variables for practice mode: instantaneous BPM, current streaks
   // within +/- 1, 3, and 5 BPM of target
   var practiceBPM = 0.0.obs;
@@ -247,6 +248,7 @@ class Groove {
     this.lastSequenceBit = -1;
     this.leadInCount = 4;
     this.leadInString.value = '4';
+    this.leadInDone = false;
     this.firstBeat = true;
   }
 
@@ -529,9 +531,12 @@ class Groove {
         //   the key (starting from E)
         //   the roman numeral offset from the tonic
         //   the starting mp3 index in soundIdMap in audio.dart
+        if (kDebugMode) {
+          print('HF: addBassNote: keyIndex = $keyIndex, offset = $offset, E1mp3 = $E1mp3');
+          }
         int _temp = keyIndex + offset + E1mp3;
-        assert(_temp < E1mp3);
-        assert(_temp > (E1mp3 + 23));
+        assert(_temp >= E1mp3);
+        assert(_temp <= (E1mp3 + 23));
         this.notes[index].oggIndex = _temp;
       }
     }
@@ -810,7 +815,7 @@ class Groove {
   }
 
   // play the next note in the groove
-  void play(int data) {
+  play(int data) {
     int sequenceBit;
     double mean2;
     var now = DateTime.now(); // get system time
@@ -819,8 +824,8 @@ class Groove {
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
-    if (lastSequenceBit != -1) {
-      // ignore the sequence bit on the first notify received is indicated by -1
+    if (lastSequenceBit != -1 && !audioTestMode) {
+      // ignore the sequence bit on the first notify received is indicated by -1 or if we're in audio test mode
       if (sequenceBit == lastSequenceBit) {
         Get.snackbar('Sequence error:',
             'A beat was missed, possibly due to a lost Bluetooth notify message',
@@ -851,6 +856,10 @@ class Groove {
     if ((!groove.interpolate && !groove.oneTap) ||
         (groove.interpolate && (groove.leadInCount == 0)) &&
             (groove.index.isEven)) {
+      // if this is a bass groove, then stop playing the previous note
+      if (this.type == GrooveType.bass) {
+        hfaudio.stop();
+      }
       hfaudio.play(
           this.voices,
           this.notes[this.index].oggIndex,
@@ -861,6 +870,9 @@ class Groove {
       this.incrementIndex();
     } else if (groove.interpolate && (groove.leadInCount > 0)) {
       this.leadInCount--;
+      if (this.leadInCount == 0) {
+        this.leadInDone = true;
+      }
       this.leadInString.value = this.leadInCount.toString();
       if (kDebugMode) {
         print('HF:  lead-in count decremented to $this.leadInCount');
@@ -919,7 +931,7 @@ class Groove {
       // schedule the note at the expected mid-point of the beat.
       var halfPeriodInMs = beatPeriod.toInt() ~/ 2;
       Timer(Duration(milliseconds: halfPeriodInMs), () {
-        if (variation.abs() <= 40.0) {
+        if (variation.abs() <= 20.0) {
           // only play the note if the beat is stable i.e. variation < 20%
           hfaudio.play(
               this.voices,
@@ -963,11 +975,11 @@ class Groove {
           // else, stop the periodic timer
           // use timer.periodic to schedule repetitive calls to oneTapbeat1
           final grooveTimer = Timer.periodic(
-              Duration(milliseconds: (beatSubdivisionInMs * this.bpm).toInt()),
-              (timer) {
-                oneTapBeat1();
-                },
-              );
+            Duration(milliseconds: (beatSubdivisionInMs * this.bpm).toInt()),
+            (timer) {
+              oneTapBeat1();
+            },
+          );
         }
       }
     }

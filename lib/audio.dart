@@ -39,7 +39,7 @@ var mp3Map = <int, String>{
   2: 'snare_drum.mp3',
   3: 'high_hat.mp3',
   4: 'cowbell.mp3',
-  5: 'TambourineHitandRoll.mp3',
+  5: 'tambourine.mp3',
   7: 'fingersnap.mp3',
   8: 'sidestick.mp3',
   9: 'shaker.mp3',
@@ -104,6 +104,7 @@ class HfAudio {
 //  final AudioCache ac = new AudioCache(prefix: 'assets/sounds/');
   Soundpool pool = Soundpool.fromOptions(
       options: SoundpoolOptions(streamType: StreamType.alarm, maxStreams: 10));
+  Future<int> streamId = Future.value(0);
 
   // flags used to indicate if the persussion or bass sounds have been loaded.
   bool engineInitialized = false;
@@ -154,6 +155,25 @@ class HfAudio {
   // initialize iOS audio engine.  Call a subfunction depending on the
   // current groove type.
   void initIOSSoundpool() {
+    if (kDebugMode) {
+      print('HF: initIOSSoundpool : entered');
+      if (groove.type == GrooveType.bass) {
+        print('HF:       groove type = bass');
+      } else {
+        print('HF:     groove type = percussion');
+      }
+      if (this.percussionLoaded) {
+        print('HF:     percussion loaded = true');
+      } else {
+        print('HF:   percussion loaded = false');
+      }
+      if (this.bassLoaded) {
+        print('HF:     bassloaded = true');
+      } else {
+        print('HF:   bassloaded = false');
+      }
+    }
+
     /*
     if (groove.type == GrooveType.percussion) {
       initIOSSoundpoolPercussion();
@@ -222,7 +242,7 @@ class HfAudio {
     int id4 = await pool.load(asset4);
     soundIdMap[4] = id4;
 
-    _filename = _path + "TambourineHitandRoll.mp3";
+    _filename = _path + "tambourine.mp3";
     var asset5 = await rootBundle.load(_filename);
     int id5 = await pool.load(asset5);
     soundIdMap[5] = id5;
@@ -619,12 +639,10 @@ class HfAudio {
       }
       loadCount++;
     });
-    await rootBundle
-        .load('assets/sounds/TambourineHitandRoll.ogg')
-        .then((ogg5) async {
+    await rootBundle.load('assets/sounds/tambourine.ogg').then((ogg5) async {
       await fop.load(
         src: ogg5,
-        name: 'TambourineHitandRoll.ogg',
+        name: 'tambourine.ogg',
         index: 5,
         forceLoad: _forceLoad,
         replace: _replace,
@@ -1086,7 +1104,7 @@ class HfAudio {
 
   // play a single sound from the index i sample loaded earlier, transposed
   // by n semitones
-  void play(int voices, int note1, int transpose1, int note2, int transpose2) {
+  play(int voices, int note1, int transpose1, int note2, int transpose2) {
     //print('HF: audio.play: voices = $voices, note1 = $note1, note2 = $note2');
     if (Platform.isAndroid) {
 //    print('HF: oggPiano.play voices: $voices, note1: $note1, transpose1: $transpose1, note2:$note2, transpose2: $transpose2');
@@ -1153,31 +1171,23 @@ class HfAudio {
         }
       }
     } else if (Platform.isIOS) {
-      // inset iOS code here
       if (kDebugMode) {
-//      print('HF: audio.play: iOS platform');
       }
       if (voices == 1) {
         if (note1 != -1) {
-//          print('HF:   1 voice, note = $note1');
-//          ac.play(mp3Map[note1]!);
-//          print('HF: audio.play: voices = 1, note1 = $note1');
-          pool.play(soundIdMap[note1]!);
+          if (kDebugMode) {
+            print('HF: play note1 = $note1, soundIdMap[note1] = $soundIdMap[note1]');
+          }
+          this.streamId = pool.play(soundIdMap[note1]!);
           return;
         }
       } else if (voices == 2) {
         if (note1 == -1 && note2 != -1) {
-//          print('HF:  2 voices, 1 note, note: $note2, transpose: $transpose2');
-          // play note 2 as a single note
-//          ac.play(mp3Map[note2]!);
-          pool.play(soundIdMap[note2]!);
+          this.streamId = pool.play(soundIdMap[note2]!);
           return;
         }
         if (note2 == -1 && note1 != -1) {
-//          print('HF:  2 voices, 1 note, note: $note1, transpose: $transpose1');
-          // play note 1 as a single note
-//          ac.play(mp3Map[note1]!);
-          pool.play(soundIdMap[note1]!);
+          this.streamId = pool.play(soundIdMap[note1]!);
           return;
         }
         if (note1 == -1 && note2 == -1) {
@@ -1185,12 +1195,22 @@ class HfAudio {
           return;
         }
         if (note1 != -1 && note2 != -1) {
-//          ac.play(mp3Map[note1]!);
-//          ac.play(mp3Map[note2]!);
-          pool.play(soundIdMap[note1]!);
-          pool.play(soundIdMap[note2]!);
+          this.streamId = pool.play(soundIdMap[note1]!);
+          this.streamId = pool.play(soundIdMap[note2]!);
         }
       }
+    }
+  }
+
+  // stop previous note.  This is only used in bass mode since
+  // bass notes should not overlap in time.
+  // Note this only works in iOS.
+  void stop() {
+    if (Platform.isAndroid) {
+      // there is no stop method defined by flutter_ogg_piano
+    } else if (Platform.isIOS) {
+      // need a streamId to stop the playing sound
+//      pool.stop(this.streamId);
     }
   }
 

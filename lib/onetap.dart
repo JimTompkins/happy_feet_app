@@ -539,14 +539,18 @@ class _OneTapPageState extends State<OneTapPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Lead-in count:'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: TextStyle(
+                     color: groove.leadInDone ? Colors.grey: Colors.blue,
+                     fontSize: 20,
+                  )
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Obx(
                   () => Text(groove.leadInString.value,
-                      style: TextStyle(color: Colors.blue, fontSize: 32)),
+                      style: TextStyle(color: groove.leadInDone ? Colors.grey: Colors.blue, 
+                      fontSize: 32)),
                 ),
               ),
             ]),

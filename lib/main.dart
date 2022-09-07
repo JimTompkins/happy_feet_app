@@ -114,6 +114,9 @@ bool multiMode = false;
 // to enable or disable beats.
 bool footSwitch = false;
 
+// flag used to enable toe or heel tapping
+bool heelTap = false;
+
 // saved preference for language
 String savedLanguage = '';
 String language = '';
@@ -220,6 +223,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     multiMode = prefs.getBool('multiMode') ?? false;
     footSwitch = prefs.getBool('footSwitch') ?? false;
     autoMode = prefs.getBool('autoMode') ?? false;
+    heelTap = prefs.getBool('heelTap') ?? false;
     savedLanguage = prefs.getString('language') ?? '';
     if (savedLanguage != '') {
       if (kDebugMode) {
@@ -307,7 +311,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         _bluetoothBLEService.disconnectFromDevice();
         _playState.value = false;
       }
-       return;
+      return;
     }
 
     final isBackground = state == AppLifecycleState.paused;
@@ -315,7 +319,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if (isBackground) {
       // when the app moves to the background...
       if (kDebugMode) {
-      print('HF: saving preferences when app goes to background');
+        print('HF: saving preferences when app goes to background');
       }
 
       final _prefs = await SharedPreferences.getInstance();
@@ -324,8 +328,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       _prefs.setBool('multiMode', multiMode);
       _prefs.setBool('autoMode', autoMode);
       _prefs.setBool('footSwitch', footSwitch);
+      _prefs.setBool('heelTap', heelTap);
     }
-
   }
 
   @override
@@ -546,24 +550,29 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       } else {
                         _audioInitNeeded = false;
                       }
-                      if (newValue == 'SingleNote'.tr) {
+                      if (newValue == 'Single Note') {
                         playMode = Mode.singleNote;
+                        groove.type = GrooveType.percussion;
                         groove.initSingle(note1);
-                      } else if (newValue == 'Alternating Notes'.tr) {
+                      } else if (newValue == 'Alternating Notes') {
                         playMode = Mode.alternatingNotes;
+                        groove.type = GrooveType.percussion;
                         groove.initAlternating(note1, note2);
-                      } else if (newValue == 'Dual Notes'.tr) {
+                      } else if (newValue == 'Dual Notes') {
                         playMode = Mode.dualNotes;
+                        groove.type = GrooveType.percussion;
                         groove.initDual(note1, note2);
-                      } else if (newValue == 'Groove'.tr) {
+                      } else if (newValue == 'Groove') {
                         groove.reset();
+                        groove.type = GrooveType.percussion;
                         if (playMode != Mode.groove) {
                           groove.clearNotes();
                         }
                         playMode = Mode.groove;
                         groove.oneTap = false;
                         Get.to(() => groovePage);
-                      } else if (newValue == 'Bass'.tr) {
+                      } else if (newValue == 'Bass') {
+                        groove.type = GrooveType.bass;
                         groove.voices = 1;
                         groove.reset();
                         if (playMode != Mode.bass) {
@@ -572,16 +581,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         playMode = Mode.bass;
                         groove.oneTap = false;
                         Get.to(() => bassPage);
-                      } else if (newValue == '1-tap'.tr) {
+                      } else if (newValue == '1-tap') {
                         groove.clearNotes();
+                        groove.type = GrooveType.percussion;
                         playMode = Mode.groove;
                         groove.oneTap = true;
                         Get.to(() => oneTapPage);
-                      } else if (newValue == 'Practice'.tr) {
+                      } else if (newValue == 'Practice') {
                         if (playMode != Mode.groove) {
                           groove.clearNotes();
                         }
                         playMode = Mode.groove;
+                        groove.type = GrooveType.percussion;
                         groove.practice = true;
                         _bluetoothBLEService.disableBeat();
                         Get.to(() => practicePage);
@@ -602,13 +613,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     });
                   },
                   items: <String>[
-                    'Single Note'.tr,
-                    'Alternating Notes'.tr,
-                    'Dual Notes'.tr,
-                    'Groove'.tr,
-                    'Bass'.tr,
-                    '1-tap'.tr,
-                    'Practice'.tr,
+                    'Single Note',
+                    'Alternating Notes',
+                    'Dual Notes',
+                    'Groove',
+                    'Bass',
+                    '1-tap',
+                    'Practice',
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -1103,12 +1114,9 @@ class _GroovePageState extends State<GroovePage> {
                           elevation: 24,
                           onChanged: (String? newValue) {
                             setState(() {
-//                                String? _initial = initialMap[newValue!];
-//                                groove.addInitialNote(index, _initial!);
-//                                dropdownValue[index] = _initial;
-//                                String? _initial = initialMap[newValue!];
                               groove.addInitialNote(index, newValue!);
                               dropdownValue[index] = newValue;
+                              groove.reset();
                             });
                           },
                           items: <String>[
@@ -1489,6 +1497,7 @@ class _BassPageState extends State<BassPage> {
                               setState(() {
                                 groove.addBassNote(index, newValue!, _key);
                                 dropdownValue[index] = newValue;
+                                groove.reset();
                               });
                             },
 //                           items: <String>['-', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].map<DropdownMenuItem<String>>((String value) {
@@ -2257,6 +2266,66 @@ class _MenuPageState extends State<MenuPage> {
                     title: 'Auto mode'.tr,
                     middleText:
                         'When auto mode is enabled, in 1-tap mode you only have to tap your foot on the first 1, and the groove plays automatically.'
+                            .tr,
+                    textConfirm: 'OK',
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+            ]),
+            Row(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Tapping mode: toe'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              Switch(
+                value: heelTap,
+                activeColor: Colors.deepOrange[400],
+                activeTrackColor: Colors.deepOrange[200],
+                inactiveThumbColor: Colors.grey[600],
+                inactiveTrackColor: Colors.grey[400],
+                onChanged: (value) {
+                  setState(() {
+                    heelTap = value;
+                    if (heelTap) {
+                      if (kDebugMode) {
+                        print('HF: heel tap mode enabled');
+                      }
+                      Get.snackbar('Status'.tr, 'Heel tap mode enabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      if (kDebugMode) {
+                        print('HF: toe tap mode enabled');
+                      }
+                      Get.snackbar('Status'.tr, 'Toe tap mode enabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    }
+                  });
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'heel'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.help,
+                ),
+                iconSize: 30,
+                color: Colors.blue[400],
+                onPressed: () {
+                  Get.defaultDialog(
+                    title: 'Tapping Mode'.tr,
+                    middleText:
+                        'Change this to make HappyFeet detect either toe or heel taps.'
                             .tr,
                     textConfirm: 'OK',
                     onConfirm: () {
