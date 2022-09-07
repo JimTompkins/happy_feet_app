@@ -43,6 +43,26 @@ The app interfaces to HappyFeet over Bluetooth Low Energy (BLE) using a service 
   of the detection of actual beats.
 - the beat detection threshold is a...
 
+## Groove .csv format definition
+Grooves are saved to and loaded from comma separated variable (CSV) files with
+the fields defined as follows:
+- 0 = groove format version
+- 1 = description of groove
+- 2 = beats per measure
+- 3 = number of measures
+- 4 = number of voices
+- 5 = interpolate flag (0 = no interpolation, 1 = with interpolation)
+- 6 = groove type e.g. percussion or bass
+- 7 = key (only used for bass grooves)
+- 8:6+BPM*measures*4 = 1st voice notes
+For each note, the following fields are used:
+- ogg number: the number reference of this note
+- transpose (no longer used)
+- note name e.g. cowbell
+- initial e.g. 'c' for cowbell
+A similar list is provided for the 2nd note voices:
+- ??:??+BPM*measures*4 = 2nd voice notes
+
 ## Wishlist
 - cloud storage/sharing of grooves
 - lower latency audio on iOS
