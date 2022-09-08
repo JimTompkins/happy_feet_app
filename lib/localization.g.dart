@@ -602,7 +602,7 @@ class Localization extends Translations {
 '2': '2',
 'Backbeat': 'Backbeat',
 'Offbeat mode can only be used with even number of beats per measure.': 'La modalità insolita può essere utilizzata solo con un numero pari di battiti per misura.',
-' Choose "-" for no note, b for bass drum, B for bass echo, t for low tom, T for high tom, S for snare drum, H for hi-hat cymbal, M for taMbourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock, Q for quijada, U for brUshes ': ' Scegli "-" per nessuna nota, b per bass tamburo, b per eco di bassi, t per bassa tom, t per tom alto, s per rullante, h per il piatto hi-hat, m per tamburino, c per campanaccio, f per Fingersnap, r per il tiro a bordo, a per shaker, w per bosco, q per Quijada, u per pennelli',
+' Choose "-" for no note, b for bass drum, B for bass echo, t for low tom, T for high tom, S for snare drum, H for hi-hat cymbal, M for taMbourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock, Q for quijada, U for brUshes ': ' Scegli "-" per nessuna nota, b per bass tamburo, b per l\'eco dei bassi, t per bassa tom, t per tom alto, s per rullante, h per il piatto hi-hat, m per tamburino, c per campanaccio, f per Fingersnap, r per il tiro a bordo, a per shaker, w per bosco, q per Quijada, u per pennelli',
 'Save groove': 'Salva groove',
 'Load groove': 'Carica scanalatura',
 'No saved grooves found.': 'Nessuna scaletta salvata trovata.',
