@@ -537,6 +537,7 @@ class BluetoothBLEService {
   }
 
   // set bit 0 of char6, the beat enable flag
+  // if heelTap is true, then also set bit 1 of char6
   Future<void> enableBeat() async {
     if (_char6 == null) {
       if (kDebugMode) {
@@ -545,9 +546,17 @@ class BluetoothBLEService {
       // error
     } else {
       if (kDebugMode) {
-        print('HF: enabling beats');
+        if (heelTap) {
+          print('HF: enabling beats with heel tapping');
+        } else {
+          print('HF: enabling beats with toe tapping');
+        }
       }
-      await _char6!.write([0x01]);
+      if (heelTap) {
+        await _char6!.write([0x03]);
+      } else {
+        await _char6!.write([0x01]);
+      }
     }
   }
 

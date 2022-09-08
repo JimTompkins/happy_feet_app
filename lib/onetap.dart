@@ -403,11 +403,12 @@ class _OneTapPageState extends State<OneTapPage> {
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(autoMode ? 
-                    '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the first 1'
-                        .tr:     
-                    '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
-                        .tr ,
+                  child: Text(
+                    autoMode
+                        ? '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the first 1'
+                            .tr
+                        : '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
+                            .tr,
                     softWrap: true,
                     style: TextStyle(color: Colors.blue, fontSize: 20),
                   ),
@@ -467,6 +468,7 @@ class _OneTapPageState extends State<OneTapPage> {
                           }
                           break;
                       }
+                      groove.oneTapStarted = false;
                       if (kDebugMode) {
                         print("HF: 1-tap rhythm changed to $newValue");
                       }
@@ -537,20 +539,19 @@ class _OneTapPageState extends State<OneTapPage> {
             Row(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Lead-in count:'.tr,
-                  style: TextStyle(
-                     color: groove.leadInDone ? Colors.grey: Colors.blue,
-                     fontSize: 20,
-                  )
-                ),
+                child: Text('Lead-in count:'.tr,
+                    style: TextStyle(
+                      color: groove.leadInDone ? Colors.grey : Colors.blue,
+                      fontSize: 20,
+                    )),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Obx(
                   () => Text(groove.leadInString.value,
-                      style: TextStyle(color: groove.leadInDone ? Colors.grey: Colors.blue, 
-                      fontSize: 32)),
+                      style: TextStyle(
+                          color: groove.leadInDone ? Colors.grey : Colors.blue,
+                          fontSize: 32)),
                 ),
               ),
             ]),

@@ -1175,9 +1175,6 @@ class HfAudio {
       }
       if (voices == 1) {
         if (note1 != -1) {
-          if (kDebugMode) {
-            print('HF: play note1 = $note1, soundIdMap[note1] = $soundIdMap[note1]');
-          }
           this.streamId = pool.play(soundIdMap[note1]!);
           return;
         }

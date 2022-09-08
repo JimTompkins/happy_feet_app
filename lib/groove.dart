@@ -104,6 +104,9 @@ class Groove {
   bool firstBeat = true;
   int runCount = 0;
   bool practice = false;
+  bool oneTapStarted =
+      false; // flag to indicate if the oneTap timer has been started or not
+  Timer? measureTimer; // a timer used by oneTap auto mode
 
   // constructor with list of notes
   Groove(int beats, int measures, List notes, List notes2, GrooveType type) {
@@ -532,8 +535,9 @@ class Groove {
         //   the roman numeral offset from the tonic
         //   the starting mp3 index in soundIdMap in audio.dart
         if (kDebugMode) {
-          print('HF: addBassNote: keyIndex = $keyIndex, offset = $offset, E1mp3 = $E1mp3');
-          }
+          print(
+              'HF: addBassNote: keyIndex = $keyIndex, offset = $offset, E1mp3 = $E1mp3');
+        }
         int _temp = keyIndex + offset + E1mp3;
         assert(_temp >= E1mp3);
         assert(_temp <= (E1mp3 + 23));
@@ -819,6 +823,7 @@ class Groove {
     int sequenceBit;
     double mean2;
     var now = DateTime.now(); // get system time
+
 //    print(
 //        'HF:   Time: $now, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
 
@@ -968,18 +973,26 @@ class Groove {
         }
         leadInCount--;
       } else {
+        // lead-in is done, we're live!
         if (!autoMode) {
+          // if not in auto mode, call the beat1 function
           oneTapBeat1();
         } else {
           // if no periodic timer is running, start one
-          // else, stop the periodic timer
-          // use timer.periodic to schedule repetitive calls to oneTapbeat1
-          final grooveTimer = Timer.periodic(
-            Duration(milliseconds: (beatSubdivisionInMs * this.bpm).toInt()),
-            (timer) {
-              oneTapBeat1();
-            },
-          );
+          if (!this.oneTapStarted) {
+            if (kDebugMode) {
+              print('HF: first measure of 1-tap auto mode');
+            }
+            oneTapBeat1(); // start the first measure
+            startMeasureTimer();
+          } else {
+            // else the timer is running.  In this case, when a beat is detected,
+            // the timers should be cancelled
+            cancelMeasureTimer();
+            if (kDebugMode) {
+              print('HF: ending 1-tap auto mode');
+            }
+          }
         }
       }
     }
@@ -987,6 +1000,26 @@ class Groove {
     if (!oneTap) {
       updateBABInfo();
     }
+  }
+
+  void startMeasureTimer() {
+    // cancel any existing timer before creating a new one
+    measureTimer?.cancel();
+    measureTimer = null;
+    
+    // use timer.periodic to schedule repetitive calls to oneTapbeat1
+    measureTimer = Timer.periodic(
+      Duration(milliseconds: (beatSubdivisionInMs * this.bpm).toInt()),
+      (timer) {
+        oneTapBeat1();
+      },
+    );
+    this.oneTapStarted = true;
+  }
+
+  void cancelMeasureTimer() {
+    measureTimer?.cancel();
+    this.oneTapStarted = false;
   }
 
   // 1-tap beat 1: in 1-tap mode, this function is called to invoke

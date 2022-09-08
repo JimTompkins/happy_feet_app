@@ -1336,9 +1336,13 @@ class _BassPageState extends State<BassPage> {
             // sliders for number of beats per measure and measures
             Column(children: <Widget>[
               Row(children: <Widget>[
-                Text(
-                  ' Beats/measure'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                Container(
+                  padding: EdgeInsets.all(10),
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Beats/measure'.tr,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                 ), // Text
                 Slider(
                   value: _beatsPerMeasure.toDouble(),
@@ -1357,9 +1361,13 @@ class _BassPageState extends State<BassPage> {
                 ), // Slider
               ]), // Row
               Row(children: <Widget>[
-                Text(
-                  ' Measures'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                Container(
+                  padding: EdgeInsets.all(10),
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Measures'.tr,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                 ), // Text
                 Slider(
                   value: _numberOfMeasures.toDouble(),
@@ -1379,9 +1387,13 @@ class _BassPageState extends State<BassPage> {
               ]), // Row
               // key dropdown
               Row(children: <Widget>[
-                Text(
-                  ' Key of '.tr,
-                  style: Theme.of(context).textTheme.caption,
+                Container(
+                  padding: EdgeInsets.all(10),
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Key of'.tr,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                 ), // Text
                 DropdownButton<String>(
                   value: _key,
@@ -1449,7 +1461,7 @@ class _BassPageState extends State<BassPage> {
                     Get.defaultDialog(
                       title: 'Offbeat mode'.tr,
                       middleText:
-                          "In offbeat mode, sounds are played between beats.  Beats are shown in blue and offbeats in purple."
+                          "In offbeat mode, sounds are played between beats. Beats are shown in blue and offbeats in purple."
                               .tr,
                       textConfirm: 'OK',
                       onConfirm: () {
@@ -1462,16 +1474,24 @@ class _BassPageState extends State<BassPage> {
             ]), // Column
 
             // print a list of tones in the selected scale
-            Text(
-              'Tones: '.tr + scaleTones(_key),
-              style: Theme.of(context).textTheme.caption,
+            Container(
+              padding: EdgeInsets.all(10),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Tones:'.tr + scaleTones(_key),
+                style: Theme.of(context).textTheme.caption,
+              ),
             ), // Text
 
             // beat grid
-            Text(
-              ' Choose "-" for no note, or numbers 1 through 7 plus flats for tones '
-                  .tr,
-              style: Theme.of(context).textTheme.caption,
+            Container(
+              padding: EdgeInsets.all(10),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Choose "-" for no note, or numbers 1 through 7 plus flats for tones'
+                    .tr,
+                style: Theme.of(context).textTheme.caption,
+              ),
             ), // Text
 
             GridView.count(
