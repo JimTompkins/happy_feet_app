@@ -77,6 +77,7 @@ class Groove {
       4); // circular buffer of system timestamp deltas in ms
   DateTime lastBeatTime = DateTime.now(); // get system time
   double beatsPerMinute = 0.0;
+  double sysLatestBPM = 0.0;
   double sysFilteredBPM = 0.0;
   double sum = 0;
   double sum2 = 0;
@@ -92,7 +93,7 @@ class Groove {
   var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
   var leadInString = '0'.obs;
-  bool leadInDone = false;
+  RxBool leadInDone = false.obs;
   // variables for practice mode: instantaneous BPM, current streaks
   // within +/- 1, 3, and 5 BPM of target
   var practiceBPM = 0.0.obs;
@@ -251,7 +252,7 @@ class Groove {
     this.lastSequenceBit = -1;
     this.leadInCount = 4;
     this.leadInString.value = '4';
-    this.leadInDone = false;
+    this.leadInDone.value = false;
     this.firstBeat = true;
   }
 
@@ -774,8 +775,8 @@ class Groove {
     // update the BPM and index info on the bottom app bar
     // if variation is high, or BPM is non-sensical i.e. < 0 or > 320, then show '---'
     if ((variation.abs() < 50.0) &&
-        ((sysFilteredBPM > 20.0) && (sysFilteredBPM < 320.0))) {
-      bpmString.value = sysFilteredBPM.toStringAsFixed(1);
+        ((sysLatestBPM > 20.0) && (sysLatestBPM < 320.0))) {
+      bpmString.value = sysLatestBPM.toStringAsFixed(1);
     } else {
       bpmString.value = '---';
     }
@@ -876,11 +877,12 @@ class Groove {
     } else if (groove.interpolate && (groove.leadInCount > 0)) {
       this.leadInCount--;
       if (this.leadInCount == 0) {
-        this.leadInDone = true;
+        this.leadInDone.value = true;
       }
       this.leadInString.value = this.leadInCount.toString();
       if (kDebugMode) {
-        print('HF:  lead-in count decremented to $this.leadInCount');
+        print(
+            'HF:  lead-in count decremented to $this.leadInCount, leadInDone set to $this.leadInDone.value');
       }
     }
 
@@ -890,7 +892,7 @@ class Groove {
         beatPeriod); // add the latest sys time interval to the circular buffer
     sum2 += sysTimeBuffer.last - first2; // update the running sum
     mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
-    double sysLatestBPM = (60000.0 / beatPeriod);
+    sysLatestBPM = (60000.0 / beatPeriod);
     sysFilteredBPM = (60000.0 / mean2);
     if (this.oneTap && !this.firstBeat) {
       sysFilteredBPM = sysFilteredBPM * this.bpm;
@@ -973,6 +975,7 @@ class Groove {
         }
         leadInCount--;
       } else {
+        leadInDone.value = true;
         // lead-in is done, we're live!
         if (!autoMode) {
           // if not in auto mode, call the beat1 function
@@ -1006,7 +1009,7 @@ class Groove {
     // cancel any existing timer before creating a new one
     measureTimer?.cancel();
     measureTimer = null;
-    
+
     // use timer.periodic to schedule repetitive calls to oneTapbeat1
     measureTimer = Timer.periodic(
       Duration(milliseconds: (beatSubdivisionInMs * this.bpm).toInt()),

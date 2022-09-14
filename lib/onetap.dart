@@ -368,6 +368,7 @@ class _OneTapPageState extends State<OneTapPage> {
             if (_playState.value) {
               // disable beats
               _bluetoothBLEService.disableBeat();
+              groove.cancelMeasureTimer();
               Get.snackbar('Status'.tr, 'beats disabled'.tr,
                   snackPosition: SnackPosition.BOTTOM);
             } else {
@@ -469,6 +470,7 @@ class _OneTapPageState extends State<OneTapPage> {
                           break;
                       }
                       groove.oneTapStarted = false;
+                      groove.cancelMeasureTimer();
                       if (kDebugMode) {
                         print("HF: 1-tap rhythm changed to $newValue");
                       }
@@ -539,18 +541,23 @@ class _OneTapPageState extends State<OneTapPage> {
             Row(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('Lead-in count:'.tr,
-                    style: TextStyle(
-                      color: groove.leadInDone ? Colors.grey : Colors.blue,
-                      fontSize: 20,
-                    )),
+                child: Obx(
+                  () => Text('Lead-in count:'.tr,
+                      style: TextStyle(
+                        color:
+                            groove.leadInDone.value ? Colors.grey : Colors.blue,
+                        fontSize: 20,
+                      )),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Obx(
                   () => Text(groove.leadInString.value,
                       style: TextStyle(
-                          color: groove.leadInDone ? Colors.grey : Colors.blue,
+                          color: groove.leadInDone.value
+                              ? Colors.grey
+                              : Colors.blue,
                           fontSize: 32)),
                 ),
               ),
