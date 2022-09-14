@@ -205,8 +205,8 @@ class _OneTapPageState extends State<OneTapPage> {
         groove.addInitialNote(3, 'H');
         groove.addInitialNote(4, 'H');
         groove.addInitialNote(5, '-');
-        groove.addInitialNote(6, '-');
-        groove.addInitialNote(7, 'H');
+        groove.addInitialNote(6, 'H');
+        groove.addInitialNote(7, '-');
 
         // bass drum on 1 and 3 of second voice
         groove.addInitialNote(8, 'b');
@@ -219,7 +219,7 @@ class _OneTapPageState extends State<OneTapPage> {
         groove.addInitialNote(15, '-');
 
         _tab.clear();
-        _tab.add(0, 'H|x--xx--x|');
+        _tab.add(0, 'H|x--xx-x-|');
         _tab.add(1, 'B|o---o---|');
         _tab.add(2, ' |1+2+3+4+|');
         _tab.add(3, 'H=hi-hat,b=bass');
