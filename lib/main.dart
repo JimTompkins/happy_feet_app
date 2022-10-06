@@ -9,9 +9,8 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'mybool.dart';
-//import 'ble.dart';   // flutter_reactive_ble version
-import 'ble2.dart'; // flutter_blue version
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'ble2.dart'; // flutter_blue_plus version
 import 'audio.dart';
 import 'groove.dart';
 import 'bass.dart';
@@ -49,6 +48,16 @@ void main() {
   runApp(MyApp());
 }
 
+class MenuItem {
+  final String text;
+  final Color? color;
+
+  MenuItem({
+    required this.text,
+    required this.color,
+  });
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
   @override
@@ -58,9 +67,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.deepOrange[500],
-        secondaryHeaderColor: Colors.blue[400],
-//        accentColor: Colors.blue[400],
-//        fontFamily: 'Roboto',
+        secondaryHeaderColor: Colors.blue[800],
         textTheme: TextTheme(
           headline1: TextStyle(
               color: Theme.of(context).colorScheme.secondary,
@@ -73,7 +80,7 @@ class MyApp extends StatelessWidget {
               height: 1,
               fontWeight: FontWeight.normal),
           headline2: TextStyle(
-              color: Colors.blue[400],
+              color: Colors.blue[800],
               fontSize: 16,
               height: 1,
               fontWeight: FontWeight.normal),
@@ -524,7 +531,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 DropdownButton<String>(
                   value: playModeString,
                   icon: const Icon(Icons.arrow_downward),
-                  iconSize: 24,
+                  iconSize: 20,
                   elevation: 24,
                   style: Theme.of(context).textTheme.headline4,
                   onChanged: (String? newValue) {
@@ -657,7 +664,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               DropdownButton<String>(
                 value: note1,
                 icon: const Icon(Icons.arrow_downward),
-                iconSize: 24,
+                iconSize: 20,
                 elevation: 24,
                 style: Theme.of(context).textTheme.headline4,
                 onChanged: (String? newValue) {
@@ -722,7 +729,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               DropdownButton<String>(
                 value: note2,
                 icon: const Icon(Icons.arrow_downward),
-                iconSize: 24,
+                iconSize: 20,
                 elevation: 24,
                 style: Theme.of(context).textTheme.headline4,
                 onChanged: (String? newValue) {
@@ -816,10 +823,58 @@ class _GroovePageState extends State<GroovePage> {
   var dropdownValue = groove.getInitials();
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   RxBool _playState = Get.find();
+  String? bpmString;
+  String? measuresString;
+
+  final List<MenuItem> bpmDropdownList = [
+    MenuItem(text: '1', color: Colors.grey[100]),
+    MenuItem(text: '2', color: Colors.grey[300]),
+    MenuItem(text: '3', color: Colors.grey[100]),
+    MenuItem(text: '4', color: Colors.grey[300]),
+    MenuItem(text: '5', color: Colors.grey[100]),
+    MenuItem(text: '6', color: Colors.grey[300]),
+    MenuItem(text: '7', color: Colors.grey[100]),
+    MenuItem(text: '8', color: Colors.grey[300]),
+  ];
+
+  final List<MenuItem> numMeasuresDropdownList = [
+    MenuItem(text: '1', color: Colors.grey[100]),
+    MenuItem(text: '2', color: Colors.grey[300]),
+    MenuItem(text: '3', color: Colors.grey[100]),
+    MenuItem(text: '4', color: Colors.grey[300]),
+    MenuItem(text: '5', color: Colors.grey[100]),
+    MenuItem(text: '6', color: Colors.grey[300]),
+    MenuItem(text: '7', color: Colors.grey[100]),
+    MenuItem(text: '8', color: Colors.grey[300]),
+    MenuItem(text: '9', color: Colors.grey[100]),
+    MenuItem(text: '10', color: Colors.grey[300]),
+    MenuItem(text: '11', color: Colors.grey[100]),
+    MenuItem(text: '12', color: Colors.grey[300]),
+  ];
+
+  final List<MenuItem> soundDropdownList = [
+    MenuItem(text: '-', color: Colors.grey[100]),
+    MenuItem(text: 'b', color: Colors.grey[300]),
+    MenuItem(text: 'B', color: Colors.grey[100]),
+    MenuItem(text: 't', color: Colors.grey[300]),
+    MenuItem(text: 'T', color: Colors.grey[100]),
+    MenuItem(text: 'S', color: Colors.grey[300]),
+    MenuItem(text: 'H', color: Colors.grey[100]),
+    MenuItem(text: 'M', color: Colors.grey[300]),
+    MenuItem(text: 'C', color: Colors.grey[100]),
+    MenuItem(text: 'F', color: Colors.grey[300]),
+    MenuItem(text: 'R', color: Colors.grey[100]),
+    MenuItem(text: 'A', color: Colors.grey[300]),
+    MenuItem(text: 'W', color: Colors.grey[100]),
+    MenuItem(text: 'Q', color: Colors.grey[300]),
+    MenuItem(text: 'U', color: Colors.grey[100]),
+  ];
 
   void loadGroove() {
     _beatsPerMeasure = groove.bpm;
+    bpmString = groove.bpm.toString();
     _numberOfMeasures = groove.numMeasures;
+    measuresString = groove.numMeasures.toString();
     _totalBeats = groove.bpm * groove.numMeasures * groove.voices;
     _voices = groove.voices;
     _interpolate = groove.interpolate;
@@ -942,66 +997,151 @@ class _GroovePageState extends State<GroovePage> {
             // sliders for number of beats per measure and measures
             Column(children: <Widget>[
               Row(children: <Widget>[
-                Text(
-                  'Beats/measure'.tr,
-                  style: Theme.of(context).textTheme.caption,
-                ), // Text
-                Slider(
-                  value: _beatsPerMeasure.toDouble(),
-                  min: 1,
-                  max: 8,
-                  divisions: 8,
-                  label: _beatsPerMeasure.round().toString(),
-                  onChanged: (double value) {
-                    setState(() {
-                      _beatsPerMeasure = value.toInt();
-                      groove.resize(
-                          _beatsPerMeasure, _numberOfMeasures, _voices);
-                      _totalBeats =
-                          _beatsPerMeasure * _numberOfMeasures * _voices;
-                      if (kDebugMode) {
-                        print(
-                            'HF: changing number of beats per measure, _beatsPerMeasure = $_beatsPerMeasure, _totalBeats = $_totalBeats');
-                      }
-                      dropdownValue = groove.getInitials();
-                    });
-                  }, // setState, onChanged
-                ), // Slider
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Beats/measure'.tr,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton2(
+                    items: bpmDropdownList
+                        .map((item) => DropdownMenuItem<String>(
+                              value: item.text,
+                              child: Container(
+                                alignment: AlignmentDirectional.centerStart,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                color: item.color,
+                                child: Text(
+                                  item.text,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                    selectedItemBuilder: (context) {
+                      return bpmDropdownList
+                          .map(
+                            (item) => Container(
+                              alignment: Alignment.center,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                item.text,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList();
+                    },
+                    value: bpmString,
+                    onChanged: (value) {
+                      setState(() {
+                        bpmString = value as String;
+                        _beatsPerMeasure = int.parse(bpmString!);
+                        groove.resize(
+                            _beatsPerMeasure, _numberOfMeasures, _voices);
+                        _totalBeats =
+                            _beatsPerMeasure * _numberOfMeasures * _voices;
+                        if (kDebugMode) {
+                          print(
+                              'HF: changing number of beats per measure, _beatsPerMeasure = $_beatsPerMeasure, _totalBeats = $_totalBeats');
+                        }
+                        dropdownValue = groove.getInitials();
+                      });
+                    },
+                    dropdownPadding: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.zero,
+                    buttonHeight: 40,
+                    buttonWidth: 80,
+                    itemHeight: 40,
+                  ),
+                ),
               ]), // Row
               Row(children: <Widget>[
-                Text(
-                  'Measures'.tr,
-                  style: Theme.of(context).textTheme.caption,
-                ), // Text
-                Slider(
-                  value: _numberOfMeasures.toDouble(),
-                  min: 1,
-                  max: 12, // for 12 bar blues!
-                  divisions: 12,
-                  label: _numberOfMeasures.round().toString(),
-                  onChanged: (double value) {
-                    setState(() {
-                      _numberOfMeasures = value.toInt();
-                      groove.resize(
-                          _beatsPerMeasure, _numberOfMeasures, _voices);
-                      _totalBeats =
-                          _beatsPerMeasure * _numberOfMeasures * _voices;
-                      if (kDebugMode) {
-                        print(
-                            'HF: changing number of measures, _numberOfMeasures = $_numberOfMeasures, _totalBeats = $_totalBeats');
-                      }
-                      dropdownValue = groove.getInitials();
-                    });
-                  }, // setState, onChanged
-                ), // Slider
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Measures'.tr,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                ),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton2(
+                    items: numMeasuresDropdownList
+                        .map((item) => DropdownMenuItem<String>(
+                              value: item.text,
+                              child: Container(
+                                alignment: AlignmentDirectional.centerStart,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                color: item.color,
+                                child: Text(
+                                  item.text,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                    selectedItemBuilder: (context) {
+                      return numMeasuresDropdownList
+                          .map(
+                            (item) => Container(
+                              alignment: Alignment.center,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                item.text,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList();
+                    },
+                    value: measuresString,
+                    onChanged: (value) {
+                      setState(() {
+                        measuresString = value as String;
+                        _numberOfMeasures = int.parse(measuresString!);
+                        groove.resize(
+                            _beatsPerMeasure, _numberOfMeasures, _voices);
+                        _totalBeats =
+                            _beatsPerMeasure * _numberOfMeasures * _voices;
+                        if (kDebugMode) {
+                          print(
+                              'HF: changing number of measures, _numberOfMeasures = $_numberOfMeasures, _totalBeats = $_totalBeats');
+                        }
+                        dropdownValue = groove.getInitials();
+                      });
+                    },
+                    dropdownPadding: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.zero,
+                    buttonHeight: 40,
+                    buttonWidth: 80,
+                    itemHeight: 40,
+                  ),
+                ),
               ]), // Row
               // radio buttons for number of voices
               Row(children: <Widget>[
-                Text('Voices'.tr, style: Theme.of(context).textTheme.caption),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('Voices'.tr, style: Theme.of(context).textTheme.caption),
+                ),
                 Radio(
                   value: 1,
                   groupValue: _voices,
-                  activeColor: Colors.blue[400],
+                  activeColor: Colors.blue[800],
                   onChanged: (val) {
                     setState(() {
                       _voices = 1;
@@ -1040,9 +1180,12 @@ class _GroovePageState extends State<GroovePage> {
                 Text('2'),
               ]),
               Row(children: <Widget>[
-                Text(
-                    'Offbeat', // note: no translation since I don't think machine translations are good
-                    style: Theme.of(context).textTheme.caption),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      'Offbeat', // note: no translation since I don't think machine translations are good
+                      style: Theme.of(context).textTheme.caption),
+                ),
                 Switch(
                     value: _interpolate,
                     onChanged: (value) {
@@ -1069,7 +1212,7 @@ class _GroovePageState extends State<GroovePage> {
                     Icons.help,
                   ),
                   iconSize: 30,
-                  color: Colors.blue[400],
+                  color: Colors.blue[800],
                   onPressed: () {
                     Get.defaultDialog(
                       title: 'Offbeat mode'.tr,
@@ -1087,10 +1230,13 @@ class _GroovePageState extends State<GroovePage> {
             ]), // Column
 
             // beat grid
-            Text(
-              ' Choose "-" for no note, b for bass drum, B for bass echo, t for low tom, T for high tom, S for snare drum, H for hi-hat cymbal, M for taMbourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock, Q for quijada, U for brUshes '
-                  .tr,
-              style: Theme.of(context).textTheme.caption,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                ' Choose "-" for no note, b for bass drum, B for bass echo, t for low tom, T for high tom, S for snare drum, H for hi-hat cymbal, M for taMbourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock, Q for quijada, U for brUshes '
+                    .tr,
+                style: Theme.of(context).textTheme.caption,
+              ),
             ), // Text
 
             GridView.count(
@@ -1137,21 +1283,7 @@ class _GroovePageState extends State<GroovePage> {
                             'Quijada',
                             'Brushes',
                             */
-                            '-',
-                            'b',
-                            'B',
-                            't',
-                            'T',
-                            'S',
-                            'H',
-                            'M',
-                            'C',
-                            'F',
-                            'R',
-                            'A',
-                            'W',
-                            'Q',
-                            'U',
+                            '-','b','B','t','T','S','H','M','C','F','R','A','W','Q','U',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -1261,7 +1393,7 @@ class _BassPageState extends State<BassPage> {
     if ((index ~/ _beatsPerMeasure) & 0x01 == 0x01) {
       _result = Colors.blue[200];
     } else {
-      _result = Colors.blue[400];
+      _result = Colors.blue[800];
     }
 
     // if in interpolate mode, use a separate colour for the back beats
@@ -1398,7 +1530,7 @@ class _BassPageState extends State<BassPage> {
                 DropdownButton<String>(
                   value: _key,
                   icon: const Icon(Icons.arrow_downward),
-                  iconSize: 24,
+                  iconSize: 20,
                   elevation: 24,
                   style: Theme.of(context).textTheme.headline4,
                   onChanged: (String? newValue) {
@@ -1456,7 +1588,7 @@ class _BassPageState extends State<BassPage> {
                     Icons.help,
                   ),
                   iconSize: 30,
-                  color: Colors.blue[400],
+                  color: Colors.blue[800],
                   onPressed: () {
                     Get.defaultDialog(
                       title: 'Offbeat mode'.tr,
@@ -1974,6 +2106,7 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   String lang = language;
+  RxBool _playState = Get.find();
   var locale = Get.deviceLocale!;
 
   @override
@@ -2004,7 +2137,7 @@ class _MenuPageState extends State<MenuPage> {
                 child: DropdownButton<String>(
                   value: lang,
                   icon: const Icon(Icons.arrow_downward),
-                  iconSize: 24,
+                  iconSize: 20,
                   elevation: 24,
                   style: Theme.of(context).textTheme.headline4,
                   onChanged: (String? newValue) {
@@ -2041,8 +2174,6 @@ class _MenuPageState extends State<MenuPage> {
                       lang = newValue!;
                       language = lang;
                       Get.updateLocale(locale);
-//                      final _prefs = await SharedPreferences.getInstance();
-//                      await _prefs.setString('language', newValue);
                       if (kDebugMode) {
                         print("HF: saved language changed to $newValue");
                       }
@@ -2090,8 +2221,6 @@ class _MenuPageState extends State<MenuPage> {
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
                       audioTestMode = value;
-//                      final _prefs = await SharedPreferences.getInstance();
-//                      await _prefs.setBool('audioTestMode', value);
                       if (audioTestMode) {
                         if (kDebugMode) {
                           print('HF: audio test mode enabled');
@@ -2114,8 +2243,8 @@ class _MenuPageState extends State<MenuPage> {
                 icon: Icon(
                   Icons.help,
                 ),
-                iconSize: 30,
-                color: Colors.blue[400],
+                iconSize: 25,
+                color: Colors.blue[800],
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Audio test mode'.tr,
@@ -2147,8 +2276,6 @@ class _MenuPageState extends State<MenuPage> {
                 onChanged: (value) {
                   setState(() {
                     multiMode = value;
-//                    final _prefs = await SharedPreferences.getInstance();
-//                    await _prefs.setBool('multiMode', value);
                     if (multiMode) {
                       if (kDebugMode) {
                         print('HF: multi mode enabled');
@@ -2169,8 +2296,8 @@ class _MenuPageState extends State<MenuPage> {
                 icon: Icon(
                   Icons.help,
                 ),
-                iconSize: 30,
-                color: Colors.blue[400],
+                iconSize: 25,
+                color: Colors.blue[800],
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Multi mode'.tr,
@@ -2202,8 +2329,6 @@ class _MenuPageState extends State<MenuPage> {
                 onChanged: (value) {
                   setState(() {
                     footSwitch = value;
-//                    final _prefs = await SharedPreferences.getInstance();
-//                    await _prefs.setBool('footSwitch', value);
                     if (footSwitch) {
                       if (kDebugMode) {
                         print('HF: foot switch enabled');
@@ -2224,8 +2349,8 @@ class _MenuPageState extends State<MenuPage> {
                 icon: Icon(
                   Icons.help,
                 ),
-                iconSize: 30,
-                color: Colors.blue[400],
+                iconSize: 25,
+                color: Colors.blue[800],
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Foot switch'.tr,
@@ -2257,8 +2382,6 @@ class _MenuPageState extends State<MenuPage> {
                 onChanged: (value) {
                   setState(() {
                     autoMode = value;
-//                    final _prefs = await SharedPreferences.getInstance();
-//                    await _prefs.setBool('autoMode', value);
                     if (autoMode) {
                       if (kDebugMode) {
                         print('HF: auto mode enabled');
@@ -2279,8 +2402,8 @@ class _MenuPageState extends State<MenuPage> {
                 icon: Icon(
                   Icons.help,
                 ),
-                iconSize: 30,
-                color: Colors.blue[400],
+                iconSize: 25,
+                color: Colors.blue[800],
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Auto mode'.tr,
@@ -2325,6 +2448,12 @@ class _MenuPageState extends State<MenuPage> {
                       Get.snackbar('Status'.tr, 'Toe tap mode enabled.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     }
+                    // if connected and beats are enabled, then re-enable
+                    // which will send the updated heelTap value
+                    if (_bluetoothBLEService.isConnected.value &&
+                        _playState.value) {
+                      _bluetoothBLEService.enableBeat();
+                    }
                   });
                 },
               ),
@@ -2339,8 +2468,8 @@ class _MenuPageState extends State<MenuPage> {
                 icon: Icon(
                   Icons.help,
                 ),
-                iconSize: 30,
-                color: Colors.blue[400],
+                iconSize: 25,
+                color: Colors.blue[800],
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Tapping Mode'.tr,
@@ -2578,7 +2707,7 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
                     Icons.help,
                   ),
                   iconSize: 30,
-                  color: Colors.blue[400],
+                  color: Colors.blue[800],
                   onPressed: () {
                     Get.defaultDialog(
                       title: 'Multi mode'.tr,

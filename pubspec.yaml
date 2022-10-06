@@ -57,6 +57,7 @@ dependencies:
   google_fonts: 2.2.0
   shared_preferences: ^2.0.13
   flutter_spinbox: ^0.8.0
+  dropdown_button2: ^1.8.2
 #  syncfusion_flutter_gauges: 19.4.48
 #  sprintf: ^6.0.0
 #  firebase_auth: ^3.1.2
