@@ -11,7 +11,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'ble2.dart'; // flutter_blue_plus version
-import 'audio.dart';
+//import 'audio.dart';
+import 'audioBASS.dart'; // BASS version
 import 'groove.dart';
 import 'bass.dart';
 import 'onetap.dart';
@@ -154,6 +155,51 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   static BluetoothBLEService _bluetoothBLEService =
       Get.put(BluetoothBLEService());
   bool _audioInitNeeded = false;
+
+  final List<MenuItem> playModeDropdownList = [
+    MenuItem(text: 'Single Note', color: Colors.grey[100]),
+    MenuItem(text: 'Alternating Notes', color: Colors.grey[300]),
+    MenuItem(text: 'Dual Notes', color: Colors.grey[100]),
+    MenuItem(text: 'Groove', color: Colors.grey[300]),
+    MenuItem(text: 'Bass', color: Colors.grey[100]),
+    MenuItem(text: '1-tap', color: Colors.grey[300]),
+    MenuItem(text: 'Practice', color: Colors.grey[100]),
+  ];
+
+  final List<MenuItem> firstNoteDropdownList = [
+    MenuItem(text: 'Bass drum'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Bass echo'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Lo tom'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Hi tom'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Snare drum'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Hi-hat cymbal'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Cowbell'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Tambourine'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Fingersnap'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Rim shot'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Shaker'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Woodblock'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Brushes'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Quijada'.tr, color: Colors.grey[300]),
+  ];
+
+  final List<MenuItem> secondNoteDropdownList = [
+    MenuItem(text: 'none'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Bass drum'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Bass echo'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Lo tom'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Hi tom'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Snare drum'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Hi-hat cymbal'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Cowbell'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Tambourine'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Fingersnap'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Rim shot'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Shaker'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Woodblock'.tr, color: Colors.grey[100]),
+    MenuItem(text: 'Brushes'.tr, color: Colors.grey[300]),
+    MenuItem(text: 'Quijada'.tr, color: Colors.grey[100]),
+  ];
 
   Future<void> _checkPermission() async {
     if (Platform.isAndroid) {
@@ -1136,7 +1182,8 @@ class _GroovePageState extends State<GroovePage> {
               Row(children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Voices'.tr, style: Theme.of(context).textTheme.caption),
+                  child: Text('Voices'.tr,
+                      style: Theme.of(context).textTheme.caption),
                 ),
                 Radio(
                   value: 1,
@@ -1283,7 +1330,21 @@ class _GroovePageState extends State<GroovePage> {
                             'Quijada',
                             'Brushes',
                             */
-                            '-','b','B','t','T','S','H','M','C','F','R','A','W','Q','U',
+                            '-',
+                            'b',
+                            'B',
+                            't',
+                            'T',
+                            'S',
+                            'H',
+                            'M',
+                            'C',
+                            'F',
+                            'R',
+                            'A',
+                            'W',
+                            'Q',
+                            'U',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,

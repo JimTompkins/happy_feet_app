@@ -1,12 +1,14 @@
-import 'audio.dart';
 import 'dart:async';
-import 'bass.dart';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
-import 'dart:io' show Platform;
 import 'package:happy_feet_app/main.dart';
+
+//import 'audio.dart';
+import 'audioBASS.dart';
+import 'bass.dart';
 
 Note note = new Note(0, "Bass drum");
 Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
