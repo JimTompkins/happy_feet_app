@@ -34,14 +34,11 @@ enum RhythmType {
 
 class Note {
   int? oggIndex; // the index of the ogg file sample
-  int?
-      oggNote; // the number of semitones to transpose from the .ogg file sample
   String? name;
   String? initial;
 
   Note(int index, String name) {
     this.oggIndex = index;
-    this.oggNote = 0;
     this.name = name;
     this.initial = initialMap[name];
   }
@@ -50,7 +47,6 @@ class Note {
 
   copyFrom(Note from) {
     this.oggIndex = from.oggIndex;
-    this.oggNote = from.oggNote;
     this.name = from.name;
     this.initial = from.initial;
   }
@@ -129,13 +125,11 @@ class Groove {
       this.notes.add(null);
       this.notes[i].name = 'none';
       this.notes[i].oggIndex = -1;
-      this.notes[i].oggNote = 0;
       this.notes[i].initial = '-';
 
       this.notes2.add(null);
       this.notes2[i].name = 'none';
       this.notes2[i].oggIndex = -1;
-      this.notes2[i].oggNote = 0;
       this.notes2[i].initial = '-';
     }
 
@@ -202,7 +196,6 @@ class Groove {
     this.resize(1, 1, 1);
     this.interpolate = false;
     this.notes[0].oggIndex = oggMap[trName];
-    this.notes[0].oggNote = 0;
     this.notes[0].name = trName;
     this.notes[0].initial = initialMap[trName];
     this.oneTap = false;
@@ -216,12 +209,10 @@ class Groove {
     this.resize(2, 1, 1);
     this.interpolate = false;
     this.notes[0].oggIndex = oggMap[trName1];
-    this.notes[0].oggNote = 0;
     this.notes[0].name = trName1;
     this.notes[0].initial = initialMap[trName1];
 
     this.notes[1].oggIndex = oggMap[trName2];
-    this.notes[1].oggNote = 0;
     this.notes[1].name = trName2;
     this.notes[1].initial = initialMap[trName2];
 
@@ -236,12 +227,10 @@ class Groove {
     this.resize(1, 1, 2);
     this.interpolate = false;
     this.notes[0].oggIndex = oggMap[trName1];
-    this.notes[0].oggNote = 0;
     this.notes[0].name = trName1;
     this.notes[0].initial = initialMap[trName1];
 
     this.notes2[0].oggIndex = oggMap[trName2];
-    this.notes2[0].oggNote = 0;
     this.notes2[0].name = trName2;
     this.notes2[0].initial = initialMap[trName2];
 
@@ -281,12 +270,10 @@ class Groove {
     for (int i = 0; i < this.bpm * this.numMeasures; i++) {
       this.notes[i].name = '-';
       this.notes[i].oggIndex = -1;
-      this.notes[i].oggNote = 0;
       this.notes[i].initial = '-';
 
       this.notes2[i].name = '-';
       this.notes2[i].oggIndex = -1;
-      this.notes2[i].oggNote = 0;
       this.notes2[i].initial = '-';
     }
     this.voices = 1;
@@ -295,7 +282,6 @@ class Groove {
   // add a note to the groove using its initial only
   void addInitialNote(int index, String initial) {
     int _oggIndex = -1;
-    int _oggNote = 0;
     String _name = '-';
     int _voices = this.voices;
 
@@ -308,124 +294,110 @@ class Groove {
       case '-':
         {
           _oggIndex = -1;
-          _oggNote = 0;
           _name = '-';
         }
         break;
       case 'b':
         {
           _oggIndex = 0;
-          _oggNote = 0;
           _name = 'Bass drum';
         }
         break;
       case 'B':
         {
           _oggIndex = 1;
-          _oggNote = 0;
           _name = 'Bass echo';
         }
         break;
       case 'S':
         {
           _oggIndex = 2;
-          _oggNote = 0;
+          //_oggNote = 0;
           _name = 'Snare drum';
         }
         break;
       case 'H':
         {
           _oggIndex = 3;
-          _oggNote = 0;
           _name = 'High Hat Cymbal';
         }
         break;
       case 'C':
         {
           _oggIndex = 4;
-          _oggNote = 0;
           _name = 'Cowbell';
         }
         break;
       case 'M':
         {
           _oggIndex = 5;
-          _oggNote = 0;
           _name = 'Tambourine';
         }
         break;
       case 'F':
         {
           _oggIndex = 7;
-          _oggNote = 0;
           _name = 'Fingersnap';
         }
         break;
       case 'R':
         {
           _oggIndex = 8;
-          _oggNote = 0;
           _name = 'Rim shot';
         }
         break;
       case 'A':
         {
           _oggIndex = 9;
-          _oggNote = 0;
           _name = 'Shaker';
         }
         break;
       case 'W':
         {
           _oggIndex = 10;
-          _oggNote = 0;
+          //_oggNote = 0;
           _name = 'Woodblock';
         }
         break;
       case 't':
         {
           _oggIndex = 11;
-          _oggNote = 0;
           _name = 'Lo tom';
         }
         break;
       case 'T':
         {
           _oggIndex = 12;
-          _oggNote = 0;
           _name = 'Hi tom';
         }
         break;
       case 'U':
         {
           _oggIndex = 13;
-          _oggNote = 0;
+          //_oggNote = 0;
           _name = 'Brushes';
         }
         break;
       case 'Q':
         {
           _oggIndex = 14;
-          _oggNote = 0;
           _name = 'Quijada';
         }
         break;
       default:
         {
           _oggIndex = -1;
-          _oggNote = 0;
           _name = '-';
         }
     }
 
     if (this.voices == 1) {
       this.notes[index].oggIndex = _oggIndex;
-      this.notes[index].oggNote = _oggNote;
       this.notes[index].name = _name;
       this.notes[index].initial = initial;
       if (kDebugMode) {
         print(
-            'HF: addInitialNote single voice: index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+            'HF: addInitialNote single voice: index = $index, oggIndex = $_oggIndex, name = $_name');
       }
     } else if (this.voices == 2) {
       var _measure = index ~/ this.bpm;
@@ -438,19 +410,17 @@ class Groove {
       if (_measure.isEven) {
         if (kDebugMode) {
           print(
-              'HF: addInitialNote dual voice: notes _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+              'HF: addInitialNote dual voice: notes _i = $_i, index = $index, oggIndex = $_oggIndex, name = $_name');
         }
         this.notes[_i].oggIndex = _oggIndex;
-        this.notes[_i].oggNote = _oggNote;
         this.notes[_i].name = _name;
         this.notes[_i].initial = initial;
       } else {
         if (kDebugMode) {
           print(
-              'HF: addInitialNote dual voice: notes2 _i = $_i, index = $index, oggIndex = $_oggIndex, oggnote = $_oggNote, name = $_name');
+              'HF: addInitialNote dual voice: notes2 _i = $_i, index = $index, oggIndex = $_oggIndex, name = $_name');
         }
         this.notes2[_i].oggIndex = _oggIndex;
-        this.notes2[_i].oggNote = _oggNote;
         this.notes2[_i].name = _name;
         this.notes2[_i].initial = initial;
       }
@@ -489,7 +459,6 @@ class Groove {
       this.notes[index].name = '-';
       this.notes[index].initial = '-';
       this.notes[index].oggIndex = -1;
-      this.notes[index].oggNote = 0;
     } else {
       // create a name by concatenating the key name, a "-" and the
       // arabic numeral,  e.g. C-4
@@ -521,22 +490,7 @@ class Groove {
       if (Platform.isAndroid) {
         //this.notes[index].oggIndex = 6;
         this.notes[index].oggIndex = E1ogg + keyIndex + offset;
-
-        // create the oggNote by adding the following:
-        //   the MIDI code for E1
-        //   the key (starting from E)
-        //   the roman numeral offset from the tonic
-        // and subtracting the MIDI code for the sample file
-        //this.notes[index].oggNote = E1midi + keyIndex + offset - A1midi;
-
-        // in the current scheme, there is an individual ogg file for each bass
-        // note, so no transposing is needed.
-        this.notes[index].oggNote = 0;
-      } else if (Platform.isIOS) {
-        // create the oggNote by adding the following:
-        //   the key (starting from E)
-        //   the roman numeral offset from the tonic
-        //   the starting mp3 index in soundIdMap in audio.dart
+       } else if (Platform.isIOS) {
         if (kDebugMode) {
           print(
               'HF: addBassNote: keyIndex = $keyIndex, offset = $offset, E1mp3 = $E1mp3');
@@ -827,9 +781,6 @@ class Groove {
     double mean2;
     var now = DateTime.now(); // get system time
 
-//    print(
-//        'HF:   Time: $now, Name: ${this.notes[this.index].name}, groove index: ${this.index}, ogg index: ${this.notes[this.index].oggIndex.toString()}, ogg transpose: ${this.notes[this.index].oggNote.toString()}');
-
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
     if (lastSequenceBit != -1 && !audioTestMode) {
@@ -869,11 +820,9 @@ class Groove {
         hfaudio.stop();
       }
       hfaudio.play(
-          this.voices,
           this.notes[this.index].oggIndex,
-          this.notes[this.index].oggNote,
           this.notes2[this.index].oggIndex,
-          this.notes2[this.index].oggNote);
+          );
       // increment pointer to the next note
       this.incrementIndex();
     } else if (groove.interpolate && (groove.leadInCount > 0)) {
@@ -943,11 +892,10 @@ class Groove {
         if (variation.abs() <= 20.0) {
           // only play the note if the beat is stable i.e. variation < 20%
           hfaudio.play(
-              this.voices,
+              //this.voices,
               this.notes[this.index].oggIndex,
-              this.notes[this.index].oggNote,
               this.notes2[this.index].oggIndex,
-              this.notes2[this.index].oggNote);
+              );
         }
         var _interpolateNow = DateTime.now(); // get system time
         if (kDebugMode) {
@@ -1047,11 +995,9 @@ class Groove {
           'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
     }
     hfaudio.play(
-        this.voices,
         this.notes[this.index].oggIndex,
-        this.notes[this.index].oggNote,
         this.notes2[this.index].oggIndex,
-        this.notes2[this.index].oggNote);
+        );
     updateBABInfo();
     // increment pointer to the next note
     this.incrementIndex();
@@ -1076,11 +1022,9 @@ class Groove {
     for (int i = 1; i < this.bpm; i++) {
       Timer(Duration(milliseconds: (beatSubdivisionInMs * i).toInt()), () {
         hfaudio.play(
-            this.voices,
             this.notes[this.index].oggIndex,
-            this.notes[this.index].oggNote,
             this.notes2[this.index].oggIndex,
-            this.notes2[this.index].oggNote);
+            );
         updateBABInfo();
         _now = DateTime.now().toString();
         if (kDebugMode) {
@@ -1110,16 +1054,16 @@ class Groove {
   // 7 = key (only used for bass grooves)
   // 8:6+BPM*measures*4 = 1st voice notes
   //     for each note...
-  //        ogg number
-  //        transpose
+  //        number
   //        name
   //        initial
-  // ??:??+BPM*measures*4 = 2nd voice notes
+  // ??:??+BPM*measures*3 = 2nd voice notes
 
-  static const String grooveFormatVersion = "2";
+  static const String grooveFormatVersion = "3";
   // Format version    Added in release    Reason
   // 1                 rel11               initial release
   // 2                 rel12               added interpolate flag
+  // 3                 2022-11-10          removed transpose
 
   // convert groove to  a csv string for writing to a file
   String toCSV(String description) {
@@ -1174,24 +1118,12 @@ class Groove {
 
     // for each note
     for (int i = 0; i < beats; i++) {
-//       print('HF: toCSV: note $i');
-//       var val = this.notes[i].oggIndex.toString();
-//       print('HF:        oggIndex = $val');
-//       val = this.notes[i].oggNote.toString();
-//       print('HF:        oggNote = $val');
-//       val = this.notes[i].name;
-//       print('HF:        name = $val');
-//       val = this.notes[i].initial;
-//       print('HF:        initial = $val');
       String note = this.notes[i].oggIndex.toString() +
-          ',' +
-          this.notes[i].oggNote.toString() +
           ',' +
           this.notes[i].name +
           ',' +
           this.notes[i].initial +
           ',';
-//       print('HF: toCSV2: $note');
       result = result + note;
     }
 
@@ -1199,13 +1131,10 @@ class Groove {
     for (int i = 0; i < beats; i++) {
       String note2 = this.notes2[i].oggIndex.toString() +
           ',' +
-          this.notes2[i].oggNote.toString() +
-          ',' +
           this.notes2[i].name +
           ',' +
           this.notes2[i].initial +
           ',';
-//      print('HF: toCSV3: $note2');
       result = result + note2;
     }
 
@@ -1246,7 +1175,7 @@ class Groove {
     this.resize(
         int.parse(fields[2]), int.parse(fields[3]), int.parse(fields[4]));
     int beats = int.parse(fields[2]) * int.parse(fields[3]);
-//    this.voices = int.parse(fields[4]);
+    this.voices = int.parse(fields[4]);
     _voices = this.voices;
     _interp = int.parse(fields[5]);
     if (_interp == 1) {
@@ -1284,13 +1213,13 @@ class Groove {
     // for each note
     for (int i = 0; i < beats; i++) {
       this.notes[i].oggIndex = int.parse(fields[i * 4 + 8]);
-      this.notes[i].oggNote = int.parse(fields[i * 4 + 9]);
-      this.notes[i].name = fields[i * 4 + 10];
-      this.notes[i].initial = fields[i * 4 + 11];
+//      this.notes[i].oggNote = int.parse(fields[i * 4 + 9]);
+      this.notes[i].name = fields[i * 4 + 9];
+      this.notes[i].initial = fields[i * 4 + 10];
       String note = this.notes[i].oggIndex.toString() +
           ',' +
-          this.notes[i].oggNote.toString() +
-          ',' +
+//          this.notes[i].oggNote.toString() +
+//          ',' +
           this.notes[i].name +
           ',' +
           this.notes[i].initial +
@@ -1301,16 +1230,16 @@ class Groove {
     }
 
     // for each note in the 2nd voice
-    var offset = 8 + (beats * 4);
+    var offset = 8 + (beats * 3);
     for (int i = 0; i < beats; i++) {
       this.notes2[i].oggIndex = int.parse(fields[i * 4 + offset]);
-      this.notes2[i].oggNote = int.parse(fields[i * 4 + offset + 1]);
-      this.notes2[i].name = fields[i * 4 + offset + 2];
-      this.notes2[i].initial = fields[i * 4 + offset + 3];
+//      this.notes2[i].oggNote = int.parse(fields[i * 4 + offset + 1]);
+      this.notes2[i].name = fields[i * 4 + offset + 1];
+      this.notes2[i].initial = fields[i * 4 + offset + 2];
       String note = this.notes2[i].oggIndex.toString() +
           ',' +
-          this.notes2[i].oggNote.toString() +
-          ',' +
+//          this.notes2[i].oggNote.toString() +
+//          ',' +
           this.notes2[i].name +
           ',' +
           this.notes2[i].initial +
@@ -1364,8 +1293,6 @@ class Groove {
     for (int i = 0; i < beats; i++) {
       String note = this.notes[i].oggIndex.toString() +
           ',' +
-          this.notes[i].oggNote.toString() +
-          ',' +
           this.notes[i].name +
           ',' +
           this.notes[i].initial +
@@ -1378,8 +1305,6 @@ class Groove {
     if (this.voices == 2) {
       for (int i = 0; i < beats; i++) {
         String note = this.notes2[i].oggIndex.toString() +
-            ',' +
-            this.notes2[i].oggNote.toString() +
             ',' +
             this.notes2[i].name +
             ',' +
