@@ -252,6 +252,17 @@ class Groove {
     this.index = (this.index + 1) % (this.bpm * this.numMeasures);
   }
 
+  // return the index of the last played note.  This is used in bass
+  // mode to stop the last note played in case it is still playing.
+  int lastIndex() {
+    int _result;
+    _result = this.index - 1;
+    if (_result == -1) {
+      _result = (this.bpm * this.numMeasures) - 1;
+    }
+    return _result;
+  }
+
   // go to the next beat 1
   nextBeat1() {
     if (this.numMeasures == 1) {
@@ -490,7 +501,7 @@ class Groove {
       if (Platform.isAndroid) {
         //this.notes[index].oggIndex = 6;
         this.notes[index].oggIndex = E1ogg + keyIndex + offset;
-       } else if (Platform.isIOS) {
+      } else if (Platform.isIOS) {
         if (kDebugMode) {
           print(
               'HF: addBassNote: keyIndex = $keyIndex, offset = $offset, E1mp3 = $E1mp3');
@@ -817,12 +828,13 @@ class Groove {
             (groove.index.isEven)) {
       // if this is a bass groove, then stop playing the previous note
       if (this.type == GrooveType.bass) {
-        hfaudio.stop();
+        int _last = this.lastIndex();
+        hfaudio.stop(_last);
       }
       hfaudio.play(
-          this.notes[this.index].oggIndex,
-          this.notes2[this.index].oggIndex,
-          );
+        this.notes[this.index].oggIndex,
+        this.notes2[this.index].oggIndex,
+      );
       // increment pointer to the next note
       this.incrementIndex();
     } else if (groove.interpolate && (groove.leadInCount > 0)) {
@@ -892,10 +904,10 @@ class Groove {
         if (variation.abs() <= 20.0) {
           // only play the note if the beat is stable i.e. variation < 20%
           hfaudio.play(
-              //this.voices,
-              this.notes[this.index].oggIndex,
-              this.notes2[this.index].oggIndex,
-              );
+            //this.voices,
+            this.notes[this.index].oggIndex,
+            this.notes2[this.index].oggIndex,
+          );
         }
         var _interpolateNow = DateTime.now(); // get system time
         if (kDebugMode) {
@@ -995,9 +1007,9 @@ class Groove {
           'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
     }
     hfaudio.play(
-        this.notes[this.index].oggIndex,
-        this.notes2[this.index].oggIndex,
-        );
+      this.notes[this.index].oggIndex,
+      this.notes2[this.index].oggIndex,
+    );
     updateBABInfo();
     // increment pointer to the next note
     this.incrementIndex();
@@ -1022,9 +1034,9 @@ class Groove {
     for (int i = 1; i < this.bpm; i++) {
       Timer(Duration(milliseconds: (beatSubdivisionInMs * i).toInt()), () {
         hfaudio.play(
-            this.notes[this.index].oggIndex,
-            this.notes2[this.index].oggIndex,
-            );
+          this.notes[this.index].oggIndex,
+          this.notes2[this.index].oggIndex,
+        );
         updateBABInfo();
         _now = DateTime.now().toString();
         if (kDebugMode) {

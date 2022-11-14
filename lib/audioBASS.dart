@@ -85,13 +85,20 @@ class Sample {
     }
   }
 
-  // stop this sample
+  // stop this sample.  Note we're actually using the
+  // BASS_ChannelPause function here instead of ChannelStop because it
+  // was giving errors.  ChannelPause will give a BASS_ERROR_NOPLAY if
+  // the channel had already stopped playing.
   stop() {
     assert(this.channelNumber != 0, 'Error: channel number is 0');
-    int _result = bass.BASS_ChannelStop(this.channelNumber);
-    assert(_result == 1, 'Error: stop result is $_result');
+    int _result = bass.BASS_ChannelPause(this.channelNumber);
+    //assert(_result == 1, 'Error: stop result is $_result');
     this.errorCode = bass.BASS_ErrorGetCode();
-    assert(this.errorCode == 0, 'Error: error code is $this.errorCode');
+    //assert(this.errorCode == 0, 'Error: error code is ${this.errorCode}');
+    if (kDebugMode) {
+      print(
+          'HF: stop: result = $_result, error code = ${this.errorCode}, channel = ${this.channelNumber}');
+    }
   }
 
   // read an audio file from assets and save to a temporary file
@@ -278,7 +285,6 @@ class HfAudio {
     if (kDebugMode) {
       print('HF: initPercussion: time = $_loadTimeMs ms');
     }
-
   }
 
   // initialize audio engine for bass sounds
@@ -347,7 +353,6 @@ class HfAudio {
     if (kDebugMode) {
       print('HF: initBass: time = $_loadTimeMs ms');
     }
-
   }
 
   play(int note1, int note2) {
@@ -361,10 +366,11 @@ class HfAudio {
 
   // stop previous note.  This is only used in bass mode since
   // bass notes should not overlap in time.
-  // Note this only works in iOS.
-  void stop() {
-    if (Platform.isAndroid) {
-    } else if (Platform.isIOS) {}
+  void stop(int lastNote) {
+    samples[lastNote].stop();
+    if (kDebugMode) {
+      print('HF: stopping last note $lastNote');
+    }
   }
 
   void depose() {
