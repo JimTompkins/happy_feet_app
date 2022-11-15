@@ -409,7 +409,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   // enable beats
                   groove.reset();
                   _bluetoothBLEService.enableBeat();
-                  //                       _bluetoothBLEService.enableTestMode();
+                  // _bluetoothBLEService.enableTestMode();
                   Get.snackbar('Status'.tr, 'beats enabled'.tr,
                       snackPosition: SnackPosition.BOTTOM);
                 } else {
@@ -445,91 +445,62 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 )),
           ]),
 
-          //row of buttons with text below each
           Row(children: <Widget>[
-            Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(5),
-                alignment: Alignment.center,
-                child: Obx(
-                  () => IconButton(
-                      icon: Icon(
-                        Icons.bluetooth_searching,
-                      ),
-                      iconSize: 50,
-                      color: _bluetoothBLEService.isConnected.value
-                          ? Colors.grey
-                          : Colors.deepOrange[400],
-                      splashColor: Colors.purple,
-                      onPressed: () {
-                        // Start scanning and make connection
-                        if (_bluetoothBLEService.isBleConnected()) {
-                          Get.snackbar('Error'.tr, 'already connected'.tr,
-                              snackPosition: SnackPosition.BOTTOM);
-                        } else {
-                          Get.snackbar(
-                              'Status'.tr, 'connecting to Bluetooth'.tr,
-                              snackPosition: SnackPosition.BOTTOM);
-                          _bluetoothBLEService.startConnection();
-                          if (multiMode) {
-                            // wait for the scan to complete
-                            if (kDebugMode) {
-                              print('HF: waiting for scan to complete...');
-                            }
-                            _bluetoothBLEService.isScanComplete();
-                            if (kDebugMode) {
-                              print('HF: ...done');
-                            }
-                            // if more than one device was found during the scan
-                            if (_bluetoothBLEService.devicesList.length > 1) {
-                              // go to the multi-connect screen...
-                              Get.to(() => multiConnectPage);
-                            }
-                          }
+            Container(
+                padding: EdgeInsets.all(10),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Connect'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                )),
+            Icon(Icons.bluetooth, 
+              size: 24,
+              color: Colors.blue[800]),
+            Obx(() =>  Switch(
+                value: _bluetoothBLEService.isConnected.value,
+                activeColor: Colors.deepOrange[400],
+                activeTrackColor: Colors.deepOrange[200],
+                inactiveThumbColor: Colors.grey[600],
+                inactiveTrackColor: Colors.grey[400],
+                onChanged: (connectionRequested) {
+                  setState(() {});
+                  if (connectionRequested) {
+                    // if already connected, do nothing
+                    if (_bluetoothBLEService.isConnected.value) {
+                    } else {
+                      // else, initiate the connection process
+                      _bluetoothBLEService.startConnection();
+                      Get.snackbar(
+                        'Status'.tr, 'connecting to Bluetooth'.tr,
+                        snackPosition: SnackPosition.BOTTOM);
+                      if (multiMode) {
+                        // wait for the scan to complete
+                        if (kDebugMode) {
+                          print('HF: waiting for scan to complete...');
                         }
-                      }),
-                ),
-              ),
-              Text(
-                'Connect'.tr,
-                style: Theme.of(context).textTheme.caption,
-              )
-            ]),
-            Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(5),
-                alignment: Alignment.center,
-                child: Obx(
-                  () => IconButton(
-                    icon: Icon(
-                      Icons.bluetooth_disabled,
-                    ),
-                    iconSize: 50,
-                    color: _bluetoothBLEService.isConnected.value
-                        ? Colors.deepOrange[400]
-                        : Colors.grey,
-                    splashColor: Colors.purple,
-                    onPressed: () {
-                      // stop the BLE connection
-                      if (_bluetoothBLEService.isBleConnected()) {
-                        _bluetoothBLEService.disconnectFromDevice();
-                        _playState.value = false;
-                      } else {
-                        Get.snackbar('Error'.tr, 'not connected'.tr,
-                            snackPosition: SnackPosition.BOTTOM);
-                      }
+                        _bluetoothBLEService.isScanComplete();
+                        if (kDebugMode) {
+                          print('HF: ...done');
+                        }
+                        // if more than one device was found during the scan
+                        if (_bluetoothBLEService.devicesList.length > 1) {
+                          // go to the multi-connect screen...
+                          Get.to(() => multiConnectPage);
+                        }
+                      }                    
+                    }
+                  } else {
+                    // if already disconected, do nothing
+                    if (!_bluetoothBLEService.isConnected.value) {
+                    } else {
+                      // else, initiate the disconnection process
+                      _bluetoothBLEService.disconnectFromDevice();
                       setState(() {
                         _playState.value = false;
-                      });
-                    },
-                  ),
-                ),
-              ),
-              Text(
-                'Disconnect'.tr,
-                style: Theme.of(context).textTheme.caption,
-              )
-            ]),
+                      });                    }
+                  }
+                }),
+            ), 
           ]),
 
           // Mode heading
@@ -866,7 +837,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         hfaudio.play(groove.notes2[0].oggIndex, -1);
                       } else if (playMode == Mode.singleNote) {
                         if (kDebugMode) {
-                          print('HF: note two has not effect in single note mode.');
+                          print(
+                              'HF: note two has not effect in single note mode.');
                         }
                       }
                     }

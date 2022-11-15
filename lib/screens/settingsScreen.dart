@@ -449,7 +449,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               ]),
             Row(children: <Widget>[
-              Spacer(flex: 10),Switch(
+              Spacer(flex: 10),
+              Switch(
                 value: playOnClickMode,
                 activeColor: Colors.deepOrange[400],
                 activeTrackColor: Colors.deepOrange[200],
