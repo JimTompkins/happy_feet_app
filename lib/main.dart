@@ -112,6 +112,11 @@ int beatThreshold = 50;
 // the lead-in.
 bool autoMode = false;
 
+// flag used to enable play-on-click mode.  When this is enabled, when you select
+// a sound, it will be played.  This is useful when you are learning how to
+// make grooves.
+bool playOnClickMode = false;
+
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -251,6 +256,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     footSwitch = prefs.getBool('footSwitch') ?? false;
     autoMode = prefs.getBool('autoMode') ?? false;
     heelTap = prefs.getBool('heelTap') ?? false;
+    playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
     savedLanguage = prefs.getString('language') ?? '';
     if (savedLanguage != '') {
       if (kDebugMode) {
@@ -356,6 +362,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       _prefs.setBool('autoMode', autoMode);
       _prefs.setBool('footSwitch', footSwitch);
       _prefs.setBool('heelTap', heelTap);
+      _prefs.setBool('playOnClickMode', playOnClickMode);
     }
   }
 
@@ -769,6 +776,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         print("HF: $text");
                       }
                     });
+                    if (playOnClickMode) {
+                      hfaudio.play(groove.notes[0].oggIndex, -1);
+                    }
                   },
                 ),
               ),
@@ -849,6 +859,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         print("HF: $text");
                       }
                     });
+                    if (playOnClickMode) {
+                      if (playMode == Mode.alternatingNotes) {
+                        hfaudio.play(groove.notes[1].oggIndex, -1);
+                      } else if (playMode == Mode.dualNotes) {
+                        hfaudio.play(groove.notes2[0].oggIndex, -1);
+                      } else if (playMode == Mode.singleNote) {
+                        if (kDebugMode) {
+                          print('HF: note two has not effect in single note mode.');
+                        }
+                      }
+                    }
                   },
                 ),
               ),

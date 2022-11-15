@@ -5,6 +5,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import '../main.dart';
 import '../ble2.dart';
 import '../utils.dart';
+import 'infoScreen.dart';
 
 // settings screen
 SettingsScreen settingsScreen = new SettingsScreen();
@@ -98,45 +99,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     itemPadding: EdgeInsets.zero,
                     buttonHeight: 40,
                     itemHeight: 40,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      switch (newValue) {
-                        case 'English':
-                          locale = Locale('en', 'US');
-                          break;
-                        case 'Français':
-                          locale = Locale('fr', 'FR');
-                          break;
-                        case 'Deutsch':
-                          locale = Locale('de', 'DE');
-                          break;
-                        case 'Español':
-                          locale = Locale('es', 'ES');
-                          break;
-                        case 'Italiano':
-                          locale = Locale('it', 'IT');
-                          break;
-                        case 'Português':
-                          locale = Locale('pt', 'PT');
-                          break;
-                        case 'Nederlands':
-                          locale = Locale('nl', 'NL');
-                          break;
-                        case 'Українська':
-                          locale = Locale('uk', 'UK');
-                          break;
-                        default:
-                          locale = Locale('en', 'US');
-                          break;
-                      }
-                      lang = newValue!;
-                      language = lang;
-                      Get.updateLocale(locale);
-                      if (kDebugMode) {
-                        print("HF: saved language changed to $newValue");
-                      }
-                    });
-                  },  
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        switch (newValue) {
+                          case 'English':
+                            locale = Locale('en', 'US');
+                            break;
+                          case 'Français':
+                            locale = Locale('fr', 'FR');
+                            break;
+                          case 'Deutsch':
+                            locale = Locale('de', 'DE');
+                            break;
+                          case 'Español':
+                            locale = Locale('es', 'ES');
+                            break;
+                          case 'Italiano':
+                            locale = Locale('it', 'IT');
+                            break;
+                          case 'Português':
+                            locale = Locale('pt', 'PT');
+                            break;
+                          case 'Nederlands':
+                            locale = Locale('nl', 'NL');
+                            break;
+                          case 'Українська':
+                            locale = Locale('uk', 'UK');
+                            break;
+                          default:
+                            locale = Locale('en', 'US');
+                            break;
+                        }
+                        lang = newValue!;
+                        language = lang;
+                        Get.updateLocale(locale);
+                        if (kDebugMode) {
+                          print("HF: saved language changed to $newValue");
+                        }
+                      });
+                    },
                   ),
                 ),
               ),
@@ -437,6 +438,72 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 },
               ),
+            ]),
+            Row(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Play on click mode'.tr,
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              ]),
+            Row(children: <Widget>[
+              Spacer(flex: 10),Switch(
+                value: playOnClickMode,
+                activeColor: Colors.deepOrange[400],
+                activeTrackColor: Colors.deepOrange[200],
+                inactiveThumbColor: Colors.grey[600],
+                inactiveTrackColor: Colors.grey[400],
+                onChanged: (value) {
+                  setState(() {
+                    playOnClickMode = value;
+                    if (playOnClickMode) {
+                      if (kDebugMode) {
+                        print('HF: play-on-click mode enabled');
+                      }
+                      Get.snackbar('Status'.tr, 'Play on click mode enabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else {
+                      if (kDebugMode) {
+                        print('HF: play-on-click mode disabled');
+                      }
+                      Get.snackbar(
+                          'Status'.tr, 'Play on click mode disabled.'.tr,
+                          snackPosition: SnackPosition.BOTTOM);
+                      }
+                    }
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.help,
+                ),
+                iconSize: 25,
+                color: Colors.blue[800],
+                onPressed: () {
+                  Get.defaultDialog(
+                    title: 'Play on click mode'.tr,
+                    middleText:
+                        "In play on click mode, sounds are played when they are selected."
+                            .tr,
+                    textConfirm: 'OK',
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
+                },
+              ),
+            ]),
+            Wrap(children: <Widget>[
+              Row(children: <Widget>[
+                ElevatedButton(
+                    child: Text('Info'.tr),
+                    onPressed: () {
+                      Get.to(() => infoScreen);
+                    }),
+              ]),
             ]),
           ]), // Column
         ]),

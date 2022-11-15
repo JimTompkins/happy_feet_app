@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import '../main.dart';
 import '../ble2.dart';
+import '../audioBASS.dart';
 import '../groove.dart';
 import '../utils.dart';
 
@@ -460,6 +461,64 @@ class _GrooveScreenState extends State<GrooveScreen> {
                         decoration: new BoxDecoration(
                             color: noteColor(index),
                             border: Border.all(width: 1.0)),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton2(
+                            items: soundDropdownList
+                                .map((item) => DropdownMenuItem<String>(
+                                      value: item.text,
+                                      child: Container(
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 1.0),
+                                        color: item.color,
+                                        child: Text(
+                                          item.text,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                            selectedItemBuilder: (context) {
+                              return soundDropdownList
+                                  .map(
+                                    (item) => Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 0.0),
+                                      child: Text(
+                                        item.text,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList();
+                            },
+                            value: dropdownValue[index],
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                groove.addInitialNote(index, newValue!);
+                                dropdownValue[index] = newValue;
+                                groove.reset();
+                              });
+                              if (playOnClickMode) {
+                                hfaudio.play(groove.notes[index].oggIndex, -1);
+                              }
+                            },
+                            dropdownPadding: EdgeInsets.zero,
+                            itemPadding: EdgeInsets.zero,
+                            buttonHeight: 40,
+                            buttonWidth: 75,
+                            itemHeight: 40,
+                            isExpanded: false,
+                          ),
+                        ),
+
+/*
                         child: DropdownButton<String>(
                           value: dropdownValue[index],
                           elevation: 24,
@@ -471,45 +530,16 @@ class _GrooveScreenState extends State<GrooveScreen> {
                             });
                           },
                           items: <String>[
-                            /*
-                            'none',
-                            'Bass drum',
-                            'Bass echo',
-                            'Lo tom',
-                            'Hi tom',
-                            'Snare drum',
-                            'Hi-hat cymbal',
-                            'Tambourine',
-                            'Cowbell',
-                            'Fingersnap',
-                            'Rim shot',
-                            'Shaker',
-                            'Woodblock',
-                            'Quijada',
-                            'Brushes',
-                            */
-                            '-',
-                            'b',
-                            'B',
-                            't',
-                            'T',
-                            'S',
-                            'H',
-                            'M',
-                            'C',
-                            'F',
-                            'R',
-                            'A',
-                            'W',
-                            'Q',
-                            'U',
-                          ].map<DropdownMenuItem<String>>((String value) {
+                            '-','b','B','t','T','S','H','M','C','F','R','A',
+                            'W','Q','U',
+                            ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
                             );
                           }).toList(),
                         ),
+*/
                       ),
                     ); // Center
                   },
