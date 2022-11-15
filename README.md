@@ -54,18 +54,18 @@ the fields defined as follows:
 - 5 = interpolate flag (0 = no interpolation, 1 = with interpolation)
 - 6 = groove type e.g. percussion or bass
 - 7 = key (only used for bass grooves)
-- 8:6+BPM x measures x 4 = 1st voice notes
+- 8:6+BPM x measures x 3 = 1st voice notes
 For each note, the following fields are used:
-- ogg number: the number reference of this note
-- transpose (no longer used)
+- number: the number reference of this note
 - note name e.g. cowbell
 - initial e.g. 'c' for cowbell
 A similar list is provided for the 2nd note voices:
-- ??:??+BPM x measures x 4 = 2nd voice notes
+- ??:??+BPM x measures x 3 = 2nd voice notes
 
 ## Wishlist
 - cloud storage/sharing of grooves
-- lower latency audio on iOS
+- lower latency audio on iOS.  This was improved greatly by changing the audio engine to the 
+BASS library from un4seen developments.
 - OAD: over-air-download for HappyFeet firmware updates.  HappyFeet uses the Texas Instruments CC26xx family of BLE microcontrollers which do have
   software libraries to support OAD.  There is currently no Flutter package for TI OAD, although there are Android apps that do it. Also Nordic          Semiconductor has a Flutter package to update their micros.
   
