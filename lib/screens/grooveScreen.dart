@@ -37,8 +37,10 @@ class _GrooveScreenState extends State<GrooveScreen> {
     HfMenuItem(text: '4', color: Colors.grey[300]),
     HfMenuItem(text: '5', color: Colors.grey[100]),
     HfMenuItem(text: '6', color: Colors.grey[300]),
-    HfMenuItem(text: '7', color: Colors.grey[100]),
-    HfMenuItem(text: '8', color: Colors.grey[300]),
+    // number of beats per measure limited to 6 since 8
+    // causes a rendering overflow...
+    //HfMenuItem(text: '7', color: Colors.grey[100]),
+    //HfMenuItem(text: '8', color: Colors.grey[300]),
   ];
 
   final List<HfMenuItem> numMeasuresDropdownList = [
