@@ -44,6 +44,7 @@ class _InfoScreenState extends State<InfoScreen> {
   Future<String>? _rssi;
   Future<String>? _bleAddress;
   Future<int>? _batteryVoltage;
+  static const double iconSize = 40;
 
   @override
   initState() {
@@ -97,23 +98,38 @@ class _InfoScreenState extends State<InfoScreen> {
                           AsyncSnapshot<String> snapshot) {
                         List<Widget> children;
                         if (snapshot.hasData) {
-                          children = <Widget>[
-                            const Icon(
-                              Icons.check_circle_outline,
-                              color: Colors.green,
-                              size: 60,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 16),
-                              child: Text('${snapshot.data}', maxLines: 2),
-                            )
-                          ];
+                          if (snapshot.data == 'not connected'.tr) {
+                            children = <Widget>[
+                              const Icon(
+                                Icons.question_mark,
+                                color: Colors.grey,
+                                size: iconSize,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text('${snapshot.data}', maxLines: 2),
+                              )
+                            ];                            
+                          }
+                           else {
+                            children = <Widget>[
+                              const Icon(
+                                Icons.check_circle_outline,
+                                color: Colors.green,
+                                size: iconSize,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text('${snapshot.data}', maxLines: 2),
+                              )
+                            ];
+                          }
                         } else if (snapshot.hasError) {
                           children = <Widget>[
                             const Icon(
                               Icons.error_outline,
                               color: Colors.red,
-                              size: 60,
+                              size: iconSize,
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 16),
@@ -124,8 +140,8 @@ class _InfoScreenState extends State<InfoScreen> {
                           children = const <Widget>[
                             SizedBox(
                               child: CircularProgressIndicator(),
-                              width: 60,
-                              height: 60,
+                              width: iconSize,
+                              height: iconSize,
                             ),
                             Padding(
                               padding: EdgeInsets.only(top: 16),
@@ -159,7 +175,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.check_circle_outline,
                             color: Colors.green,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -171,7 +187,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.error_outline,
                             color: Colors.red,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -182,8 +198,8 @@ class _InfoScreenState extends State<InfoScreen> {
                         children = const <Widget>[
                           SizedBox(
                             child: CircularProgressIndicator(),
-                            width: 60,
-                            height: 60,
+                            width: iconSize,
+                            height: iconSize,
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 16),
@@ -216,7 +232,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.check_circle_outline,
                             color: Colors.green,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -228,7 +244,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.error_outline,
                             color: Colors.red,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -239,8 +255,8 @@ class _InfoScreenState extends State<InfoScreen> {
                         children = const <Widget>[
                           SizedBox(
                             child: CircularProgressIndicator(),
-                            width: 60,
-                            height: 60,
+                            width: iconSize,
+                            height: iconSize,
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 16),
@@ -273,7 +289,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.check_circle_outline,
                             color: Colors.green,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -285,7 +301,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.error_outline,
                             color: Colors.red,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -296,8 +312,8 @@ class _InfoScreenState extends State<InfoScreen> {
                         children = const <Widget>[
                           SizedBox(
                             child: CircularProgressIndicator(),
-                            width: 60,
-                            height: 60,
+                            width: iconSize,
+                            height: iconSize,
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 16),
@@ -329,7 +345,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.check_circle_outline,
                             color: Colors.green,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -342,7 +358,7 @@ class _InfoScreenState extends State<InfoScreen> {
                           const Icon(
                             Icons.error_outline,
                             color: Colors.red,
-                            size: 60,
+                            size: iconSize,
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -353,8 +369,8 @@ class _InfoScreenState extends State<InfoScreen> {
                         children = const <Widget>[
                           SizedBox(
                             child: CircularProgressIndicator(),
-                            width: 60,
-                            height: 60,
+                            width: iconSize,
+                            height: iconSize,
                           ),
                           Padding(
                             padding: EdgeInsets.only(top: 16),

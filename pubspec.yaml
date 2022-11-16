@@ -111,6 +111,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+    - family: IrishGrover
+      fonts:
+        - asset: assets/fonts/IrishGrover-Regular.ttf
 
   assets:
 # google fonts folder

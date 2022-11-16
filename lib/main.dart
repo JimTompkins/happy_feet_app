@@ -21,6 +21,7 @@ import 'practice.dart';
 import 'saveAndLoad.dart';
 import 'localization.g.dart';
 import 'utils.dart';
+import 'appDesign.dart';
 
 void main() {
   /*
@@ -39,6 +40,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Happy Feet',
+      theme: AppTheme.appTheme,
+/*
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.deepOrange[500],
@@ -71,6 +74,7 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.normal),
         ),
       ),
+*/
       home: MyHomePage(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en', 'US'),
@@ -441,7 +445,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'BLUETOOTH'.tr,
-                  style: Theme.of(context).textTheme.headline1,
+                  style: AppTheme.appTheme.textTheme.headline1,
                 )),
           ]),
 
@@ -451,7 +455,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Connect'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: AppTheme.appTheme.textTheme.caption,
                 )),
             Icon(Icons.bluetooth, 
               size: 24,
@@ -510,7 +514,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'MODE'.tr,
-                  style: Theme.of(context).textTheme.headline1,
+                  style: AppTheme.appTheme.textTheme.headline1,
                 )),
           ]),
 
