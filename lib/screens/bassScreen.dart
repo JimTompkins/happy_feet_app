@@ -6,7 +6,7 @@ import '../main.dart';
 import '../ble2.dart';
 import '../audioBASS.dart';
 import '../groove.dart';
-import '../bass.dart';
+//import '../bass.dart';
 import '../utils.dart';
 
 // Bass page
@@ -24,7 +24,7 @@ class _BassScreenState extends State<BassScreen> {
   int _totalBeats = groove.bpm * groove.numMeasures;
   int _testModeData = 0x00;
   bool _interpolate = groove.interpolate;
-  String _key = groove.key;
+  //String _key = groove.key;
   List<String> dropdownValue = groove.getInitials();
   static BluetoothBLEService _bluetoothBLEService = Get.find();
   RxBool _playState = Get.find();
@@ -59,6 +59,7 @@ class _BassScreenState extends State<BassScreen> {
     HfMenuItem(text: '12', color: Colors.grey[300]),
   ];
 
+/*
   final List<HfMenuItem> keyDropdownList = [
     HfMenuItem(text: 'E', color: Colors.grey[100]),
     HfMenuItem(text: 'F', color: Colors.grey[300]),
@@ -88,6 +89,35 @@ class _BassScreenState extends State<BassScreen> {
     HfMenuItem(text: 'b7', color: Colors.grey[100]),
     HfMenuItem(text: '7', color: Colors.grey[300]),
   ];
+*/
+
+  final List<HfMenuItem> allNoteDropdownList = [
+    HfMenuItem(text: '-', color: Colors.grey[100]),
+    HfMenuItem(text: 'E1', color: Colors.grey[300]),
+    HfMenuItem(text: 'F1', color: Colors.grey[100]),
+    HfMenuItem(text: 'F#1', color: Colors.grey[300]),
+    HfMenuItem(text: 'G1', color: Colors.grey[100]),
+    HfMenuItem(text: 'G#1', color: Colors.grey[300]),
+    HfMenuItem(text: 'A1', color: Colors.grey[100]),
+    HfMenuItem(text: 'A#1', color: Colors.grey[300]),
+    HfMenuItem(text: 'B1', color: Colors.grey[100]),
+    HfMenuItem(text: 'C2', color: Colors.grey[300]),
+    HfMenuItem(text: 'C#2', color: Colors.grey[100]),
+    HfMenuItem(text: 'D2', color: Colors.grey[300]),
+    HfMenuItem(text: 'D#2', color: Colors.grey[100]),
+    HfMenuItem(text: 'E2', color: Colors.grey[300]),
+    HfMenuItem(text: 'F2', color: Colors.grey[100]),
+    HfMenuItem(text: 'F#2', color: Colors.grey[300]),
+    HfMenuItem(text: 'G2', color: Colors.grey[100]),
+    HfMenuItem(text: 'G#2', color: Colors.grey[300]),
+    HfMenuItem(text: 'A2', color: Colors.grey[100]),
+    HfMenuItem(text: 'A#2', color: Colors.grey[300]),
+    HfMenuItem(text: 'B2', color: Colors.grey[100]),
+    HfMenuItem(text: 'C3', color: Colors.grey[300]),
+    HfMenuItem(text: 'C#3', color: Colors.grey[100]),
+    HfMenuItem(text: 'D3', color: Colors.grey[300]),
+    HfMenuItem(text: 'D#3', color: Colors.grey[100]),
+  ];
 
   @override
   initState() {
@@ -97,7 +127,6 @@ class _BassScreenState extends State<BassScreen> {
     _numberOfMeasures = groove.numMeasures;
     measuresString = groove.numMeasures.toString();
     _totalBeats = groove.bpm * groove.numMeasures;
-    _key = groove.key;
     _interpolate = groove.interpolate;
     if (_interpolate) {
       groove.leadInCount = 4;
@@ -331,69 +360,13 @@ class _BassScreenState extends State<BassScreen> {
                 ),
               ]), // Row
 
-              // key dropdown
               Row(children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(10),
-                  alignment: Alignment.centerLeft,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Key of'.tr,
-                    style: Theme.of(context).textTheme.caption,
-                  ),
-                ), // Text
-                DropdownButtonHideUnderline(
-                  child: DropdownButton2(
-                    items: keyDropdownList
-                        .map((item) => DropdownMenuItem<String>(
-                              value: item.text,
-                              child: Container(
-                                alignment: AlignmentDirectional.centerStart,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                color: item.color,
-                                child: Text(
-                                  item.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ))
-                        .toList(),
-                    selectedItemBuilder: (context) {
-                      return keyDropdownList
-                          .map(
-                            (item) => Container(
-                              alignment: Alignment.center,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text(
-                                item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList();
-                    },
-                    value: _key,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _key = newValue!;
-                        groove.changeKey(_key);
-                      });
-                    },
-                    dropdownPadding: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.zero,
-                    buttonHeight: 40,
-                    buttonWidth: 80,
-                    itemHeight: 40,
-                  ),
+                      'Offbeat', // note: no translation since I don't think machine translations are good
+                      style: Theme.of(context).textTheme.caption),
                 ),
-                Text(
-                    'Offbeat', // note: no translation since I don't think machine translations are good
-                    style: Theme.of(context).textTheme.caption),
                 Switch(
                     value: _interpolate,
                     onChanged: (value) {
@@ -437,23 +410,12 @@ class _BassScreenState extends State<BassScreen> {
               ]),
             ]), // Column
 
-            // print a list of tones in the selected scale
-            Container(
-              padding: EdgeInsets.all(10),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Tones:'.tr + scaleTones(_key),
-                style: Theme.of(context).textTheme.caption,
-              ),
-            ), // Text
-
             // beat grid
             Container(
               padding: EdgeInsets.all(10),
               alignment: Alignment.centerLeft,
               child: Text(
-                'Choose "-" for no note, or numbers 1 through 7 plus flats for tones'
-                    .tr,
+                'Choose "-" for no note, or any bass note from E1 to D#3'.tr,
                 style: Theme.of(context).textTheme.caption,
               ),
             ), // Text
@@ -474,10 +436,9 @@ class _BassScreenState extends State<BassScreen> {
                         decoration: new BoxDecoration(
                             color: rowColor(index),
                             border: Border.all(width: 1.0)),
-
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton2(
-                            items: noteDropdownList
+                            items: allNoteDropdownList
                                 .map((item) => DropdownMenuItem<String>(
                                       value: item.text,
                                       child: Container(
@@ -496,7 +457,7 @@ class _BassScreenState extends State<BassScreen> {
                                     ))
                                 .toList(),
                             selectedItemBuilder: (context) {
-                              return noteDropdownList
+                              return allNoteDropdownList
                                   .map(
                                     (item) => Container(
                                       alignment: Alignment.center,
@@ -515,7 +476,7 @@ class _BassScreenState extends State<BassScreen> {
                             value: dropdownValue[index],
                             onChanged: (String? newValue) {
                               setState(() {
-                                groove.addBassNote(index, newValue!, _key);
+                                groove.addBassNote(index, newValue!);
                                 dropdownValue[index] = newValue;
                                 groove.reset();
                               });
@@ -526,33 +487,11 @@ class _BassScreenState extends State<BassScreen> {
                             dropdownPadding: EdgeInsets.zero,
                             itemPadding: EdgeInsets.zero,
                             buttonHeight: 40,
-                            buttonWidth: 40,
+                            //buttonWidth: 40,
                             itemHeight: 40,
                             isExpanded: false,
                           ),
                         ),
-
-                        /*
-                          child: DropdownButton<String>(
-                            value: dropdownValue[index],
-                            elevation: 24,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                groove.addBassNote(index, newValue!, _key);
-                                dropdownValue[index] = newValue;
-                                groove.reset();
-                              });
-                            },
-                            items: <String>[
-                              '-','1','b2','2','b3','3','4','b5','5','b6','6',
-                              'b7','7'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                  value: value, child: Text(value));
-                            }).toList(),
-                          ) 
-                          */
-                        // DropdownButton
                       ),
                     ); // Center
                   },

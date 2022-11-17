@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:circular_buffer/circular_buffer.dart';
@@ -84,7 +83,6 @@ class Groove {
   double beatSubdivisionInMs = 0.0;
   List notes = <Note>[]; // list of notes
   List notes2 = <Note>[]; // list of notes
-  String key = 'E';
   GrooveType type = GrooveType.percussion;
   String description = '';
   var bpmString = '---'.obs;
@@ -132,8 +130,6 @@ class Groove {
       this.notes2[i].oggIndex = -1;
       this.notes2[i].initial = '-';
     }
-
-    this.key = 'E';
   }
 
   // constructor without list of notes
@@ -438,78 +434,32 @@ class Groove {
     }
   }
 
-  // change the key of a bass groove
-  changeKey(String? keyName) {
-    String roman;
-    int romanIndex;
-    String key;
-    if (keyName == null) {
-      key = 'E';
-    } else {
-      key = keyName;
-    }
-    this.key = key;
-
-    // loop over all of the notes in the groove
-    for (int i = 0; i < this.bpm * this.numMeasures; i++) {
-      if (this.notes[i].name != '-') {
-        // ignore empty notes
-        romanIndex = this.notes[i].name.indexOf('-') + 1;
-        roman = this.notes[i].name.substring(romanIndex); //
-        this.addBassNote(i, roman, key);
-      }
-    }
-  }
-
-  // add a bass note to the groove using the arabic numeral and which key
-  // we're in currently e.g. key of C, 3 would be E.
-  addBassNote(int index, String arabic, String keyName) {
+  // add a bass note to the groove using the note's name.
+  addBassNote(int index, String name) {
     // if no note is to be played, as indicated by -,
     // then set oggIndex to -1 and name and initial to -
-    if (arabic == '-') {
+    if (name == '-') {
       this.notes[index].name = '-';
       this.notes[index].initial = '-';
       this.notes[index].oggIndex = -1;
     } else {
-      // create a name by concatenating the key name, a "-" and the
-      // arabic numeral,  e.g. C-4
-      this.notes[index].name = keyName + '-' + arabic;
-      this.notes[index].initial = arabic;
+      // set both the note's name and initial to the name parameter.
+      // Note that for bass notes, the initial (or more accurately the
+      // short name) is 2 to 3 characters in length e.g. E1 or D#3
+      this.notes[index].name = name;
+      this.notes[index].initial = name;
 
-      // get the index of the keyName
-      int keyIndex = keys.indexWhere((element) => element == keyName);
+      int noteIndex = allBassNotes.indexWhere((element) => element == name);
       if (kDebugMode) {
-        print('HF: addBassNote: keyName = $keyName, keyIndex = $keyIndex');
+        print('HF: addBassNote2: name = $name, note index = $noteIndex');
       }
 
-      // get the index of the roman numeral
-      if (arabic == 'none') {
-        arabic = '-';
-      }
-      int arabicIndex =
-          scaleTonesArabic.indexWhere((element) => element == arabic);
+      int _temp = noteIndex + E1mp3;
+      assert(_temp >= E1mp3);
+      assert(_temp <= (E1mp3 + 23));
+      this.notes[index].oggIndex = _temp;
       if (kDebugMode) {
-        print('HF: addBassNote: arabic = $arabic');
-        print('HF: addBassNote: arabicIndex = $arabicIndex');
-      }
-
-      int offset = scaleTonesIndex[arabicIndex];
-      if (kDebugMode) {
-        print('HF: addBassNote: offset = $offset');
-      }
-
-      if (Platform.isAndroid) {
-        //this.notes[index].oggIndex = 6;
-        this.notes[index].oggIndex = E1ogg + keyIndex + offset;
-      } else if (Platform.isIOS) {
-        if (kDebugMode) {
-          print(
-              'HF: addBassNote: keyIndex = $keyIndex, offset = $offset, E1mp3 = $E1mp3');
-        }
-        int _temp = keyIndex + offset + E1mp3;
-        assert(_temp >= E1mp3);
-        assert(_temp <= (E1mp3 + 23));
-        this.notes[index].oggIndex = _temp;
+        print('HF: addBassNote2: number = $_temp');
       }
     }
   }
@@ -1063,19 +1013,19 @@ class Groove {
   // 4 = number of voices
   // 5 = interpolate flag (0 = no interpolation, 1 = with interpolation)
   // 6 = groove type e.g. percussion or bass
-  // 7 = key (only used for bass grooves)
-  // 8:6+BPM*measures*4 = 1st voice notes
+  // 7:6+BPM*measures*4 = 1st voice notes
   //     for each note...
   //        number
   //        name
   //        initial
   // ??:??+BPM*measures*3 = 2nd voice notes
 
-  static const String grooveFormatVersion = "3";
+  static const String grooveFormatVersion = "4";
   // Format version    Added in release    Reason
   // 1                 rel11               initial release
   // 2                 rel12               added interpolate flag
   // 3                 2022-11-10          removed transpose
+  // 4                 2022-11-17          removed keys from bass grooves
 
   // convert groove to  a csv string for writing to a file
   String toCSV(String description) {
@@ -1106,9 +1056,6 @@ class Groove {
       _interp = 1;
     }
 
-//    print('HF: oggMap: $oggMap');
-//    print('HF: initialMap: $initialMap');
-
     result = grooveFormatVersion +
         ',' +
         description +
@@ -1122,10 +1069,8 @@ class Groove {
         _interp.toString() +
         ',' +
         type +
-        ',' +
-        this.key +
         ',';
-
+  
 //    print('HF: toCSV1: $result');
 
     // for each note
@@ -1163,8 +1108,7 @@ class Groove {
     String _type;
     int _voices;
     int _interp;
-    String _key;
-
+ 
     if (kDebugMode) {
       print('HF groove.fromCSV : number of fields = $numFields');
     }
@@ -1215,17 +1159,15 @@ class Groove {
         }
         break;
     }
-    this.key = fields[7];
-    _key = this.key;
     if (kDebugMode) {
       print(
-          'HF groove.fromCSV : description = $_description, number of beats = $beats, voices = $_voices, type = $_type, key = $_key');
+          'HF groove.fromCSV : description = $_description, number of beats = $beats, voices = $_voices, type = $_type');
     }
 
     // for each note
     for (int i = 0; i < beats; i++) {
-      this.notes[i].oggIndex = int.parse(fields[i * 4 + 8]);
-//      this.notes[i].oggNote = int.parse(fields[i * 4 + 9]);
+      this.notes[i].oggIndex = int.parse(fields[i * 4 + 7]);
+//      this.notes[i].oggNote = int.parse(fields[i * 4 + 8]);
       this.notes[i].name = fields[i * 4 + 9];
       this.notes[i].initial = fields[i * 4 + 10];
       String note = this.notes[i].oggIndex.toString() +
@@ -1242,7 +1184,7 @@ class Groove {
     }
 
     // for each note in the 2nd voice
-    var offset = 8 + (beats * 3);
+    var offset = 7 + (beats * 3);
     for (int i = 0; i < beats; i++) {
       this.notes2[i].oggIndex = int.parse(fields[i * 4 + offset]);
 //      this.notes2[i].oggNote = int.parse(fields[i * 4 + offset + 1]);
@@ -1269,7 +1211,6 @@ class Groove {
     int _bpm = this.bpm;
     int _numMeasures = this.numMeasures;
     int _voices = this.voices;
-    String? _key = this.key;
     String type;
 
     switch (this.type) {
@@ -1292,7 +1233,7 @@ class Groove {
 
     if (kDebugMode) {
       print(
-          'HF: print groove: BPM = $_bpm, num measures = $_numMeasures, voices = $_voices, key = $_key, type = $type');
+          'HF: print groove: BPM = $_bpm, num measures = $_numMeasures, voices = $_voices, type = $type');
     }
 
     if (this.description != '') {
