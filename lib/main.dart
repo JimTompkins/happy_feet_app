@@ -16,7 +16,7 @@ import 'groove.dart';
 import 'screens/grooveScreen.dart';
 import 'screens/bassScreen.dart';
 import 'screens/settingsScreen.dart';
-import 'screens/infoScreen.dart';
+//import 'screens/infoScreen.dart';
 import 'onetap.dart';
 import 'practice.dart';
 import 'saveAndLoad.dart';
@@ -46,40 +46,6 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Happy Feet',
       theme: AppTheme.appTheme,
-/*
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Colors.deepOrange[500],
-        secondaryHeaderColor: Colors.blue[800],
-        textTheme: TextTheme(
-          headline1: TextStyle(
-              color: Theme.of(context).colorScheme.secondary,
-              fontSize: 20,
-              height: 1,
-              fontWeight: FontWeight.bold),
-          caption: TextStyle(
-              color: Theme.of(context).colorScheme.secondary,
-              fontSize: 16,
-              height: 1,
-              fontWeight: FontWeight.normal),
-          headline2: TextStyle(
-              color: Colors.blue[800],
-              fontSize: 16,
-              height: 1,
-              fontWeight: FontWeight.normal),
-          headline3: TextStyle(
-              color: Colors.deepOrange[500],
-              fontSize: 16,
-              height: 1,
-              fontWeight: FontWeight.normal),
-          headline4: TextStyle(
-              color: Colors.grey[700],
-              fontSize: 16,
-              height: 1,
-              fontWeight: FontWeight.normal),
-        ),
-      ),
-*/
       home: MyHomePage(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en', 'US'),
@@ -380,22 +346,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         title: Text('Happy Feet'),
-        leading: GestureDetector(
-          onTap: () {
-            Get.to(() => settingsScreen);
-          },
-          child: Icon(
-            Icons.settings, // add custom icons also
-          ),
-        ),
+        //backgroundColor: AppColors.scaffoldBackgroundColor,
         actions: <Widget>[
           Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: () {
-                  Get.to(() => infoScreen);
+                  Get.to(() => settingsScreen);
                 },
-                child: Icon(Icons.more_vert),
+                child: Icon(Icons.settings,
+                color: AppColors.settingsIconColor),
               )),
         ],
       ),
@@ -546,9 +506,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                  style: AppTheme.appTheme.textTheme.headline4,
                                 ),
                               ),
                             ))
@@ -560,11 +518,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               alignment: Alignment.center,
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 5.0),
+                              color: AppColors.dropdownBackgroundColor,
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.labelMedium,
                               ),
                             ),
                           )
@@ -574,7 +531,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     dropdownPadding: EdgeInsets.zero,
                     itemPadding: EdgeInsets.zero,
                     buttonHeight: 40,
+                    buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                      color: AppColors.dropdownBackgroundColor,
+                    ),                    
                     itemHeight: 40,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                    ),
                     onChanged: (String? newValue) {
                       setState(() {
                         if (kDebugMode) {
@@ -702,9 +669,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               color: item.color,
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.headline4,
                               ),
                             ),
                           ))
@@ -718,9 +683,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
                               item.text,
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
+                              style: AppTheme.appTheme.textTheme.labelMedium,
                             ),
                           ),
                         )
@@ -730,7 +693,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   dropdownPadding: EdgeInsets.zero,
                   itemPadding: EdgeInsets.zero,
                   buttonHeight: 40,
+                  buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                  buttonDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(),
+                    color: AppColors.dropdownBackgroundColor,
+                  ),                    
                   itemHeight: 40,
+                  dropdownDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(),
+                  ),
                   onChanged: (String? newValue) {
                     setState(() {
                       note1 = newValue!;
@@ -785,9 +758,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               color: item.color,
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.headline4,
                               ),
                             ),
                           ))
@@ -801,9 +772,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 const EdgeInsets.symmetric(horizontal: 5.0),
                             child: Text(
                               item.text,
-                              style: const TextStyle(
-                                fontSize: 16,
-                              ),
+                              style: AppTheme.appTheme.textTheme.labelMedium,
                             ),
                           ),
                         )
@@ -813,7 +782,17 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   dropdownPadding: EdgeInsets.zero,
                   itemPadding: EdgeInsets.zero,
                   buttonHeight: 40,
+                  buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                  buttonDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(),
+                    color: AppColors.dropdownBackgroundColor,
+                  ),                    
                   itemHeight: 40,
+                  dropdownDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(),
+                  ),
                   onChanged: (String? newValue) {
                     setState(() {
                       note2 = newValue!;

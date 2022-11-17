@@ -7,6 +7,8 @@ import '../ble2.dart';
 import '../audioBASS.dart';
 import '../groove.dart';
 import '../utils.dart';
+import '../appDesign.dart';
+import 'settingsScreen.dart';
 
 // Groove page
 GrooveScreen grooveScreen = new GrooveScreen();
@@ -139,10 +141,20 @@ class _GrooveScreenState extends State<GrooveScreen> {
 
   @override
   Widget build(BuildContext context) {
-//    dropdownValue = groove.getInitials();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Happy Feet - Grooves'.tr),
+        title: Text('Grooves'.tr),
+                actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => settingsScreen);
+                },
+                child: Icon(Icons.settings,
+                  color: AppColors.settingsIconColor),
+              )),
+        ],
       ),
       floatingActionButton: Obx(
         () => FloatingActionButton(
@@ -222,9 +234,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                  style: AppTheme.appTheme.textTheme.headline4,
                                 ),
                               ),
                             ))
@@ -238,15 +248,27 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                   const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.labelMedium,
                               ),
                             ),
                           )
                           .toList();
                     },
                     value: bpmString,
+                    dropdownPadding: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.zero,
+                    buttonHeight: 40,
+                    buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                      color: AppColors.dropdownBackgroundColor,
+                    ),                    
+                    itemHeight: 40,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                    ),
                     onChanged: (value) {
                       setState(() {
                         bpmString = value as String;
@@ -262,11 +284,6 @@ class _GrooveScreenState extends State<GrooveScreen> {
                         dropdownValue = groove.getInitials();
                       });
                     },
-                    dropdownPadding: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.zero,
-                    buttonHeight: 40,
-                    buttonWidth: 80,
-                    itemHeight: 40,
                   ),
                 ),
               ]), // Row
@@ -290,9 +307,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                  style: AppTheme.appTheme.textTheme.headline4,
                                 ),
                               ),
                             ))
@@ -306,15 +321,27 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                   const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.labelMedium,
                               ),
                             ),
                           )
                           .toList();
                     },
                     value: measuresString,
+                    dropdownPadding: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.zero,
+                    buttonHeight: 40,
+                    buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                      color: AppColors.dropdownBackgroundColor,
+                    ),                    
+                    itemHeight: 40,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                    ),
                     onChanged: (value) {
                       setState(() {
                         measuresString = value as String;
@@ -330,11 +357,6 @@ class _GrooveScreenState extends State<GrooveScreen> {
                         dropdownValue = groove.getInitials();
                       });
                     },
-                    dropdownPadding: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.zero,
-                    buttonHeight: 40,
-                    buttonWidth: 80,
-                    itemHeight: 40,
                   ),
                 ),
               ]), // Row

@@ -13,6 +13,7 @@ class AppColors {
   static const dropdownListColor = Color(0xFF262626);
   static const textEntryHeaderColor = Color(0xFFFCFCFC);
   static const textEntryBoxColor = Color(0xFFFCFCFC);
+  static const settingsIconColor = Color(0xFFD6F3F8);
 }
 
 class AppTheme {
@@ -20,7 +21,7 @@ class AppTheme {
     brightness: Brightness.dark,
     backgroundColor: AppColors.scaffoldBackgroundColor,
     //primaryColor: Colors.deepOrange[500],
-    //secondaryHeaderColor: Colors.blue[800],
+    secondaryHeaderColor: AppColors.scaffoldBackgroundColor,
     textTheme: TextTheme(
       headline1: TextStyle(
           color: AppColors.h2Color,
@@ -37,9 +38,9 @@ class AppTheme {
           fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
-      headline4: TextStyle(
-          color: AppColors.h4Color,
-          fontSize: 18,
+      headline4: TextStyle(  // used for list items after picked
+          color: AppColors.dropdownChoiceColor,
+          fontSize: 16,
           fontWeight: FontWeight.w500,
           fontFamily: 'Montserrat'),
       caption: TextStyle(
@@ -47,6 +48,11 @@ class AppTheme {
           fontSize: 16,
           fontWeight: FontWeight.w500,
           fontFamily: 'Montserrat'),
-    ),
+      labelMedium: TextStyle(  // used for list items before picked
+          color: AppColors.dropdownListColor,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Montserrat'),
+     ),
   );
 }

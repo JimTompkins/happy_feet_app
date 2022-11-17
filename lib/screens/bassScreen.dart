@@ -8,6 +8,8 @@ import '../audioBASS.dart';
 import '../groove.dart';
 //import '../bass.dart';
 import '../utils.dart';
+import '../appDesign.dart';
+import 'settingsScreen.dart';
 
 // Bass page
 BassScreen bassScreen = new BassScreen();
@@ -168,7 +170,18 @@ class _BassScreenState extends State<BassScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Happy Feet - Bass'.tr),
+        title: Text('Bass'.tr),
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => settingsScreen);
+                },
+                child: Icon(Icons.settings,
+                  color: AppColors.settingsIconColor),
+              )),
+        ],
       ),
       floatingActionButton: Obx(
         () => FloatingActionButton(
@@ -247,9 +260,7 @@ class _BassScreenState extends State<BassScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                  style: AppTheme.appTheme.textTheme.headline4,
                                 ),
                               ),
                             ))
@@ -263,15 +274,27 @@ class _BassScreenState extends State<BassScreen> {
                                   const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.labelMedium,
                               ),
                             ),
                           )
                           .toList();
                     },
                     value: bpmString,
+                    dropdownPadding: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.zero,
+                    buttonHeight: 40,
+                    buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                      color: AppColors.dropdownBackgroundColor,
+                    ),                    
+                    itemHeight: 40,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                    ),
                     onChanged: (value) {
                       setState(() {
                         bpmString = value as String;
@@ -285,11 +308,6 @@ class _BassScreenState extends State<BassScreen> {
                         dropdownValue = groove.getInitials();
                       });
                     },
-                    dropdownPadding: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.zero,
-                    buttonHeight: 40,
-                    buttonWidth: 80,
-                    itemHeight: 40,
                   ),
                 ),
               ]), // Row
@@ -313,9 +331,7 @@ class _BassScreenState extends State<BassScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                  style: AppTheme.appTheme.textTheme.headline4,
                                 ),
                               ),
                             ))
@@ -329,15 +345,27 @@ class _BassScreenState extends State<BassScreen> {
                                   const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.labelMedium,
                               ),
                             ),
                           )
                           .toList();
                     },
                     value: measuresString,
+                    dropdownPadding: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.zero,
+                    buttonHeight: 40,
+                    buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                      color: AppColors.dropdownBackgroundColor,
+                    ),                    
+                    itemHeight: 40,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                    ),
                     onChanged: (value) {
                       setState(() {
                         measuresString = value as String;
@@ -351,11 +379,6 @@ class _BassScreenState extends State<BassScreen> {
                         dropdownValue = groove.getInitials();
                       });
                     },
-                    dropdownPadding: EdgeInsets.zero,
-                    itemPadding: EdgeInsets.zero,
-                    buttonHeight: 40,
-                    buttonWidth: 80,
-                    itemHeight: 40,
                   ),
                 ),
               ]), // Row
