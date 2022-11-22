@@ -4,7 +4,6 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:get/get.dart';
 import '../main.dart';
 import '../appDesign.dart';
-import '../utils.dart';
 
 WalkthroughScreen walkthroughScreen = new WalkthroughScreen();
 
@@ -46,7 +45,6 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
       titleTextStyle: AppTheme.walkthroughTitleText,
       bodyTextStyle: AppTheme.walkthroughBodyText,
       bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-      //pageColor: Colors.white,
       pageColor: AppColors.scaffoldBackgroundColor,
       imagePadding: EdgeInsets.zero,
     );
@@ -60,27 +58,9 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 16, right: 16),
-            //child: addVerticalSpace(20),
-            //child: _buildImage('flutter.png', 100),
-          ),
+         ),
         ),
       ),
-
-      /*
-      globalFooter: SizedBox(
-        width: double.infinity,
-        height: 60,
-        child: ElevatedButton(
-          child: Text(
-            'Start using HappyFeet'.tr,
-            style: TextStyle(
-              fontSize: 16.0, fontWeight: FontWeight.bold,
-              color: AppColors.walkthroughTextColor),
-          ),
-          onPressed: () => _onIntroEnd(context),
-        ),
-      ),
-      */
 
       pages: [
         PageViewModel(
