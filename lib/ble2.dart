@@ -8,7 +8,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'groove.dart';
-//import 'mybool.dart';
+import 'screens/multiConnectScreen.dart';
 
 class BluetoothBLEService {
   static const String DEVINFO_SERVICE_UUID =

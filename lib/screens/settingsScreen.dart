@@ -5,7 +5,9 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import '../main.dart';
 import '../ble2.dart';
 import '../utils.dart';
+import '../appDesign.dart';
 import 'infoScreen.dart';
+import 'walkthroughScreen.dart';
 
 // settings screen
 SettingsScreen settingsScreen = new SettingsScreen();
@@ -56,8 +58,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: Theme.of(context).textTheme.caption,
                 ),
               ),
+            ]),
+            Row(children: <Widget> [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.fromLTRB(60, 8, 8, 8),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton2(
                     items: languageDropdownList
@@ -68,11 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0),
                                 color: item.color,
-                                child: Text(
-                                  item.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                  ),
+                                child: Text(item.text,
+                                  style: AppTheme.appTheme.textTheme.headline4,
                                 ),
                               ),
                             ))
@@ -86,9 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
                                 item.text,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: AppTheme.appTheme.textTheme.labelMedium,
                               ),
                             ),
                           )
@@ -98,7 +97,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     dropdownPadding: EdgeInsets.zero,
                     itemPadding: EdgeInsets.zero,
                     buttonHeight: 40,
+                    buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                      color: AppColors.dropdownBackgroundColor,
+                    ),                    
                     itemHeight: 40,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                    ),
                     onChanged: (String? newValue) {
                       setState(() {
                         switch (newValue) {
@@ -447,7 +456,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: Theme.of(context).textTheme.caption,
                 ),
               ),
-              ]),
+            ]),
             Row(children: <Widget>[
               Spacer(flex: 10),
               Switch(
@@ -463,7 +472,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       if (kDebugMode) {
                         print('HF: play-on-click mode enabled');
                       }
-                      Get.snackbar('Status'.tr, 'Play on click mode enabled.'.tr,
+                      Get.snackbar(
+                          'Status'.tr, 'Play on click mode enabled.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
                       if (kDebugMode) {
@@ -472,9 +482,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Get.snackbar(
                           'Status'.tr, 'Play on click mode disabled.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
-                      }
                     }
-                  );
+                  });
                 },
               ),
               IconButton(
@@ -499,11 +508,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ]),
             Wrap(children: <Widget>[
               Row(children: <Widget>[
-                ElevatedButton(
-                    child: Text('Info'.tr),
-                    onPressed: () {
-                      Get.to(() => infoScreen);
-                    }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      child: Text(
+                        'Info'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                      onPressed: () {
+                        Get.to(() => infoScreen);
+                      }),
+                ),
+              ]),
+            ]),
+            Wrap(children: <Widget>[
+              Row(children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      child: Text(
+                        'Introduction'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                      onPressed: () {
+                        Get.to(() => walkthroughScreen);
+                      }),
+                ),
               ]),
             ]),
           ]), // Column

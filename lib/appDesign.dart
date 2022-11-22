@@ -14,6 +14,11 @@ class AppColors {
   static const textEntryHeaderColor = Color(0xFFFCFCFC);
   static const textEntryBoxColor = Color(0xFFFCFCFC);
   static const settingsIconColor = Color(0xFFD6F3F8);
+  static const walkthroughBoxColor = Color(0xFFF4FFFD);
+  static const walkthroughButtonColor = Color(0xFF15616D);
+  static const walkthroughTextColor = Color(0xFF15616D);
+  static const myButtonColor = Color(0xFF15616D);
+  static const bottomBarColor = Color(0xFF15616D);
 }
 
 class AppTheme {
@@ -38,7 +43,8 @@ class AppTheme {
           fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
-      headline4: TextStyle(  // used for list items after picked
+      headline4: TextStyle(
+          // used for list items after picked
           color: AppColors.dropdownChoiceColor,
           fontSize: 16,
           fontWeight: FontWeight.w500,
@@ -48,11 +54,36 @@ class AppTheme {
           fontSize: 16,
           fontWeight: FontWeight.w500,
           fontFamily: 'Montserrat'),
-      labelMedium: TextStyle(  // used for list items before picked
+      labelMedium: TextStyle(
+          // used for list items before picked
           color: AppColors.dropdownListColor,
           fontSize: 16,
           fontWeight: FontWeight.w500,
           fontFamily: 'Montserrat'),
-     ),
+    ),
+  );
+  static const walkthroughText = TextStyle(
+    color: AppColors.walkthroughTextColor,
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'Inter',
+  );
+  static const walkthroughButtonText = TextStyle(
+    color: AppColors.h1Color,
+    fontSize: 22,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'Inter',
+  );
+  static const walkthroughTitleText = TextStyle(
+    color: Color(0xFF15616D),
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    fontFamily: 'Inter',
+  );
+  static const walkthroughBodyText = TextStyle(
+    color: Color(0xFF15616D),
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    fontFamily: 'Inter',
   );
 }

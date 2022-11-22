@@ -9,6 +9,8 @@ import '../groove.dart';
 import '../utils.dart';
 import '../appDesign.dart';
 import 'settingsScreen.dart';
+import 'saveGrooveScreen.dart';
+import 'loadGrooveScreen.dart';
 
 // Groove page
 GrooveScreen grooveScreen = new GrooveScreen();
@@ -111,9 +113,11 @@ class _GrooveScreenState extends State<GrooveScreen> {
     Color? _result;
     if (groove.voices == 1) {
       if ((index ~/ _beatsPerMeasure) & 0x01 == 0x01) {
-        _result = Colors.blue[200];
+//        _result = Colors.blue[200];
+        _result = Colors.grey[400];
       } else {
-        _result = Colors.blue[400];
+//        _result = Colors.blue[400];
+        _result = AppColors.dropdownBackgroundColor;
       }
     } else if (groove.voices == 2) {
       switch ((index ~/ _beatsPerMeasure) & 0x03) {
@@ -144,15 +148,14 @@ class _GrooveScreenState extends State<GrooveScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Grooves'.tr),
-                actions: <Widget>[
+        actions: <Widget>[
           Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: () {
                   Get.to(() => settingsScreen);
                 },
-                child: Icon(Icons.settings,
-                  color: AppColors.settingsIconColor),
+                child: Icon(Icons.settings, color: AppColors.settingsIconColor),
               )),
         ],
       ),
@@ -263,7 +266,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(),
                       color: AppColors.dropdownBackgroundColor,
-                    ),                    
+                    ),
                     itemHeight: 40,
                     dropdownDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
@@ -336,7 +339,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(),
                       color: AppColors.dropdownBackgroundColor,
-                    ),                    
+                    ),
                     itemHeight: 40,
                     dropdownDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
@@ -484,6 +487,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                       child: Container(
                         decoration: new BoxDecoration(
                             color: noteColor(index),
+                            borderRadius: BorderRadius.circular(8),
                             border: Border.all(width: 1.0)),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton2(
@@ -498,9 +502,8 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                         color: item.color,
                                         child: Text(
                                           item.text,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                          ),
+                                          style: AppTheme
+                                              .appTheme.textTheme.headline4,
                                         ),
                                       ),
                                     ))
@@ -514,9 +517,8 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                           horizontal: 0.0),
                                       child: Text(
                                         item.text,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
+                                        style: AppTheme
+                                            .appTheme.textTheme.labelMedium,
                                       ),
                                     ),
                                   )
@@ -573,22 +575,42 @@ class _GrooveScreenState extends State<GrooveScreen> {
             // Save groove
             Wrap(children: <Widget>[
               Row(children: <Widget>[
-                ElevatedButton(
-                    child: Text('Save groove'.tr),
-                    onPressed: () {
-                      Get.to(() => saveGroovePage);
-                    }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      child: Text(
+                        'Save groove'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                      onPressed: () {
+                        Get.to(() => saveGroovePage);
+                      }),
+                ),
               ]),
             ]),
 
             // load groove
             Wrap(children: <Widget>[
               Row(children: <Widget>[
-                ElevatedButton(
-                    child: Text('Load groove'.tr),
-                    onPressed: () {
-                      Get.to(() => loadGroovePage);
-                    }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      child: Text(
+                        'Load groove'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                      onPressed: () {
+                        Get.to(() => loadGroovePage);
+                      }),
+                ),
               ]),
             ]), // Widget, wrap
           ], // Widget
@@ -606,7 +628,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
           ],
         ),
         shape: CircularNotchedRectangle(),
-        color: Colors.blue[400],
+        color: AppColors.bottomBarColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

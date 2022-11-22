@@ -10,6 +10,8 @@ import '../groove.dart';
 import '../utils.dart';
 import '../appDesign.dart';
 import 'settingsScreen.dart';
+import 'saveGrooveScreen.dart';
+import 'loadGrooveScreen.dart';
 
 // Bass page
 BassScreen bassScreen = new BassScreen();
@@ -60,38 +62,6 @@ class _BassScreenState extends State<BassScreen> {
     HfMenuItem(text: '11', color: Colors.grey[100]),
     HfMenuItem(text: '12', color: Colors.grey[300]),
   ];
-
-/*
-  final List<HfMenuItem> keyDropdownList = [
-    HfMenuItem(text: 'E', color: Colors.grey[100]),
-    HfMenuItem(text: 'F', color: Colors.grey[300]),
-    HfMenuItem(text: 'F#', color: Colors.grey[100]),
-    HfMenuItem(text: 'G', color: Colors.grey[300]),
-    HfMenuItem(text: 'G#', color: Colors.grey[100]),
-    HfMenuItem(text: 'A', color: Colors.grey[300]),
-    HfMenuItem(text: 'A#', color: Colors.grey[100]),
-    HfMenuItem(text: 'B', color: Colors.grey[300]),
-    HfMenuItem(text: 'C', color: Colors.grey[100]),
-    HfMenuItem(text: 'C#', color: Colors.grey[300]),
-    HfMenuItem(text: 'D', color: Colors.grey[100]),
-    HfMenuItem(text: 'D#', color: Colors.grey[300]),
-  ];
-
-  final List<HfMenuItem> noteDropdownList = [
-    HfMenuItem(text: '-', color: Colors.grey[100]),
-    HfMenuItem(text: '1', color: Colors.grey[300]),
-    HfMenuItem(text: 'b2', color: Colors.grey[100]),
-    HfMenuItem(text: '2', color: Colors.grey[300]),
-    HfMenuItem(text: 'b3', color: Colors.grey[100]),
-    HfMenuItem(text: '3', color: Colors.grey[300]),
-    HfMenuItem(text: '4', color: Colors.grey[100]),
-    HfMenuItem(text: '5', color: Colors.grey[300]),
-    HfMenuItem(text: 'b6', color: Colors.grey[100]),
-    HfMenuItem(text: '6', color: Colors.grey[300]),
-    HfMenuItem(text: 'b7', color: Colors.grey[100]),
-    HfMenuItem(text: '7', color: Colors.grey[300]),
-  ];
-*/
 
   final List<HfMenuItem> allNoteDropdownList = [
     HfMenuItem(text: '-', color: Colors.grey[100]),
@@ -153,9 +123,11 @@ class _BassScreenState extends State<BassScreen> {
 
     // alternate between two shades of blue for each measure
     if ((index ~/ _beatsPerMeasure) & 0x01 == 0x01) {
-      _result = Colors.blue[200];
+//      _result = Colors.blue[200];
+      _result = Colors.grey[400];
     } else {
-      _result = Colors.blue[800];
+//      _result = Colors.blue[800];
+      _result = AppColors.dropdownBackgroundColor;
     }
 
     // if in interpolate mode, use a separate colour for the back beats
@@ -178,8 +150,7 @@ class _BassScreenState extends State<BassScreen> {
                 onTap: () {
                   Get.to(() => settingsScreen);
                 },
-                child: Icon(Icons.settings,
-                  color: AppColors.settingsIconColor),
+                child: Icon(Icons.settings, color: AppColors.settingsIconColor),
               )),
         ],
       ),
@@ -289,7 +260,7 @@ class _BassScreenState extends State<BassScreen> {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(),
                       color: AppColors.dropdownBackgroundColor,
-                    ),                    
+                    ),
                     itemHeight: 40,
                     dropdownDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
@@ -360,7 +331,7 @@ class _BassScreenState extends State<BassScreen> {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(),
                       color: AppColors.dropdownBackgroundColor,
-                    ),                    
+                    ),
                     itemHeight: 40,
                     dropdownDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
@@ -444,6 +415,7 @@ class _BassScreenState extends State<BassScreen> {
             ), // Text
 
             GridView.count(
+                childAspectRatio: 2.0,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 primary: false,
@@ -458,6 +430,7 @@ class _BassScreenState extends State<BassScreen> {
                       child: Container(
                         decoration: new BoxDecoration(
                             color: rowColor(index),
+                            borderRadius: BorderRadius.circular(8),
                             border: Border.all(width: 1.0)),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton2(
@@ -472,9 +445,8 @@ class _BassScreenState extends State<BassScreen> {
                                         color: item.color,
                                         child: Text(
                                           item.text,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                          ),
+                                          style: AppTheme
+                                              .appTheme.textTheme.headline4,
                                         ),
                                       ),
                                     ))
@@ -488,9 +460,8 @@ class _BassScreenState extends State<BassScreen> {
                                           horizontal: 0.0),
                                       child: Text(
                                         item.text,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
+                                        style: AppTheme
+                                            .appTheme.textTheme.labelMedium,
                                       ),
                                     ),
                                   )
@@ -510,8 +481,11 @@ class _BassScreenState extends State<BassScreen> {
                             dropdownPadding: EdgeInsets.zero,
                             itemPadding: EdgeInsets.zero,
                             buttonHeight: 40,
-                            //buttonWidth: 40,
                             itemHeight: 40,
+                            dropdownDecoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(),
+                            ),
                             isExpanded: false,
                           ),
                         ),
@@ -524,22 +498,42 @@ class _BassScreenState extends State<BassScreen> {
             // Save groove
             Wrap(children: <Widget>[
               Row(children: <Widget>[
-                ElevatedButton(
-                    child: Text('Save groove'.tr),
-                    onPressed: () {
-                      Get.to(() => saveGroovePage);
-                    }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      child: Text(
+                        'Save groove'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                      onPressed: () {
+                        Get.to(() => saveGroovePage);
+                      }),
+                ),
               ]),
             ]),
 
             // load groove
             Wrap(children: <Widget>[
               Row(children: <Widget>[
-                ElevatedButton(
-                    child: Text('Load groove'.tr),
-                    onPressed: () {
-                      Get.to(() => loadGroovePage);
-                    }),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      child: Text(
+                        'Load groove'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                      onPressed: () {
+                        Get.to(() => loadGroovePage);
+                      }),
+                ),
               ]),
             ]), // Widget, wrap
           ], // Widget
@@ -557,7 +551,7 @@ class _BassScreenState extends State<BassScreen> {
           ],
         ),
         shape: CircularNotchedRectangle(),
-        color: Colors.blue[400],
+        color: AppColors.bottomBarColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

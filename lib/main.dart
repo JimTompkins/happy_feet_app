@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:device_display_brightness/device_display_brightness.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,10 +15,10 @@ import 'groove.dart';
 import 'screens/grooveScreen.dart';
 import 'screens/bassScreen.dart';
 import 'screens/settingsScreen.dart';
-//import 'screens/infoScreen.dart';
+import 'screens/multiConnectScreen.dart';
+import 'screens/walkthroughScreen.dart';
 import 'onetap.dart';
 import 'practice.dart';
-import 'saveAndLoad.dart';
 import 'localization.g.dart';
 import 'utils.dart';
 import 'appDesign.dart';
@@ -46,7 +45,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Happy Feet',
       theme: AppTheme.appTheme,
-      home: MyHomePage(),
+      home: WalkthroughScreen(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en', 'US'),
       translations: Localization(),
@@ -91,6 +90,10 @@ bool autoMode = false;
 // a sound, it will be played.  This is useful when you are learning how to
 // make grooves.
 bool playOnClickMode = false;
+
+// flag used to show the walkthrough.  It is initially set to true but can
+// be set to false by hitting the skip button on the walkthrough
+bool showWalkthrough = true;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -232,6 +235,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     autoMode = prefs.getBool('autoMode') ?? false;
     heelTap = prefs.getBool('heelTap') ?? false;
     playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
+    showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
     savedLanguage = prefs.getString('language') ?? '';
     if (savedLanguage != '') {
       if (kDebugMode) {
@@ -338,6 +342,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       _prefs.setBool('footSwitch', footSwitch);
       _prefs.setBool('heelTap', heelTap);
       _prefs.setBool('playOnClickMode', playOnClickMode);
+      _prefs.setBool('showWalkthrough', showWalkthrough);
     }
   }
 
@@ -354,8 +359,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 onTap: () {
                   Get.to(() => settingsScreen);
                 },
-                child: Icon(Icons.settings,
-                color: AppColors.settingsIconColor),
+                child: Icon(Icons.settings, color: AppColors.settingsIconColor),
               )),
         ],
       ),
@@ -422,7 +426,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   'Connect'.tr,
                   style: AppTheme.appTheme.textTheme.caption,
                 )),
-            Icon(Icons.bluetooth, size: 24, color: Colors.blue[800]),
+            Icon(Icons.bluetooth, size: 30, color: AppColors.settingsIconColor),
             Obx(
               () => Switch(
                   value: _bluetoothBLEService.isConnected.value,
@@ -536,7 +540,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(),
                       color: AppColors.dropdownBackgroundColor,
-                    ),                    
+                    ),
                     itemHeight: 40,
                     dropdownDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
@@ -698,7 +702,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(),
                     color: AppColors.dropdownBackgroundColor,
-                  ),                    
+                  ),
                   itemHeight: 40,
                   dropdownDecoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
@@ -787,7 +791,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(),
                     color: AppColors.dropdownBackgroundColor,
-                  ),                    
+                  ),
                   itemHeight: 40,
                   dropdownDecoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
@@ -848,282 +852,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           ],
         ),
         shape: CircularNotchedRectangle(),
-        color: Colors.blue[400],
+        color: AppColors.bottomBarColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   } // widget
 
-} // class
-
-// save groove page
-SaveGroovePage saveGroovePage = new SaveGroovePage();
-
-// Stateful version of saveGroovePage page
-class SaveGroovePage extends StatefulWidget {
-  @override
-  _SaveGroovePageState createState() => _SaveGroovePageState();
-}
-
-class _SaveGroovePageState extends State<SaveGroovePage> {
-  final TextEditingController _filenameController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-
-  @override
-  initState() {
-    super.initState();
-    _filenameController.addListener(() {
-      final String text = _filenameController.text.toLowerCase();
-      _filenameController.value = _filenameController.value.copyWith(
-        text: text,
-        selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-    });
-    _descriptionController.addListener(() {
-      final String text = _descriptionController.text;
-      _descriptionController.value = _descriptionController.value.copyWith(
-        text: text,
-        selection:
-            TextSelection(baseOffset: text.length, extentOffset: text.length),
-        composing: TextRange.empty,
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Happy Feet - Save Groove'.tr),
-      ),
-      body: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.all(6),
-        child: ListView(children: <Widget>[
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-              Widget>[
-            Text(
-              'Enter groove name: '.tr,
-              style: Theme.of(context).textTheme.caption,
-            ),
-            TextFormField(
-              controller: _filenameController,
-              textCapitalization: TextCapitalization.none,
-              inputFormatters: [
-                new FilteringTextInputFormatter(RegExp("[a-z0-9_]"),
-                    allow: true)
-              ],
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  Get.snackbar(
-                      'Missing or invalid file name:'.tr,
-                      'Please enter a file name with only letters, numbers and underscores.'
-                          .tr,
-                      snackPosition: SnackPosition.BOTTOM);
-                  return 'Please enter a file name';
-                } else {
-                  return null;
-                }
-              },
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-            ),
-            Text(
-              'Enter a description of the groove: '.tr,
-              style: Theme.of(context).textTheme.caption,
-            ),
-            TextFormField(
-              controller: _descriptionController,
-              inputFormatters: [
-                new FilteringTextInputFormatter(RegExp(","), allow: false)
-              ],
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-            ),
-            ElevatedButton(
-                child: Text('Save groove'.tr),
-                onPressed: () {
-                  grooveStorage.writeGroove(
-                      _filenameController.text, _descriptionController.text);
-                  Get.snackbar('Status:'.tr, 'groove saved'.tr,
-                      snackPosition: SnackPosition.BOTTOM);
-                  // go back to previous screen
-                  Get.back(closeOverlays: true);
-                }),
-          ]),
-        ]),
-      ),
-    );
-  } // Widget
-} // class
-
-// load groove page
-LoadGroovePage loadGroovePage = new LoadGroovePage();
-
-// Stateful version of loadGroovePage page
-class LoadGroovePage extends StatefulWidget {
-  @override
-  _LoadGroovePageState createState() => _LoadGroovePageState();
-}
-
-class _LoadGroovePageState extends State<LoadGroovePage> {
-  Future<List>? _grooveList;
-
-  @override
-  initState() {
-    super.initState();
-    _grooveList = grooveStorage.listOfSavedGrooves();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Happy Feet - Load Groove'.tr),
-      ),
-      body: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.all(6),
-        child: Column(
-          children: <Widget>[
-            Text(
-              'Saved grooves: '.tr,
-              style: Theme.of(context).textTheme.caption,
-            ),
-            Flexible(
-                child: FutureBuilder(
-                    future: _grooveList,
-                    builder: (context, snapshot) {
-                      if (_grooveList == null) {
-                        // no saved grooves found
-                        return Text('No saved grooves found.'.tr);
-                      } else {
-                        return ListView.builder(
-                            itemCount: grooveStorage.grooveFileNames.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListTile(
-                                  title: Text(
-                                      grooveStorage.grooveFileNames[index]),
-                                  trailing: Icon(Icons.file_upload),
-                                  onTap: () {
-                                    // load the selected groove
-                                    var name =
-                                        grooveStorage.grooveFileNames[index];
-                                    grooveStorage.readGroove(name);
-                                    Get.snackbar('Load status'.tr,
-                                        'Loaded groove '.tr + name,
-                                        snackPosition: SnackPosition.BOTTOM);
-                                    // go back to previous screen
-                                    Get.back(closeOverlays: true);
-                                    /*
-                                    if (groove.type == GrooveType.percussion) {
-                                      Get.offAll(groovePage);
-                                    } else if (groove.type == GrooveType.bass) {
-                                      Get.offAll(bassPage);
-                                    }
-                                    */
-                                  });
-                            });
-                      }
-                    })),
-          ],
-        ),
-      ),
-    );
-  } // Widget
-} // class
-
-// multi-connect page
-MultiConnectPage multiConnectPage = new MultiConnectPage();
-
-// Stateful version of multiConnectPage page
-class MultiConnectPage extends StatefulWidget {
-  @override
-  _MultiConnectPageState createState() => _MultiConnectPageState();
-}
-
-class _MultiConnectPageState extends State<MultiConnectPage> {
-  static BluetoothBLEService _bluetoothBLEService = Get.find();
-  int? _rssi = 0;
-  @override
-  initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Happy Feet - Multi-connect'.tr),
-      ),
-      body: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.all(6),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: [
-                Text(
-                  'Select an available HappyFeet:'.tr,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.help,
-                  ),
-                  iconSize: 30,
-                  color: Colors.blue[800],
-                  onPressed: () {
-                    Get.defaultDialog(
-                      title: 'Multi mode'.tr,
-                      middleText:
-                          'Nearby HappyFeet are listed from closest to furthest as shown by RSSI'
-                              .tr,
-                      textConfirm: 'OK',
-                      onConfirm: () {
-                        Get.back();
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
-            Flexible(
-                child: ListView.builder(
-                    itemCount: _bluetoothBLEService.devicesList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      _rssi = _bluetoothBLEService
-                          .rssiMap[_bluetoothBLEService.devicesList[index]];
-
-                      return ListTile(
-                          title: Text(_bluetoothBLEService.devicesList[index].id
-                              .toString()),
-                          trailing: Text(_rssi.toString() + 'dB'),
-                          onTap: () {
-                            // connect to the selected HappyFeet
-                            _bluetoothBLEService.targetDevice =
-                                _bluetoothBLEService.devicesList[index];
-                            _bluetoothBLEService.connectToDevice();
-                            _bluetoothBLEService.bleAddress =
-                                _bluetoothBLEService.devicesList[index].id
-                                    .toString();
-                            _bluetoothBLEService.rssi =
-                                _bluetoothBLEService.rssiMap[
-                                    _bluetoothBLEService.devicesList[index]]!;
-                            if (kDebugMode) {
-                              print(
-                                  'HF: connecting to selected device $_bluetoothBLEService.devicesList[index].id.toString()');
-                            }
-                            Get.snackbar('Bluetooth status'.tr,
-                                'connecting to Bluetooth '.tr,
-                                snackPosition: SnackPosition.BOTTOM);
-                            // go back to previous screen
-                            Get.back(closeOverlays: true);
-                          });
-                    })),
-          ],
-        ),
-      ),
-    );
-  } // Widget
 } // class

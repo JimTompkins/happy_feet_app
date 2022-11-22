@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import '../ble2.dart';
+import '../appDesign.dart';
 
 _launchURLHomePage() async {
   const url = 'https://happyfeet-music.com';
@@ -20,6 +22,13 @@ _launchURLPrivacyPage() async {
   } else {
     throw 'Could not launch $url';
   }
+}
+
+_emailUs() async {
+  final Email email = Email(
+    recipients: ['info@happyfeet-music.com'],
+  );
+  await FlutterEmailSender.send(email);
 }
 
 // info scren
@@ -109,9 +118,8 @@ class _InfoScreenState extends State<InfoScreen> {
                                 padding: const EdgeInsets.only(top: 16),
                                 child: Text('${snapshot.data}', maxLines: 2),
                               )
-                            ];                            
-                          }
-                           else {
+                            ];
+                          } else {
                             children = <Widget>[
                               const Icon(
                                 Icons.check_circle_outline,
@@ -389,17 +397,55 @@ class _InfoScreenState extends State<InfoScreen> {
               ]),
               Row(
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: _launchURLHomePage,
-                    child: new Text('Show HappyFeet homepage'.tr),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      onPressed: _launchURLHomePage,
+                      child: new Text(
+                        'Show HappyFeet homepage'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                    ),
                   ),
                 ],
               ),
               Row(
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: _launchURLPrivacyPage,
-                    child: new Text('Show privacy policy'.tr),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      onPressed: _launchURLPrivacyPage,
+                      child: new Text(
+                        'Show privacy policy'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll<Color>(
+                            AppColors.myButtonColor),
+                      ),
+                      onPressed: _emailUs,
+                      child: new Text(
+                        'Contact us'.tr,
+                        style: AppTheme.appTheme.textTheme.caption,
+                      ),
+                    ),
                   ),
                 ],
               ),
