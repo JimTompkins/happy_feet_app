@@ -172,10 +172,14 @@ flutter:
     - assets/images/Logo_v14.png
     - assets/images/overview.jpg
     - assets/images/charging.jpg
-    - assets/images/flutter.png
-    - assets/images/fullscreen.jpeg
-    - assets/images/img1.jpeg
-    - assets/images/img2.jpeg
-    - assets/images/img3.jpeg
+    - assets/images/shoe.jpg
+    - assets/images/connect.jpeg
+    - assets/images/beats.jpeg
+
+    #- assets/images/flutter.png
+    #- assets/images/fullscreen.jpeg
+    #- assets/images/img1.jpeg
+    #- assets/images/img2.jpeg
+    #- assets/images/img3.jpeg
 
 

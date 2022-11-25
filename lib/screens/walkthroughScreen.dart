@@ -67,7 +67,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           reverse: true,
           title: 'Welcome'.tr,
           body: 'Welcome to HappyFeet!  Thank you for buying HappyFeet.'.tr,
-          image: _buildImage('Logo_v14.png'),
+          image: _buildImage('overview.jpg'),
           decoration: pageDecoration,
         ),
 
@@ -87,10 +87,29 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           body:
               'Put HappyFeet on your shoe with the blue light on the right.  Adjust the Velcro strap as you like.'
                   .tr,
-          image: _buildImage('charging.jpg'),
+          image: _buildImage('shoe.jpg'),
           decoration: pageDecoration,
         ),
 
+        PageViewModel(
+          reverse: true,
+          title: 'Connect to HappyFeet'.tr,
+          body:
+              'Press the Connect switch to connect to your HappyFeet.  It must be charged and nearby, and Bluetooth must be enabled.'
+                  .tr,
+          image: _buildImage('connect.jpeg'),
+          decoration: pageDecoration,
+        ),
+
+        PageViewModel(
+          reverse: true,
+          title: 'Enable Beats'.tr,
+          body:
+              'Press the music note button at the bottom of the screen to enable beat detection.  Press it again to disable beat detection.'
+                  .tr,
+          image: _buildImage('beats.jpeg'),
+          decoration: pageDecoration,
+        ),
       ],
       onDone: () => _onIntroEnd(context),
       onSkip: () => _onSkip(context), // You can override onSkip callback

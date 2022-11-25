@@ -24,13 +24,8 @@ import 'utils.dart';
 import 'appDesign.dart';
 
 void main() {
-  /*
-  LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString('google_fonts/OFL.txt');
-    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
-  });
-*/
-
+  WidgetsFlutterBinding.ensureInitialized();
+  initPreferences();
   runApp(MyApp());
 }
 
@@ -45,11 +40,110 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Happy Feet',
       theme: AppTheme.appTheme,
-      home: WalkthroughScreen(),
+      home: showWalkthrough ? WalkthroughScreen() : MyHomePage(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en', 'US'),
       translations: Localization(),
     );
+  }
+}
+
+initPreferences() async {
+  // get the current language
+  Locale _locale = Get.deviceLocale!;
+  var _langCode = _locale.languageCode;
+  // convert languageCode to text name of language
+  switch (_langCode) {
+    case 'en':
+      {
+        language = 'English';
+      }
+      break;
+    case 'fr':
+      {
+        language = 'Français';
+      }
+      break;
+    case 'de':
+      {
+        language = 'Deutsch';
+      }
+      break;
+    case 'es':
+      {
+        language = 'Español';
+      }
+      break;
+    case 'it':
+      {
+        language = 'Italiano';
+      }
+      break;
+    case 'pt':
+      {
+        language = 'Português';
+      }
+      break;
+    case 'nl':
+      {
+        language = 'Nederlands';
+      }
+      break;
+    case 'uk':
+      {
+        language = 'Українська';
+      }
+      break;
+  }
+
+  // load saved preferences
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  audioTestMode = prefs.getBool('audioTestMode') ?? false;
+  multiMode = prefs.getBool('multiMode') ?? false;
+  footSwitch = prefs.getBool('footSwitch') ?? false;
+  autoMode = prefs.getBool('autoMode') ?? false;
+  heelTap = prefs.getBool('heelTap') ?? false;
+  playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
+  showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
+  savedLanguage = prefs.getString('language') ?? '';
+  if (savedLanguage != '') {
+    if (kDebugMode) {
+      print('HF: found saved language $savedLanguage');
+    }
+    switch (savedLanguage) {
+      case 'English':
+        _locale = Locale('en', 'US');
+        break;
+      case 'Français':
+        _locale = Locale('fr', 'FR');
+        break;
+      case 'Deutsch':
+        _locale = Locale('de', 'DE');
+        break;
+      case 'Español':
+        _locale = Locale('es', 'ES');
+        break;
+      case 'Italiano':
+        _locale = Locale('it', 'IT');
+        break;
+      case 'Português':
+        _locale = Locale('pt', 'PT');
+        break;
+      case 'Nederlands':
+        _locale = Locale('nl', 'NL');
+        break;
+      case 'Українська':
+        _locale = Locale('uk', 'UK');
+        break;
+      default:
+        _locale = Locale('en', 'US');
+        break;
+    }
+    Get.updateLocale(_locale);
+    language = savedLanguage;
+    if (kDebugMode) {
+      print('HF: updating language to $savedLanguage');
+    }
   }
 }
 
@@ -176,105 +270,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       */
     } else if (Platform.isIOS) {
       // not used
-    }
-  }
-
-  initPreferences() async {
-    // get the current language
-    Locale _locale = Get.deviceLocale!;
-    var _langCode = _locale.languageCode;
-    // convert languageCode to text name of language
-    switch (_langCode) {
-      case 'en':
-        {
-          language = 'English';
-        }
-        break;
-      case 'fr':
-        {
-          language = 'Français';
-        }
-        break;
-      case 'de':
-        {
-          language = 'Deutsch';
-        }
-        break;
-      case 'es':
-        {
-          language = 'Español';
-        }
-        break;
-      case 'it':
-        {
-          language = 'Italiano';
-        }
-        break;
-      case 'pt':
-        {
-          language = 'Português';
-        }
-        break;
-      case 'nl':
-        {
-          language = 'Nederlands';
-        }
-        break;
-      case 'uk':
-        {
-          language = 'Українська';
-        }
-        break;
-    }
-
-    // load saved preferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    audioTestMode = prefs.getBool('audioTestMode') ?? false;
-    multiMode = prefs.getBool('multiMode') ?? false;
-    footSwitch = prefs.getBool('footSwitch') ?? false;
-    autoMode = prefs.getBool('autoMode') ?? false;
-    heelTap = prefs.getBool('heelTap') ?? false;
-    playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
-    showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
-    savedLanguage = prefs.getString('language') ?? '';
-    if (savedLanguage != '') {
-      if (kDebugMode) {
-        print('HF: found saved language $savedLanguage');
-      }
-      switch (savedLanguage) {
-        case 'English':
-          _locale = Locale('en', 'US');
-          break;
-        case 'Français':
-          _locale = Locale('fr', 'FR');
-          break;
-        case 'Deutsch':
-          _locale = Locale('de', 'DE');
-          break;
-        case 'Español':
-          _locale = Locale('es', 'ES');
-          break;
-        case 'Italiano':
-          _locale = Locale('it', 'IT');
-          break;
-        case 'Português':
-          _locale = Locale('pt', 'PT');
-          break;
-        case 'Nederlands':
-          _locale = Locale('nl', 'NL');
-          break;
-        case 'Українська':
-          _locale = Locale('uk', 'UK');
-          break;
-        default:
-          _locale = Locale('en', 'US');
-          break;
-      }
-      Get.updateLocale(_locale);
-      language = savedLanguage;
-      if (kDebugMode) {
-        print('HF: updating language to $savedLanguage');
-      }
     }
   }
 
