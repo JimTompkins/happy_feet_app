@@ -55,7 +55,7 @@ dependencies:
   shared_preferences: ^2.0.13
   flutter_spinbox: ^0.8.0
   dropdown_button2: ^1.8.2
-  introduction_screen: ^3.0.2
+  introduction_screen: ^3.1.1
   flutter_email_sender: ^5.2.0
 
 dev_dependencies:
