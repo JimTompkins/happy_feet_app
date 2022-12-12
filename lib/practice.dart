@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-//import 'ble.dart';   // flutter_reactive_ble version
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'ble2.dart'; // flutter_blue version
-//import 'mybool.dart';
-import 'audio.dart';
+import 'main.dart';
+import 'utils.dart';
+import 'appDesign.dart';
+import 'audioBASS.dart';
 import 'groove.dart';
 
 // Practice page
@@ -25,10 +26,22 @@ class _PracticePageState extends State<PracticePage> {
   String note = 'Bass drum';
   Timer? _metronomeTimer;
 
-  // flag indicating whether a metronome is used in Practice mode or not.
-  // If set to true, a metronome tone (consisting of C4 and G4 on piano)
-  // will be played at the selected tempo
-  bool metronomeFlag = false;
+  final List<HfMenuItem> noteDropdownList = [
+    HfMenuItem(text: 'Bass drum'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Bass echo'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Lo tom'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Hi tom'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Snare drum'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Hi-hat cymbal'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Cowbell'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Tambourine'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Fingersnap'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Rim shot'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Shaker'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Woodblock'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Brushes'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Quijada'.tr, color: Colors.grey[300]),
+  ];
 
   @override
   initState() {
@@ -71,7 +84,7 @@ class _PracticePageState extends State<PracticePage> {
                   _metronomeTimer = Timer.periodic(
                       Duration(milliseconds: periodInMs.toInt()), (timer) {
                     // play the metronome sound
-                    hfaudio.play(1, 15, 0, -1, 0);
+                    hfaudio.play(15, -1);
                   });
                 }
                 Get.snackbar('Status'.tr, 'beats enabled'.tr,
@@ -116,39 +129,62 @@ class _PracticePageState extends State<PracticePage> {
                 style: Theme.of(context).textTheme.caption,
               ),
             ),
-            DropdownButton<String>(
-              value: note,
-              icon: const Icon(Icons.arrow_downward),
-              iconSize: 24,
-              elevation: 24,
-              style: Theme.of(context).textTheme.headline4,
-              onChanged: (String? newValue) {
-                setState(() {
-                  note = newValue!;
-                  groove.initSingle(note);
-                });
-              },
-              items: <String>[
-                'Bass drum'.tr,
-                'Bass echo'.tr,
-                'Lo tom'.tr,
-                'Hi tom'.tr,
-                'Snare drum'.tr,
-                'Hi-hat cymbal'.tr,
-                'Cowbell'.tr,
-                'Tambourine'.tr,
-                'Fingersnap'.tr,
-                'Rim shot'.tr,
-                'Shaker'.tr,
-                'Woodblock'.tr,
-                'Brushes'.tr,
-                'Quijada'.tr,
-              ].map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+            DropdownButtonHideUnderline(
+              child: DropdownButton2(
+                items: noteDropdownList
+                    .map((item) => DropdownMenuItem<String>(
+                          value: item.text,
+                          child: Container(
+                            alignment: AlignmentDirectional.centerStart,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 5.0),
+                            color: item.color,
+                            child: Text(
+                              item.text,
+                              style: AppTheme.appTheme.textTheme.headline4,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+                selectedItemBuilder: (context) {
+                  return noteDropdownList
+                      .map(
+                        (item) => Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Text(
+                            item.text,
+                            style: AppTheme.appTheme.textTheme.labelMedium,
+                          ),
+                        ),
+                      )
+                      .toList();
+                },
+                value: note,
+                dropdownPadding: EdgeInsets.zero,
+                itemPadding: EdgeInsets.zero,
+                buttonHeight: 40,
+                buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                buttonDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(),
+                  color: AppColors.dropdownBackgroundColor,
+                ),
+                itemHeight: 40,
+                dropdownDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(),
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    note = newValue!;
+                    groove.initSingle(note);
+                  });
+                  if (playOnClickMode) {
+                    hfaudio.play(groove.notes[0].oggIndex, -1);
+                  }
+                },
+              ),
             ),
           ]),
 
@@ -168,10 +204,8 @@ class _PracticePageState extends State<PracticePage> {
               inactiveThumbColor: Colors.grey[600],
               inactiveTrackColor: Colors.grey[400],
               onChanged: (value) {
-                setState(() async {
+                setState(() {
                   metronomeFlag = value;
-                  final _prefs = await SharedPreferences.getInstance();
-                  await _prefs.setBool('metronomeFlag', value);
                   if (metronomeFlag) {
                     if (kDebugMode) {
                       print('HF: metronome enabled');

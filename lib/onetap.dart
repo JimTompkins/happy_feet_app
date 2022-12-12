@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:happy_feet_app/main.dart';
-//import 'ble.dart';   // flutter_reactive_ble version
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'main.dart';
+import 'utils.dart';
+import 'appDesign.dart';
 import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
 
@@ -49,6 +51,16 @@ class _OneTapPageState extends State<OneTapPage> {
   RhythmType type = RhythmType.rock1;
   String _rhythmName = 'Rock 1';
   Tablature _tab = new Tablature();
+
+  final List<HfMenuItem> rhythmDropdownList = [
+    HfMenuItem(text: 'Rock 1'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Rock 2'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Jazz 1'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Bossa Nova'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Merengue'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: 'Afro-Cuban 6/8'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: 'Samba'.tr, color: Colors.grey[100]),
+  ];
 
   @override
   initState() {
@@ -426,74 +438,100 @@ class _OneTapPageState extends State<OneTapPage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: DropdownButton<String>(
-                  value: _rhythmName,
-                  icon: const Icon(Icons.arrow_downward),
-                  iconSize: 24,
-                  elevation: 24,
-                  style: Theme.of(context).textTheme.headline4,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      switch (newValue) {
-                        case 'Rock 1':
-                          type = RhythmType.rock1;
-                          createGroove(type);
-                          break;
-                        case 'Rock 2':
-                          type = RhythmType.rock2;
-                          createGroove(type);
-                          break;
-                        case 'Jazz 1':
-                          type = RhythmType.jazz1;
-                          createGroove(type);
-                          break;
-                        case 'Bossa Nova':
-                          type = RhythmType.bossanova;
-                          createGroove(type);
-                          break;
-                        case 'Merengue':
-                          type = RhythmType.merengue;
-                          createGroove(type);
-                          break;
-                        case 'Afro-Cuban 6/8':
-                          type = RhythmType.afrocuban68;
-                          createGroove(type);
-                          break;
-                        case 'Samba':
-                          type = RhythmType.samba;
-                          createGroove(type);
-                          break;
-                        default:
-                          if (kDebugMode) {
-                            print('HF: unknown 1-tap rhythm type');
-                          }
-                          break;
-                      }
-                      groove.oneTapStarted = false;
-                      groove.cancelMeasureTimer();
-                      if (kDebugMode) {
-                        print("HF: 1-tap rhythm changed to $newValue");
-                      }
-                    });
-                    _rhythmName = newValue!;
-                  },
-                  items: <String>[
-                    'Rock 1',
-                    'Rock 2',
-                    'Jazz 1',
-                    'Bossa Nova',
-                    'Merengue',
-                    'Afro-Cuban 6/8',
-                    'Samba',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton2(
+                    items: rhythmDropdownList
+                    .map((item) => DropdownMenuItem<String>(
+                          value: item.text,
+                          child: Container(
+                            alignment: AlignmentDirectional.centerStart,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 5.0),
+                            color: item.color,
+                            child: Text(
+                              item.text,
+                              style: AppTheme.appTheme.textTheme.headline4,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+                selectedItemBuilder: (context) {
+                  return rhythmDropdownList
+                      .map(
+                        (item) => Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: Text(
+                            item.text,
+                            style: AppTheme.appTheme.textTheme.labelMedium,
+                          ),
+                        ),
+                      )
+                      .toList();
+                },
+                value: _rhythmName,
+                dropdownPadding: EdgeInsets.zero,
+                itemPadding: EdgeInsets.zero,
+                buttonHeight: 40,
+                buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                buttonDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(),
+                  color: AppColors.dropdownBackgroundColor,
                 ),
+                itemHeight: 40,
+                dropdownDecoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(),
+                ),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    switch (newValue) {
+                      case 'Rock 1':
+                        type = RhythmType.rock1;
+                        createGroove(type);
+                        break;
+                      case 'Rock 2':
+                        type = RhythmType.rock2;
+                        createGroove(type);
+                        break;
+                      case 'Jazz 1':
+                        type = RhythmType.jazz1;
+                        createGroove(type);
+                        break;
+                      case 'Bossa Nova':
+                        type = RhythmType.bossanova;
+                        createGroove(type);
+                        break;
+                      case 'Merengue':
+                        type = RhythmType.merengue;
+                        createGroove(type);
+                        break;
+                      case 'Afro-Cuban 6/8':
+                        type = RhythmType.afrocuban68;
+                        createGroove(type);
+                        break;
+                      case 'Samba':
+                        type = RhythmType.samba;
+                        createGroove(type);
+                        break;
+                      default:
+                        if (kDebugMode) {
+                          print('HF: unknown 1-tap rhythm type');
+                        }
+                        break;
+                    }
+                    groove.oneTapStarted = false;
+                    groove.cancelMeasureTimer();
+                    if (kDebugMode) {
+                      print("HF: 1-tap rhythm changed to $newValue");
+                    }
+                  });
+                  _rhythmName = newValue!;
+                },
               ),
-              // Text
+            ),
+            ),
             ]),
             Row(children: <Widget>[
               Column(

@@ -260,6 +260,7 @@ class HfAudio {
     samples[12] = Sample(12, 'Hi tom', 'T', 'hidrytom.mp3');
     samples[13] = Sample(13, 'Brushes', 'U', 'circlebrush.mp3');
     samples[14] = Sample(14, 'Quijada', 'Q', 'vibraslap.mp3');
+    samples[15] = Sample(15, 'Click', 'K', 'click.mp3');
 
     // load the samples
     await samples[0].load();
@@ -276,6 +277,7 @@ class HfAudio {
     await samples[12].load();
     await samples[13].load();
     await samples[14].load();
+    await samples[15].load();
 
     var _finishTime = DateTime.now(); // get system time
     Duration _loadTime = _finishTime.difference(_startTime);

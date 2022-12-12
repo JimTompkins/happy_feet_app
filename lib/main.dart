@@ -105,6 +105,7 @@ initPreferences() async {
   heelTap = prefs.getBool('heelTap') ?? false;
   playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
   showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
+  metronomeFlag = prefs.getBool('metronomeFlag') ?? false;
   savedLanguage = prefs.getString('language') ?? '';
   if (savedLanguage != '') {
     if (kDebugMode) {
@@ -184,6 +185,11 @@ bool autoMode = false;
 // a sound, it will be played.  This is useful when you are learning how to
 // make grooves.
 bool playOnClickMode = false;
+
+// flag indicating whether a metronome is used in Practice mode or not.
+// If set to true, a metronome tone (consisting of C4 and G4 on piano)
+// will be played at the selected tempo
+bool metronomeFlag = false;
 
 // flag used to show the walkthrough.  It is initially set to true but can
 // be set to false by hitting the skip button on the walkthrough
@@ -337,6 +343,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       _prefs.setBool('footSwitch', footSwitch);
       _prefs.setBool('heelTap', heelTap);
       _prefs.setBool('playOnClickMode', playOnClickMode);
+      _prefs.setBool('metronomeFlag', metronomeFlag);
       _prefs.setBool('showWalkthrough', showWalkthrough);
     }
   }
