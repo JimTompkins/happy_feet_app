@@ -445,7 +445,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                     Icons.help,
                   ),
                   iconSize: 30,
-                  color: Colors.blue[800],
+                  color: AppColors.myButtonColor,
                   onPressed: () {
                     Get.defaultDialog(
                       title: 'Offbeat mode'.tr,

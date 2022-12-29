@@ -387,7 +387,7 @@ class _BassScreenState extends State<BassScreen> {
                     Icons.help,
                   ),
                   iconSize: 30,
-                  color: Colors.blue[800],
+                  color: AppColors.myButtonColor,
                   onPressed: () {
                     Get.defaultDialog(
                       title: 'Offbeat mode'.tr,

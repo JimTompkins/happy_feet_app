@@ -45,7 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Happy Feet - Settings Menu'.tr),
+        title: Text('Settings'.tr),
       ),
       body: Center(
         child: ListView(children: <Widget>[
@@ -198,7 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.help,
                 ),
                 iconSize: 25,
-                color: Colors.blue[800],
+                color: AppColors.myButtonColor,
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Audio test mode'.tr,
@@ -251,7 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.help,
                 ),
                 iconSize: 25,
-                color: Colors.blue[800],
+                color: AppColors.myButtonColor,
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Multi mode'.tr,
@@ -304,7 +304,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.help,
                 ),
                 iconSize: 25,
-                color: Colors.blue[800],
+                color: AppColors.myButtonColor,
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Foot switch'.tr,
@@ -357,7 +357,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.help,
                 ),
                 iconSize: 25,
-                color: Colors.blue[800],
+                color: AppColors.myButtonColor,
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Auto mode'.tr,
@@ -433,7 +433,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.help,
                 ),
                 iconSize: 25,
-                color: Colors.blue[800],
+                color: AppColors.myButtonColor,
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Tapping Mode'.tr,
@@ -491,7 +491,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Icons.help,
                 ),
                 iconSize: 25,
-                color: Colors.blue[800],
+                color: AppColors.myButtonColor,
                 onPressed: () {
                   Get.defaultDialog(
                     title: 'Play on click mode'.tr,

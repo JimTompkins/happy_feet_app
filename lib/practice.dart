@@ -54,7 +54,7 @@ class _PracticePageState extends State<PracticePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Happy Feet - Practice Menu'.tr),
+        title: Text('Practice Mode'.tr),
       ),
       floatingActionButton: Obx(
         () => FloatingActionButton(
@@ -227,7 +227,7 @@ class _PracticePageState extends State<PracticePage> {
                 Icons.help,
               ),
               iconSize: 30,
-              color: Colors.blue[400],
+              color: AppColors.myButtonColor,
               onPressed: () {
                 Get.defaultDialog(
                   title: 'Metronome'.tr,
@@ -292,8 +292,7 @@ class _PracticePageState extends State<PracticePage> {
                   groove.practiceBPM.value.toStringAsFixed(1),
                   style: TextStyle(
                       fontSize: 40,
-                      color: Colors.white,
-                      backgroundColor: groove.practiceColor),
+                      color: AppColors.captionColor),
                 ),
               ),
             ),
@@ -348,7 +347,7 @@ class _PracticePageState extends State<PracticePage> {
                 Icons.help,
               ),
               iconSize: 30,
-              color: Colors.blue[400],
+              color: AppColors.myButtonColor,
               onPressed: () {
                 Get.defaultDialog(
                   title: 'Streak count:'.tr,

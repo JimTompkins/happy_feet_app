@@ -53,7 +53,7 @@ class _InfoScreenState extends State<InfoScreen> {
   Future<String>? _rssi;
   Future<String>? _bleAddress;
   Future<int>? _batteryVoltage;
-  static const double iconSize = 40;
+  static const double iconSize = 25;
 
   @override
   initState() {
@@ -73,33 +73,54 @@ class _InfoScreenState extends State<InfoScreen> {
     });
   }
 
-  Widget _infoTile(String title, String subtitle) {
-    return ListTile(
-      title: Text(title),
-      subtitle: Text(subtitle.isEmpty ? '??' : subtitle),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Happy Feet - Info Menu'.tr),
+        title: Text('Info'.tr),
       ),
       body: Center(
         child: ListView(children: <Widget>[
           Column(
             children: <Widget>[
-//              _infoTile('App name', _packageInfo.appName),
-//              _infoTile('Package name', _packageInfo.packageName),
-              _infoTile('App version'.tr, _packageInfo.version),
-//              _infoTile('Build number', _packageInfo.buildNumber),
+              
               Row(children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Serial number:'.tr),
+                Flexible(child:FractionallySizedBox(
+                  widthFactor: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('App version:'.tr, maxLines: 2,
+                      style: Theme.of(context).textTheme.caption,),
+                    ),
+                  ), 
                 ),
-                Flexible(
+                Flexible(child:FractionallySizedBox(
+                  alignment: Alignment.center,
+                  widthFactor: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(_packageInfo.version, maxLines: 2,
+                      style: Theme.of(context).textTheme.caption,),
+                    ),
+                  ),
+                ),                
+              ]),
+              
+              Row(children: <Widget>[
+                Flexible(child: FractionallySizedBox(
+                    widthFactor: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('Serial number:'.tr, 
+                        maxLines: 3,
+                        style: Theme.of(context).textTheme.caption,),
+                    ),
+                  ),
+                ),
+                Flexible(child: FractionallySizedBox(
+                  widthFactor: 1,
+                  alignment: Alignment.center,
+                  //child:Flexible(
                   // this widget is here so that text wrapping will work...
                   child: FutureBuilder<String>(
                       future: _bleAddress,
@@ -116,7 +137,10 @@ class _InfoScreenState extends State<InfoScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 16),
-                                child: Text('${snapshot.data}', maxLines: 2),
+                                child: Text('${snapshot.data}', 
+                                  maxLines: 3,
+                                  style: Theme.of(context).textTheme.caption,
+                                  ),
                               )
                             ];
                           } else {
@@ -128,7 +152,10 @@ class _InfoScreenState extends State<InfoScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 16),
-                                child: Text('${snapshot.data}', maxLines: 2),
+                                child: Text('${snapshot.data}', 
+                                  maxLines: 3,
+                                  style: Theme.of(context).textTheme.caption,
+                                  ),
                               )
                             ];
                           }
@@ -141,7 +168,10 @@ class _InfoScreenState extends State<InfoScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 16),
-                              child: Text('Error: ${snapshot.error}'.tr),
+                              child: Text('Error: ${snapshot.error}'.tr, 
+                                maxLines: 3,
+                                style: Theme.of(context).textTheme.caption,
+                                ),
                             )
                           ];
                         } else {
@@ -166,12 +196,21 @@ class _InfoScreenState extends State<InfoScreen> {
                           ),
                         );
                       }),
-                )
+                    //),
+                  ),
+                ),
               ]),
               Row(children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('RSSI:'.tr),
+                Flexible(child: FractionallySizedBox(
+                  widthFactor: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('RSSI:'.tr,
+                      maxLines: 3,
+                      style: Theme.of(context).textTheme.caption,
+                      ),
+                  ),
+                ),
                 ),
                 FutureBuilder<String>(
                     future: _rssi,
@@ -187,7 +226,10 @@ class _InfoScreenState extends State<InfoScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
-                            child: Text('Result: ${snapshot.data}' + 'dB'),
+                            child: Text('Result: ${snapshot.data}' + 'dB',
+                              maxLines: 3,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           )
                         ];
                       } else if (snapshot.hasError) {
@@ -199,7 +241,10 @@ class _InfoScreenState extends State<InfoScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
-                            child: Text('Error: ${snapshot.error}'.tr),
+                            child: Text('Error: ${snapshot.error}'.tr,
+                              maxLines: 3,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
                           )
                         ];
                       } else {
@@ -225,10 +270,18 @@ class _InfoScreenState extends State<InfoScreen> {
                       );
                     })
               ]),
+
               Row(children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Model number:'.tr),
+                Flexible(child: FractionallySizedBox(
+                  widthFactor: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                      child: Text('Model number:'.tr,
+                        maxLines: 3,
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                  ),
+                  ),
                 ),
                 FutureBuilder<String>(
                     future: _modelNumber,
@@ -285,7 +338,10 @@ class _InfoScreenState extends State<InfoScreen> {
               Row(children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Firmware revision'.tr),
+                  child: Text('Firmware revision'.tr,
+                    maxLines: 3,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                 ),
                 FutureBuilder<String>(
                     future: _firmwareRevision,
@@ -341,7 +397,10 @@ class _InfoScreenState extends State<InfoScreen> {
               Row(children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Battery charge level:'.tr),
+                  child: Text('Battery charge level:'.tr,
+                    maxLines: 3,
+                    style: Theme.of(context).textTheme.caption,
+                  ),
                 ),
                 FutureBuilder<int>(
                     future: _batteryVoltage,

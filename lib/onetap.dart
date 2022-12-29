@@ -370,7 +370,7 @@ class _OneTapPageState extends State<OneTapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Happy Feet - 1-tap Menu'.tr),
+        title: Text('1-tap Mode'.tr),
       ),
       floatingActionButton: Obx(
         () => FloatingActionButton(
@@ -423,7 +423,7 @@ class _OneTapPageState extends State<OneTapPage> {
                         : '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
                             .tr,
                     softWrap: true,
-                    style: TextStyle(color: Colors.blue, fontSize: 20),
+                    style: Theme.of(context).textTheme.caption,
                   ),
                 ),
               ),
@@ -548,7 +548,7 @@ class _OneTapPageState extends State<OneTapPage> {
                       Icons.help,
                     ),
                     iconSize: 30,
-                    color: Colors.blue[400],
+                    color: AppColors.myButtonColor,
                     onPressed: () {
                       Get.defaultDialog(
                         title: 'Tablature'.tr,
@@ -571,7 +571,7 @@ class _OneTapPageState extends State<OneTapPage> {
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.courierPrime(
-                    textStyle: TextStyle(color: Colors.blue, fontSize: 18),
+                    textStyle: TextStyle(color: AppColors.h4Color, fontSize: 18),
                   ),
                 ),
               ),
@@ -583,8 +583,8 @@ class _OneTapPageState extends State<OneTapPage> {
                   () => Text('Lead-in count:'.tr,
                       style: TextStyle(
                         color:
-                            groove.leadInDone.value ? Colors.grey : Colors.blue,
-                        fontSize: 20,
+                            groove.leadInDone.value ? Colors.grey : AppColors.h4Color,
+                        fontSize: 16,
                       )),
                 ),
               ),
@@ -595,7 +595,7 @@ class _OneTapPageState extends State<OneTapPage> {
                       style: TextStyle(
                           color: groove.leadInDone.value
                               ? Colors.grey
-                              : Colors.blue,
+                              : AppColors.captionColor,
                           fontSize: 32)),
                 ),
               ),
