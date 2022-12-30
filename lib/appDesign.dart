@@ -70,7 +70,7 @@ class AppTheme {
   );
   static const walkthroughButtonText = TextStyle(
     color: AppColors.h1Color,
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: FontWeight.w700,
     fontFamily: 'Inter',
   );

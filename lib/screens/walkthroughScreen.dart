@@ -15,6 +15,12 @@ class WalkthroughScreen extends StatefulWidget {
 class _WalkthroughScreenState extends State<WalkthroughScreen> {
   final introKey = GlobalKey<IntroductionScreenState>();
 
+  @override
+  initState() {
+    super.initState();
+    initPreferences();
+  }
+
   void _onIntroEnd(context) {
     if (kDebugMode) {
       print('HF: leaving the walkthrough');
@@ -40,8 +46,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
 
   @override
   Widget build(BuildContext context) {
- 
-     const pageDecoration = const PageDecoration(
+    const pageDecoration = const PageDecoration(
       titleTextStyle: AppTheme.walkthroughTitleText,
       bodyTextStyle: AppTheme.walkthroughBodyText,
       bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
@@ -52,16 +57,13 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
     return IntroductionScreen(
       key: introKey,
       globalBackgroundColor: Colors.white,
-      dotsFlex: 2,  // disables the expanded dots behaviour,
-                    // added to prevent render overflow
-                    // see github.com./Pyozer/introduction_screen/issues/7
 
       globalHeader: Align(
         alignment: Alignment.topRight,
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 16, right: 16),
-         ),
+          ),
         ),
       ),
 
@@ -73,7 +75,6 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           image: _buildImage('overview.jpg'),
           decoration: pageDecoration,
         ),
-
         PageViewModel(
           reverse: true,
           image: _buildImage('charging.jpg'),
@@ -83,7 +84,6 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
                   .tr,
           decoration: pageDecoration,
         ),
-
         PageViewModel(
           reverse: true,
           title: 'Putting on HappyFeet'.tr,
@@ -93,7 +93,6 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           image: _buildImage('shoe.jpg'),
           decoration: pageDecoration,
         ),
-
         PageViewModel(
           reverse: true,
           title: 'Connect to HappyFeet'.tr,
@@ -103,12 +102,27 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           image: _buildImage('connect.jpeg'),
           decoration: pageDecoration,
         ),
-
         PageViewModel(
           reverse: true,
-          title: 'Enable Beats'.tr,
+          title: 'Enable beats'.tr,
           body:
               'Press the music note button at the bottom of the screen to enable beat detection.  Press it again to disable beat detection.'
+                  .tr,
+          image: _buildImage('beats.jpeg'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          reverse: true,
+          title: 'Choose a sound'.tr,
+          body: 'Select a sound using the 1st note pulldown menu.'.tr,
+          image: _buildImage('beats.jpeg'),
+          decoration: pageDecoration,
+        ),
+        PageViewModel(
+          reverse: true,
+          title: 'Tap your foot'.tr,
+          body:
+              'Tap your foot to play the selected sound.  Experiment with other sounds and play modes.  Have fun!'
                   .tr,
           image: _buildImage('beats.jpeg'),
           decoration: pageDecoration,
@@ -123,21 +137,23 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
       //rtl: true, // Display as right-to-left
       back: const Icon(Icons.arrow_back),
       skip: Text('Skip'.tr, style: AppTheme.walkthroughButtonText),
-      next: const Icon(Icons.arrow_forward,
-         size: 30.0,
-         color: AppColors.h1Color),
+      next:
+          const Icon(Icons.arrow_forward, size: 20.0, color: AppColors.h1Color),
       done: Text('Done'.tr, style: AppTheme.walkthroughButtonText),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
       controlsPadding: kIsWeb
           ? const EdgeInsets.all(12.0)
           : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+      dotsFlex: 2, // disables the expanded dots behaviour,
+      // added to prevent render overflow
+      // see github.com./Pyozer/introduction_screen/issues/7
       dotsDecorator: const DotsDecorator(
-        size: Size(16.0, 16.0),
+        size: Size(8.0, 8.0),
         color: AppColors.h1Color,
-        activeSize: Size(18.0, 18.0),
+        activeSize: Size(8.0, 8.0),
         activeShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
         ),
       ),
       dotsContainerDecorator: const ShapeDecoration(
