@@ -886,35 +886,39 @@ class BluetoothBLEService {
   // dropout voltage at 50mA so probably less in this design, e.g. 10mV.
   // The LD3985 has a min operating voltage of 2.5V.
   // So the min battery voltage as a percentage is 2.51V/3.273V = 76%.
-  Future<int>? readBatteryVoltage() async {
-    if (_char1 == null) {
-      if (kDebugMode) {
-        print('HF: readBatteryVoltage: _char1 is null');
-      }
-      return (0);
+  Future<String>? readBatteryVoltage() async {
+    if (!isConnected()) {
+      return ('not connected');
     } else {
-      try {
-        List<int> value = await _char1!.read();
+      if (_char1 == null) {
         if (kDebugMode) {
-          print("HF: battery voltage .  Value = $value[0]");
+          print('HF: readBatteryVoltage: _char1 is null');
         }
-        batteryVoltage = value[0];
-        // scale batteryVoltage to convert the range 76:100 to 0:100
-        if (batteryVoltage > 100) {
-          // limit battery voltage to 100%
-          batteryVoltage = 100;
-        } else if (batteryVoltage < 76) {
-          batteryVoltage = 0;
-        } else {
-          batteryVoltage = (batteryVoltage - 76) * 100 ~/ 24;
+        return ('not connected');
+      } else {
+        try {
+          List<int> value = await _char1!.read();
+          if (kDebugMode) {
+            print("HF: battery voltage .  Value = $value[0]");
+          }
+          batteryVoltage = value[0];
+          // scale batteryVoltage to convert the range 76:100 to 0:100
+          if (batteryVoltage > 100) {
+            // limit battery voltage to 100%
+            batteryVoltage = 100;
+          } else if (batteryVoltage < 76) {
+            batteryVoltage = 0;
+          } else {
+            batteryVoltage = (batteryVoltage - 76) * 100 ~/ 24;
+          }
+          return (batteryVoltage.toString());
+        } catch (err) {
+          if (kDebugMode) {
+            print("HF: error readBatteryVoltage");
+            print(err);
+          }
+          return ('error');
         }
-        return (batteryVoltage);
-      } catch (err) {
-        if (kDebugMode) {
-          print("HF: error readBatteryVoltage");
-          print(err);
-        }
-        return (0);
       }
     }
   }

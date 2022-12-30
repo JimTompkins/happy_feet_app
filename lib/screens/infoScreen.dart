@@ -52,8 +52,9 @@ class _InfoScreenState extends State<InfoScreen> {
   Future<String>? _firmwareRevision;
   Future<String>? _rssi;
   Future<String>? _bleAddress;
-  Future<int>? _batteryVoltage;
+  Future<String>? _batteryVoltage;
   static const double iconSize = 25;
+  static const double spacerHeight = 15;
 
   @override
   initState() {
@@ -83,45 +84,45 @@ class _InfoScreenState extends State<InfoScreen> {
         child: ListView(children: <Widget>[
           Column(
             children: <Widget>[
-              
               Row(children: <Widget>[
-                Flexible(child:FractionallySizedBox(
-                  widthFactor: 1,
+                Expanded(
+                  flex: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('App version:'.tr, maxLines: 2,
-                      style: Theme.of(context).textTheme.caption,),
-                    ),
-                  ), 
-                ),
-                Flexible(child:FractionallySizedBox(
-                  alignment: Alignment.center,
-                  widthFactor: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(_packageInfo.version, maxLines: 2,
-                      style: Theme.of(context).textTheme.caption,),
+                    child: Text(
+                      'App version:'.tr,
+                      maxLines: 2,
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ),
-                ),                
+                ),
+                Expanded(
+                  flex: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      _packageInfo.version,
+                      maxLines: 2,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                  ),
+                ),
               ]),
-              
+              SizedBox(height: spacerHeight),
               Row(children: <Widget>[
-                Flexible(child: FractionallySizedBox(
-                    widthFactor: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Serial number:'.tr, 
-                        maxLines: 3,
-                        style: Theme.of(context).textTheme.caption,),
+                Expanded(
+                  flex: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Serial number:'.tr,
+                      maxLines: 3,
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   ),
                 ),
-                Flexible(child: FractionallySizedBox(
-                  widthFactor: 1,
-                  alignment: Alignment.center,
-                  //child:Flexible(
-                  // this widget is here so that text wrapping will work...
+                Expanded(
+                  flex: 6,
                   child: FutureBuilder<String>(
                       future: _bleAddress,
                       builder: (BuildContext context,
@@ -137,10 +138,11 @@ class _InfoScreenState extends State<InfoScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 16),
-                                child: Text('${snapshot.data}', 
+                                child: Text(
+                                  '${snapshot.data}',
                                   maxLines: 3,
                                   style: Theme.of(context).textTheme.caption,
-                                  ),
+                                ),
                               )
                             ];
                           } else {
@@ -152,10 +154,11 @@ class _InfoScreenState extends State<InfoScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 16),
-                                child: Text('${snapshot.data}', 
+                                child: Text(
+                                  '${snapshot.data}',
                                   maxLines: 3,
                                   style: Theme.of(context).textTheme.caption,
-                                  ),
+                                ),
                               )
                             ];
                           }
@@ -168,10 +171,11 @@ class _InfoScreenState extends State<InfoScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 16),
-                              child: Text('Error: ${snapshot.error}'.tr, 
+                              child: Text(
+                                'Error: ${snapshot.error}'.tr,
                                 maxLines: 3,
                                 style: Theme.of(context).textTheme.caption,
-                                ),
+                              ),
                             )
                           ];
                         } else {
@@ -196,263 +200,360 @@ class _InfoScreenState extends State<InfoScreen> {
                           ),
                         );
                       }),
-                    //),
-                  ),
                 ),
               ]),
+              SizedBox(height: spacerHeight),
               Row(children: <Widget>[
-                Flexible(child: FractionallySizedBox(
-                  widthFactor: 1,
+                Expanded(
+                  flex: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('RSSI:'.tr,
+                    child: Text(
+                      'RSSI:'.tr,
                       maxLines: 3,
                       style: Theme.of(context).textTheme.caption,
-                      ),
+                    ),
                   ),
                 ),
-                ),
-                FutureBuilder<String>(
-                    future: _rssi,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      List<Widget> children;
-                      if (snapshot.hasData) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.check_circle_outline,
-                            color: Colors.green,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text('Result: ${snapshot.data}' + 'dB',
-                              maxLines: 3,
-                              style: Theme.of(context).textTheme.caption,
+                Expanded(
+                    flex: 6,
+                    child: FutureBuilder<String>(
+                        future: _rssi,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String> snapshot) {
+                          List<Widget> children;
+                          if (snapshot.hasData) {
+                            if (snapshot.data == 'not connected'.tr) {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.question_mark,
+                                  color: Colors.grey,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    '${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                )
+                              ];
+                            } else {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    '${snapshot.data}' + 'dBm',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                )
+                              ];
+                            }
+                          } else if (snapshot.hasError) {
+                            children = <Widget>[
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: iconSize,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text(
+                                  'Error: ${snapshot.error}'.tr,
+                                  maxLines: 3,
+                                  style: Theme.of(context).textTheme.caption,
+                                ),
+                              )
+                            ];
+                          } else {
+                            children = const <Widget>[
+                              SizedBox(
+                                child: CircularProgressIndicator(),
+                                width: iconSize,
+                                height: iconSize,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Text(
+                                    '...'), // can't translate a string here...
+                              )
+                            ];
+                          }
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: children,
                             ),
-                          )
-                        ];
-                      } else if (snapshot.hasError) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text('Error: ${snapshot.error}'.tr,
-                              maxLines: 3,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                          )
-                        ];
-                      } else {
-                        children = const <Widget>[
-                          SizedBox(
-                            child: CircularProgressIndicator(),
-                            width: iconSize,
-                            height: iconSize,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 16),
-                            child:
-                                Text('...'), // can't translate a string here...
-                          )
-                        ];
-                      }
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: children,
-                        ),
-                      );
-                    })
+                          );
+                        })),
               ]),
-
+              SizedBox(height: spacerHeight),
               Row(children: <Widget>[
-                Flexible(child: FractionallySizedBox(
-                  widthFactor: 1,
+                Expanded(
+                  flex: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                      child: Text('Model number:'.tr,
-                        maxLines: 3,
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                  ),
+                    child: Text(
+                      'Model number:'.tr,
+                      maxLines: 3,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                   ),
                 ),
-                FutureBuilder<String>(
-                    future: _modelNumber,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      List<Widget> children;
-                      if (snapshot.hasData) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.check_circle_outline,
-                            color: Colors.green,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text('Result: ${snapshot.data}'.tr),
-                          )
-                        ];
-                      } else if (snapshot.hasError) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text('Error: ${snapshot.error}'.tr),
-                          )
-                        ];
-                      } else {
-                        children = const <Widget>[
-                          SizedBox(
-                            child: CircularProgressIndicator(),
-                            width: iconSize,
-                            height: iconSize,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 16),
-                            child:
-                                Text('...'), // can't translate a string here...
-                          )
-                        ];
-                      }
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: children,
-                        ),
-                      );
-                    })
+                Expanded(
+                    flex: 6,
+                    child: FutureBuilder<String>(
+                        future: _modelNumber,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String> snapshot) {
+                          List<Widget> children;
+                          if (snapshot.hasData) {
+                            if (snapshot.data == 'not connected'.tr) {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.question_mark,
+                                  color: Colors.grey,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    '${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                )
+                              ];
+                            } else {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text('${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,),
+                                )
+                              ];
+                            }
+                          } else if (snapshot.hasError) {
+                            children = <Widget>[
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: iconSize,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text('Error: ${snapshot.error}'.tr),
+                              )
+                            ];
+                          } else {
+                            children = const <Widget>[
+                              SizedBox(
+                                child: CircularProgressIndicator(),
+                                width: iconSize,
+                                height: iconSize,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Text(
+                                    '...'), // can't translate a string here...
+                              )
+                            ];
+                          }
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: children,
+                            ),
+                          );
+                        })),
               ]),
+              SizedBox(height: spacerHeight),
               Row(children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Firmware revision'.tr,
-                    maxLines: 3,
-                    style: Theme.of(context).textTheme.caption,
+                Expanded(
+                  flex: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Firmware revision:'.tr,
+                      maxLines: 3,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                   ),
                 ),
-                FutureBuilder<String>(
-                    future: _firmwareRevision,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      List<Widget> children;
-                      if (snapshot.hasData) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.check_circle_outline,
-                            color: Colors.green,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text('Result: ${snapshot.data}'.tr),
-                          )
-                        ];
-                      } else if (snapshot.hasError) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text('Error: ${snapshot.error}'.tr),
-                          )
-                        ];
-                      } else {
-                        children = const <Widget>[
-                          SizedBox(
-                            child: CircularProgressIndicator(),
-                            width: iconSize,
-                            height: iconSize,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 16),
-                            child: Text('...'),
-                          )
-                        ];
-                      }
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: children,
-                        ),
-                      );
-                    })
+                Expanded(
+                    flex: 6,
+                    child: FutureBuilder<String>(
+                        future: _firmwareRevision,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String> snapshot) {
+                          List<Widget> children;
+                          if (snapshot.hasData) {
+                            if (snapshot.data == 'not connected'.tr) {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.question_mark,
+                                  color: Colors.grey,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    '${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                )
+                              ];
+                            } else {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text('${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,),
+                                )
+                              ];
+                            }
+                          } else if (snapshot.hasError) {
+                            children = <Widget>[
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: iconSize,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text('Error: ${snapshot.error}'.tr),
+                              )
+                            ];
+                          } else {
+                            children = const <Widget>[
+                              SizedBox(
+                                child: CircularProgressIndicator(),
+                                width: iconSize,
+                                height: iconSize,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Text('...'),
+                              )
+                            ];
+                          }
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: children,
+                            ),
+                          );
+                        })),
               ]),
+              SizedBox(height: spacerHeight),
               Row(children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Battery charge level:'.tr,
-                    maxLines: 3,
-                    style: Theme.of(context).textTheme.caption,
+                Expanded(
+                  flex: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Battery charge level:'.tr,
+                      maxLines: 3,
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                   ),
                 ),
-                FutureBuilder<int>(
-                    future: _batteryVoltage,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<int> snapshot) {
-                      List<Widget> children;
-                      if (snapshot.hasData) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.check_circle_outline,
-                            color: Colors.green,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child:
-                                Text('Result: ${snapshot.data.toString()}%'.tr),
-                          )
-                        ];
-                      } else if (snapshot.hasError) {
-                        children = <Widget>[
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: iconSize,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Text('Error: ${snapshot.error}'.tr),
-                          )
-                        ];
-                      } else {
-                        children = const <Widget>[
-                          SizedBox(
-                            child: CircularProgressIndicator(),
-                            width: iconSize,
-                            height: iconSize,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 16),
-                            child: Text('...'),
-                          )
-                        ];
-                      }
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: children,
-                        ),
-                      );
-                    })
+                Expanded(
+                    flex: 6,
+                    child: FutureBuilder<String>(
+                        future: _batteryVoltage,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String> snapshot) {
+                          List<Widget> children;
+                          if (snapshot.hasData) {
+                            if (snapshot.data == 'not connected'.tr) {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.question_mark,
+                                  color: Colors.grey,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    '${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                )
+                              ];
+                            } else {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text('${snapshot.data.toString()}%',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.caption,
+                                    ),
+                                )
+                              ];
+                            }
+                          } else if (snapshot.hasError) {
+                            children = <Widget>[
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: iconSize,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text('Error: ${snapshot.error}'.tr),
+                              )
+                            ];
+                          } else {
+                            children = const <Widget>[
+                              SizedBox(
+                                child: CircularProgressIndicator(),
+                                width: iconSize,
+                                height: iconSize,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Text('...'),
+                              )
+                            ];
+                          }
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: children,
+                            ),
+                          );
+                        })),
               ]),
               Row(
                 children: <Widget>[

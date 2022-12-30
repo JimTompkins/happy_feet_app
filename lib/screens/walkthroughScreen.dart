@@ -52,6 +52,9 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
     return IntroductionScreen(
       key: introKey,
       globalBackgroundColor: Colors.white,
+      dotsFlex: 2,  // disables the expanded dots behaviour,
+                    // added to prevent render overflow
+                    // see github.com./Pyozer/introduction_screen/issues/7
 
       globalHeader: Align(
         alignment: Alignment.topRight,
@@ -121,7 +124,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
       back: const Icon(Icons.arrow_back),
       skip: Text('Skip'.tr, style: AppTheme.walkthroughButtonText),
       next: const Icon(Icons.arrow_forward,
-         size: 40.0,
+         size: 30.0,
          color: AppColors.h1Color),
       done: Text('Done'.tr, style: AppTheme.walkthroughButtonText),
       curve: Curves.fastLinearToSlowEaseIn,
