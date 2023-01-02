@@ -369,6 +369,7 @@ class BluetoothBLEService {
             break;
           case BluetoothDeviceState.disconnected:
             isConnected(false);
+            _playState.value = false;
             if (kDebugMode) {
               print('HF: connection state update: disconnected');
             }

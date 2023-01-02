@@ -396,6 +396,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             setState(() {
               if (_bluetoothBLEService.isBleConnected()) {
                 _playState.value = !_playState.value;
+              } else {
+                _playState.value = false;
               }
             });
           }, //onPressed
