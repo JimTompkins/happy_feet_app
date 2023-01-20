@@ -165,8 +165,8 @@ bool multiMode = false;
 // to enable or disable beats.
 bool footSwitch = false;
 
-// flag used to enable toe or heel tapping
-bool heelTap = false;
+// flag used to enable toe or heel tapping.  The default setting is heel tapping
+bool heelTap = true;
 
 // saved preference for language
 String savedLanguage = '';

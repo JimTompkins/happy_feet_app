@@ -91,13 +91,14 @@ class Groove {
   var leadInString = '0'.obs;
   RxBool leadInDone = false.obs;
   // variables for practice mode: instantaneous BPM, current streaks
-  // within +/- 1, 3, and 5 BPM of target
+  // within +/- 5 and 10 BPM of target
   var practiceBPM = 0.0.obs;
-  var practiceStreak1 = 0.obs;
-  var practiceStreak3 = 0.obs;
+  //var practiceStreak1 = 0.obs;
+  //var practiceStreak3 = 0.obs;
   var practiceStreak5 = 0.obs;
+  var practiceStreak10 = 0.obs;
   var targetTempo = 120.obs;
-  var practiceColor = Colors.white;
+  //var practiceColor = Colors.white;
   bool firstBeat = true;
   int runCount = 0;
   bool practice = false;
@@ -716,13 +717,19 @@ class Groove {
 
     // set the background color based on the sign of the error:
     // red if going too fast, green if going too slow, blue otherwise
-    if (err < -5) {
+    /*
+    if (err < -10) {
       practiceColor = Colors.red;
-    } else if (err > 5) {
+    } else if (err < -5) {
+      practiceColor = Colors.orange;
+    } else if (err > 10) {
       practiceColor = Colors.green;
+    } else if (err > 5) {
+      practiceColor = Colors.lightGreen;
     } else {
       practiceColor = Colors.blue;
     }
+    */
 
     // absolute value of error, used by the streak couters below
     if (err < 0) {
@@ -733,6 +740,12 @@ class Groove {
       this.practiceStreak5++;
     } else {
       this.practiceStreak5.value = 0;
+    }
+
+    if (err <= 10) {
+      this.practiceStreak10++;
+    } else {
+      this.practiceStreak10.value = 0;
     }
   }
 
@@ -1070,7 +1083,7 @@ class Groove {
         ',' +
         type +
         ',';
-  
+
 //    print('HF: toCSV1: $result');
 
     // for each note
@@ -1108,7 +1121,7 @@ class Groove {
     String _type;
     int _voices;
     int _interp;
- 
+
     if (kDebugMode) {
       print('HF groove.fromCSV : number of fields = $numFields');
     }

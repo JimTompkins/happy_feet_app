@@ -106,7 +106,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           reverse: true,
           title: 'Enable beats'.tr,
           body:
-              'Press the music note button at the bottom of the screen to enable beat detection.  Press it again to disable beat detection.'
+              'With your foot flat on the floor, press the music note button at the bottom of the screen to enable beat detection.  Press it again to disable beat detection.'
                   .tr,
           image: _buildImage('beats.jpeg'),
           decoration: pageDecoration,
@@ -122,7 +122,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
           reverse: true,
           title: 'Tap your foot'.tr,
           body:
-              'Tap your foot to play the selected sound.  Experiment with other sounds and play modes.  Have fun!'
+              'Tap your foot to play the selected sound.  Heel tapping is the default mode.  Experiment with other sounds and play modes.  Have fun!'
                   .tr,
           image: _buildImage('beats.jpeg'),
           decoration: pageDecoration,

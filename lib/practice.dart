@@ -337,7 +337,7 @@ class _PracticePageState extends State<PracticePage> {
               alignment: Alignment.center,
               child: Obx(
                 () => Text(
-                  (groove.practiceStreak5.value.toString()),
+                  (groove.practiceStreak10.value.toString()),
                   style: TextStyle(fontSize: 40),
                 ),
               ),
