@@ -951,7 +951,7 @@ class Groove {
   }
 
   // 1-tap beat 1: in 1-tap mode, this function is called to invoke
-  // these action on beat 1:
+  // these actions on beat 1:
   //    - play the first note in the groove
   //    - schedules the other notes in the groove using timers
   void oneTapBeat1() {

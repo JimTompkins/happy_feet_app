@@ -368,6 +368,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       floatingActionButton: Obx(
         () => FloatingActionButton(
           foregroundColor: Theme.of(context).colorScheme.secondary,
+          //foregroundColor: AppColors.settingsIconColor,
           elevation: 25,
           onPressed: () {
             if (audioTestMode) {
@@ -594,6 +595,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           }
                           playMode = Mode.groove;
                           groove.oneTap = false;
+                          /*
+                          if (groove.bpm > 6) {  // this checks for an error
+                            // when going from oneTap mode to groove mode
+                            // since oneTap can have bpm up to 9
+                            groove.reset();
+                          }
+                          */
                           Get.to(() => grooveScreen);
                         } else if (newValue == 'Bass') {
                           groove.type = GrooveType.bass;
@@ -604,6 +612,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           }
                           playMode = Mode.bass;
                           groove.oneTap = false;
+                          /*
+                          if (groove.bpm > 6) {  // this checks for an error
+                            // when going from oneTap mode to bass mode
+                            // since oneTap can have bpm up to 9
+                            groove.reset();
+                          }
+                          */
                           Get.to(() => bassScreen);
                         } else if (newValue == '1-tap') {
                           groove.clearNotes();

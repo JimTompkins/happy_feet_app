@@ -52,6 +52,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
       bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: AppColors.scaffoldBackgroundColor,
       imagePadding: EdgeInsets.zero,
+      fullScreen: false,
     );
 
     return IntroductionScreen(

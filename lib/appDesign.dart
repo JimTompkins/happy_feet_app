@@ -23,6 +23,9 @@ class AppColors {
 
 class AppTheme {
   static var appTheme = ThemeData(
+    appBarTheme: AppBarTheme(
+       color: AppColors.bottomBarColor,
+    ),
     brightness: Brightness.dark,
     backgroundColor: AppColors.scaffoldBackgroundColor,
     //primaryColor: Colors.deepOrange[500],

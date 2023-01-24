@@ -81,6 +81,10 @@ class _GrooveScreenState extends State<GrooveScreen> {
   ];
 
   void loadGroove() {
+    if (groove.bpm > 6) {  // check for an out of range bpm i.e. > 6
+      // this can happen if coming from oneTap to groove mode
+      groove.bpm = 6;
+    }
     _beatsPerMeasure = groove.bpm;
     bpmString = groove.bpm.toString();
     _numberOfMeasures = groove.numMeasures;

@@ -94,6 +94,10 @@ class _BassScreenState extends State<BassScreen> {
   @override
   initState() {
     super.initState();
+    if (groove.bpm > 6) {  // check for an out of range bpm i.e. > 6
+      // this can happen if coming from oneTap to bass mode
+      groove.bpm = 6;
+    }
     _beatsPerMeasure = groove.bpm;
     bpmString = groove.bpm.toString();
     _numberOfMeasures = groove.numMeasures;
