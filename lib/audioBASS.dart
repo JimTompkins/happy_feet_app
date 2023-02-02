@@ -75,6 +75,7 @@ class Sample {
     assert(_result == 1, 'Error: play result is $_result');
     this.errorCode = bass.BASS_ErrorGetCode();
     assert(this.errorCode == 0, 'Error: error code is $this.errorCode');
+    /*
     if (kDebugMode) {
       // print out some elements of the BASS_INFO struct
       bass.BASS_GetInfo(infoPointer);
@@ -83,6 +84,7 @@ class Sample {
       int minBuf = infoPointer.ref.minbuf;
       print('HF: Latency = $latency, Minbuf = $minBuf, Frequency = $freq');
     }
+    */
   }
 
   // stop this sample.  Note we're actually using the

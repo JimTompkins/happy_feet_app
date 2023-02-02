@@ -827,15 +827,23 @@ class Groove {
     variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
 
     // create status string
-    String _status = '';
-    if (beatPeriod > (mean2 * 1.5)) {
-      _status = 'missing';
-      runCount = 0;
-    } else if (beatPeriod < (mean2 * 0.75)) {
-      _status = 'spurious';
-      runCount = 0;
-    } else {
-      runCount++;
+    if (kDebugMode) {
+      String _status = '';
+      if (beatPeriod > (mean2 * 1.5)) {
+        _status = 'missing';
+        runCount = 0;
+      } else if (beatPeriod > (mean2 * 1.1)) {
+        _status = 'late';
+        runCount = 0;
+      } else if (beatPeriod < (mean2 * 0.9)) {
+        _status = 'early';
+        runCount = 0;
+      } else if (beatPeriod < (mean2 * 0.75)) {
+        _status = 'spurious';
+        runCount = 0;
+      } else {
+        runCount++;
+      }
     }
 
     // print comma separated data for later analysis in Excel

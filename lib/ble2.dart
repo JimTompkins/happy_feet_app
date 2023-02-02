@@ -561,7 +561,9 @@ class BluetoothBLEService {
     }
   }
 
-  // set bit 7 of char6, the beat enable flag
+  // enable test mode by setting bit 7 of char6, the testMode enable flag
+  // note that the beat enable bit (bit 0) is also set to make the
+  // normal calibration sequence occur.
   Future<void> enableTestMode() async {
     if (_char6 == null) {
       if (kDebugMode) {
@@ -572,7 +574,7 @@ class BluetoothBLEService {
       if (kDebugMode) {
         print('HF: enabling test mode: HF will send beats at a fixed rate');
       }
-      await _char6!.write([0x80]);
+      await _char6!.write([0x81]);
     }
   }
 
@@ -661,12 +663,14 @@ class BluetoothBLEService {
     );
     try {
       _beatSubscription = _char4!.value.listen((data) {
-//        var time = DateTime.now(); // get system time
+        var time = DateTime.now(); // get system time
         if (data.isNotEmpty) {
           String notifyData = data[0].toRadixString(16).padLeft(2, '0');
+          /*
           if (kDebugMode) {
-            print('HF:   notify received with data: $notifyData');
+            print('HF:   notify received,$time,$notifyData');
           }
+          */
 //          var lengthOfData = data.length();
 //          print('HF:   length of data = $lengthOfData');
 
@@ -721,9 +725,11 @@ class BluetoothBLEService {
               // if beats are currently on...
               // play the next note in the groove
               groove.play(data[0]);
+              /*
               if (kDebugMode) {
                 print('HF: playing next note in groove, ${data[0]}');
               }
+              */
               heartbeatCount = 0;
             }
           }

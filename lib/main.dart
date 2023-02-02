@@ -385,7 +385,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   // enable beats
                   groove.reset();
                   _bluetoothBLEService.enableBeat();
-                  // _bluetoothBLEService.enableTestMode();
+                  //_bluetoothBLEService.enableTestMode();
                   Get.snackbar('Status'.tr, 'beats enabled'.tr,
                       snackPosition: SnackPosition.BOTTOM);
                 } else {
