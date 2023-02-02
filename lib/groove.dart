@@ -827,8 +827,8 @@ class Groove {
     variation = (sysLatestBPM - sysFilteredBPM) / sysFilteredBPM * 100.0;
 
     // create status string
+    String _status = '';
     if (kDebugMode) {
-      String _status = '';
       if (beatPeriod > (mean2 * 1.5)) {
         _status = 'missing';
         runCount = 0;

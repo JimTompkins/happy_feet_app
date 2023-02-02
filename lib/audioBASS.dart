@@ -92,6 +92,9 @@ class Sample {
   // was giving errors.  ChannelPause will give a BASS_ERROR_NOPLAY if
   // the channel had already stopped playing.
   stop() {
+    if (this.channelNumber == 0) {
+      return;
+    }
     assert(this.channelNumber != 0, 'Error: channel number is 0');
     int _result = bass.BASS_ChannelPause(this.channelNumber);
     //assert(_result == 1, 'Error: stop result is $_result');
