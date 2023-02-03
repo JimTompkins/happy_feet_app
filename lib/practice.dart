@@ -126,7 +126,7 @@ class _PracticePageState extends State<PracticePage> {
               alignment: Alignment.center,
               child: Text(
                 'Sound'.tr,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             DropdownButtonHideUnderline(
@@ -141,7 +141,7 @@ class _PracticePageState extends State<PracticePage> {
                             color: item.color,
                             child: Text(
                               item.text,
-                              style: AppTheme.appTheme.textTheme.headline4,
+                              style: AppTheme.appTheme.textTheme.headlineMedium,
                             ),
                           ),
                         ))
@@ -194,7 +194,7 @@ class _PracticePageState extends State<PracticePage> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Metronome'.tr,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             Switch(
@@ -281,7 +281,7 @@ class _PracticePageState extends State<PracticePage> {
               alignment: Alignment.center,
               child: Text(
                 'Measured tempo:'.tr,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             Container(
@@ -305,7 +305,7 @@ class _PracticePageState extends State<PracticePage> {
               alignment: Alignment.center,
               child: Text(
                 'Error:'.tr,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             Container(
@@ -329,7 +329,7 @@ class _PracticePageState extends State<PracticePage> {
               alignment: Alignment.center,
               child: Text(
                 'Streak count:'.tr,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
             Container(

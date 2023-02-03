@@ -54,7 +54,7 @@ class _SaveGroovePageState extends State<SaveGroovePage> {
               Widget>[
             Text(
               'Enter groove name: '.tr,
-              style: Theme.of(context).textTheme.caption,
+              style: Theme.of(context).textTheme.displaySmall,
             ),
             TextFormField(
               controller: _filenameController,
@@ -79,7 +79,7 @@ class _SaveGroovePageState extends State<SaveGroovePage> {
             ),
             Text(
               'Enter a description of the groove: '.tr,
-              style: Theme.of(context).textTheme.caption,
+              style: Theme.of(context).textTheme.displaySmall,
             ),
             TextFormField(
               controller: _descriptionController,
@@ -96,7 +96,7 @@ class _SaveGroovePageState extends State<SaveGroovePage> {
                             AppColors.myButtonColor),
                       ),
                 child: Text('Save groove'.tr,
-                  style: AppTheme.appTheme.textTheme.caption,),
+                  style: AppTheme.appTheme.textTheme.displaySmall,),
                 onPressed: () {
                   grooveStorage.writeGroove(
                       _filenameController.text, _descriptionController.text);

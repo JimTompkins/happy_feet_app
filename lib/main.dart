@@ -419,7 +419,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'BLUETOOTH'.tr,
-                  style: AppTheme.appTheme.textTheme.headline1,
+                  style: AppTheme.appTheme.textTheme.displayLarge,
                 )),
           ]),
 
@@ -429,7 +429,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'Connect'.tr,
-                  style: AppTheme.appTheme.textTheme.caption,
+                  style: AppTheme.appTheme.textTheme.displaySmall,
                 )),
             Icon(Icons.bluetooth, size: 30, color: AppColors.settingsIconColor),
             Obx(
@@ -487,7 +487,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'MODE'.tr,
-                  style: AppTheme.appTheme.textTheme.headline1,
+                  style: AppTheme.appTheme.textTheme.displayLarge,
                 )),
           ]),
 
@@ -500,7 +500,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   alignment: Alignment.center,
                   child: Text(
                     'Play mode'.tr,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.displaySmall,
                   ),
                 ),
                 DropdownButtonHideUnderline(
@@ -515,7 +515,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headline4,
+                                  style: AppTheme.appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -664,7 +664,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'NOTES'.tr,
-                  style: Theme.of(context).textTheme.headline1,
+                  style: Theme.of(context).textTheme.displayLarge,
                 )),
           ]),
 
@@ -677,7 +677,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.center,
                 child: Text(
                   '1st note'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               DropdownButtonHideUnderline(
@@ -692,7 +692,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               color: item.color,
                               child: Text(
                                 item.text,
-                                style: AppTheme.appTheme.textTheme.headline4,
+                                style: AppTheme.appTheme.textTheme.headlineMedium,
                               ),
                             ),
                           ))
@@ -766,7 +766,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 alignment: Alignment.center,
                 child: Text(
                   '2nd note'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               DropdownButtonHideUnderline(
@@ -781,7 +781,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               color: item.color,
                               child: Text(
                                 item.text,
-                                style: AppTheme.appTheme.textTheme.headline4,
+                                style: AppTheme.appTheme.textTheme.headlineMedium,
                               ),
                             ),
                           ))

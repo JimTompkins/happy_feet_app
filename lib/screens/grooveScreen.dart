@@ -215,7 +215,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'DEFINE GROOVE'.tr,
-                    style: Theme.of(context).textTheme.headline1,
+                    style: Theme.of(context).textTheme.displayLarge,
                   )),
             ]),
 
@@ -226,7 +226,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Beats/measure'.tr,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.displaySmall,
                   ),
                 ),
                 DropdownButtonHideUnderline(
@@ -241,7 +241,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headline4,
+                                  style: AppTheme.appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -299,7 +299,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Measures'.tr,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.displaySmall,
                   ),
                 ),
                 DropdownButtonHideUnderline(
@@ -314,7 +314,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headline4,
+                                  style: AppTheme.appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -373,7 +373,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text('Voices'.tr,
-                      style: Theme.of(context).textTheme.caption),
+                      style: Theme.of(context).textTheme.displaySmall),
                 ),
                 Radio(
                   value: 1,
@@ -421,7 +421,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                       'Offbeat', // note: no translation since I don't think machine translations are good
-                      style: Theme.of(context).textTheme.caption),
+                      style: Theme.of(context).textTheme.displaySmall),
                 ),
                 Switch(
                     value: _interpolate,
@@ -472,7 +472,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
               child: Text(
                 ' Choose "-" for no note, b for bass drum, B for bass echo, t for low tom, T for high tom, S for snare drum, H for hi-hat cymbal, M for taMbourine, C for cowbell, F for fingersnap, R for rim shot, A for shAker, W for woodblock, Q for quijada, U for brUshes '
                     .tr,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.displaySmall,
               ),
             ), // Text
 
@@ -507,7 +507,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                         child: Text(
                                           item.text,
                                           style: AppTheme
-                                              .appTheme.textTheme.headline4,
+                                              .appTheme.textTheme.headlineMedium,
                                         ),
                                       ),
                                     ))
@@ -588,7 +588,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                       ),
                       child: Text(
                         'Save groove'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.displaySmall,
                       ),
                       onPressed: () {
                         Get.to(() => saveGroovePage);
@@ -609,7 +609,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
                       ),
                       child: Text(
                         'Load groove'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.displaySmall,
                       ),
                       onPressed: () {
                         Get.to(() => loadGroovePage);

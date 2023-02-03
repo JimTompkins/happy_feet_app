@@ -55,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Change language'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
             ]),
@@ -73,7 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     horizontal: 16.0),
                                 color: item.color,
                                 child: Text(item.text,
-                                  style: AppTheme.appTheme.textTheme.headline4,
+                                  style: AppTheme.appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -157,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Audio test mode'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               Switch(
@@ -218,7 +218,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Multi mode'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               Switch(
@@ -271,7 +271,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Foot switch'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               Switch(
@@ -324,7 +324,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Auto mode'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               Switch(
@@ -377,7 +377,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Tapping mode'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
             ]),
@@ -387,7 +387,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'toe'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               Switch(
@@ -425,7 +425,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'heel'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
               IconButton(
@@ -453,7 +453,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Play on click mode'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
             ]),
@@ -517,7 +517,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       child: Text(
                         'Info'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.displaySmall,
                       ),
                       onPressed: () {
                         Get.to(() => infoScreen);
@@ -536,7 +536,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       child: Text(
                         'Introduction'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.displaySmall,
                       ),
                       onPressed: () {
                         Get.to(() => walkthroughScreen);

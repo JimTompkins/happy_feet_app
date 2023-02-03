@@ -34,7 +34,7 @@ class _LoadGroovePageState extends State<LoadGroovePage> {
           children: <Widget>[
             Text(
               'Saved grooves: '.tr,
-              style: Theme.of(context).textTheme.caption,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             Flexible(
                 child: FutureBuilder(

@@ -423,7 +423,7 @@ class _OneTapPageState extends State<OneTapPage> {
                         : '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
                             .tr,
                     softWrap: true,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
               ),
@@ -433,7 +433,7 @@ class _OneTapPageState extends State<OneTapPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Rhythm'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
               Padding(
@@ -450,7 +450,7 @@ class _OneTapPageState extends State<OneTapPage> {
                             color: item.color,
                             child: Text(
                               item.text,
-                              style: AppTheme.appTheme.textTheme.headline4,
+                              style: AppTheme.appTheme.textTheme.headlineMedium,
                             ),
                           ),
                         ))
@@ -540,7 +540,7 @@ class _OneTapPageState extends State<OneTapPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       'Tab:',
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                   IconButton(

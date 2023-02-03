@@ -31,28 +31,28 @@ class AppTheme {
     //primaryColor: Colors.deepOrange[500],
     secondaryHeaderColor: AppColors.scaffoldBackgroundColor,
     textTheme: TextTheme(
-      headline1: TextStyle(
+      displayLarge: TextStyle(
           color: AppColors.h2Color,
           fontSize: 24,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
-      headline2: TextStyle(
+      displayMedium: TextStyle(
           color: AppColors.h2Color,
           fontSize: 22,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
-      headline3: TextStyle(
+      displaySmall: TextStyle(
           color: AppColors.h3Color,
           fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
-      headline4: TextStyle(
+      headlineMedium: TextStyle(
           // used for list items after picked
           color: AppColors.dropdownChoiceColor,
           fontSize: 16,
           fontWeight: FontWeight.w500,
           fontFamily: 'Montserrat'),
-      caption: TextStyle(
+      bodySmall: TextStyle(
           color: AppColors.captionColor,
           fontSize: 16,
           fontWeight: FontWeight.w500,

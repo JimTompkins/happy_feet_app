@@ -209,7 +209,7 @@ class _BassScreenState extends State<BassScreen> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'DEFINE BASS GROOVE'.tr,
-                    style: Theme.of(context).textTheme.headline1,
+                    style: Theme.of(context).textTheme.displayLarge,
                   )),
             ]),
 
@@ -220,7 +220,7 @@ class _BassScreenState extends State<BassScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Beats/measure'.tr,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 DropdownButtonHideUnderline(
@@ -235,7 +235,7 @@ class _BassScreenState extends State<BassScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headline4,
+                                  style: AppTheme.appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -291,7 +291,7 @@ class _BassScreenState extends State<BassScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Measures'.tr,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 DropdownButtonHideUnderline(
@@ -306,7 +306,7 @@ class _BassScreenState extends State<BassScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headline4,
+                                  style: AppTheme.appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -363,7 +363,7 @@ class _BassScreenState extends State<BassScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                       'Offbeat', // note: no translation since I don't think machine translations are good
-                      style: Theme.of(context).textTheme.caption),
+                      style: Theme.of(context).textTheme.bodySmall),
                 ),
                 Switch(
                     value: _interpolate,
@@ -414,7 +414,7 @@ class _BassScreenState extends State<BassScreen> {
               alignment: Alignment.centerLeft,
               child: Text(
                 'Choose "-" for no note, or any bass note from E1 to D#3'.tr,
-                style: Theme.of(context).textTheme.caption,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ), // Text
 
@@ -450,7 +450,7 @@ class _BassScreenState extends State<BassScreen> {
                                         child: Text(
                                           item.text,
                                           style: AppTheme
-                                              .appTheme.textTheme.headline4,
+                                              .appTheme.textTheme.headlineMedium,
                                         ),
                                       ),
                                     ))
@@ -511,7 +511,7 @@ class _BassScreenState extends State<BassScreen> {
                       ),
                       child: Text(
                         'Save groove'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.bodySmall,
                       ),
                       onPressed: () {
                         Get.to(() => saveGroovePage);
@@ -532,7 +532,7 @@ class _BassScreenState extends State<BassScreen> {
                       ),
                       child: Text(
                         'Load groove'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.bodySmall,
                       ),
                       onPressed: () {
                         Get.to(() => loadGroovePage);

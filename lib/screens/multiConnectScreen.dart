@@ -36,7 +36,7 @@ class _MultiConnectPageState extends State<MultiConnectPage> {
               children: [
                 Text(
                   'Select an available HappyFeet:'.tr,
-                  style: Theme.of(context).textTheme.caption,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 IconButton(
                   icon: Icon(

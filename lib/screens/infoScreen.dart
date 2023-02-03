@@ -7,20 +7,20 @@ import '../ble2.dart';
 import '../appDesign.dart';
 
 _launchURLHomePage() async {
-  const url = 'https://happyfeet-music.com';
-  if (await canLaunch(url)) {
-    await launch(url);
+  final Uri _url = Uri.parse('https://happyfeet-music.com');
+  if (await canLaunchUrl(_url)) {
+    await launchUrl(_url);
   } else {
-    throw 'Could not launch $url';
+    throw 'Could not launch $_url';
   }
 }
 
 _launchURLPrivacyPage() async {
-  const url = 'https://happyfeet-music.com/app-privacy/';
-  if (await canLaunch(url)) {
-    await launch(url);
+  final Uri _url = Uri.parse('https://happyfeet-music.com/app-privacy/');
+  if (await canLaunchUrl(_url)) {
+    await launchUrl(_url);
   } else {
-    throw 'Could not launch $url';
+    throw 'Could not launch $_url';
   }
 }
 
@@ -31,7 +31,7 @@ _emailUs() async {
   await FlutterEmailSender.send(email);
 }
 
-// info scren
+// info screen
 InfoScreen infoScreen = new InfoScreen();
 
 // Stateful version of Info page
@@ -92,7 +92,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     child: Text(
                       'App version:'.tr,
                       maxLines: 2,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -103,7 +103,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     child: Text(
                       _packageInfo.version,
                       maxLines: 2,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -117,7 +117,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     child: Text(
                       'Serial number:'.tr,
                       maxLines: 3,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -141,7 +141,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                 child: Text(
                                   '${snapshot.data}',
                                   maxLines: 3,
-                                  style: Theme.of(context).textTheme.caption,
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               )
                             ];
@@ -157,7 +157,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                 child: Text(
                                   '${snapshot.data}',
                                   maxLines: 3,
-                                  style: Theme.of(context).textTheme.caption,
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               )
                             ];
@@ -174,7 +174,7 @@ class _InfoScreenState extends State<InfoScreen> {
                               child: Text(
                                 'Error: ${snapshot.error}'.tr,
                                 maxLines: 3,
-                                style: Theme.of(context).textTheme.caption,
+                                style: Theme.of(context).textTheme.bodySmall,
                               ),
                             )
                           ];
@@ -211,7 +211,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     child: Text(
                       'RSSI:'.tr,
                       maxLines: 3,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -235,7 +235,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   child: Text(
                                     '${snapshot.data}',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 )
                               ];
@@ -251,7 +251,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   child: Text(
                                     '${snapshot.data}' + 'dBm',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 )
                               ];
@@ -268,7 +268,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                 child: Text(
                                   'Error: ${snapshot.error}'.tr,
                                   maxLines: 3,
-                                  style: Theme.of(context).textTheme.caption,
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                               )
                             ];
@@ -304,7 +304,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     child: Text(
                       'Model number:'.tr,
                       maxLines: 3,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -328,7 +328,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   child: Text(
                                     '${snapshot.data}',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 )
                               ];
@@ -343,7 +343,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   padding: const EdgeInsets.only(top: 16),
                                   child: Text('${snapshot.data}',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,),
+                                    style: Theme.of(context).textTheme.bodySmall,),
                                 )
                               ];
                             }
@@ -391,7 +391,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     child: Text(
                       'Firmware revision:'.tr,
                       maxLines: 3,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -415,7 +415,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   child: Text(
                                     '${snapshot.data}',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 )
                               ];
@@ -430,7 +430,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   padding: const EdgeInsets.only(top: 16),
                                   child: Text('${snapshot.data}',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,),
+                                    style: Theme.of(context).textTheme.bodySmall,),
                                 )
                               ];
                             }
@@ -477,7 +477,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     child: Text(
                       'Battery charge level:'.tr,
                       maxLines: 3,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
@@ -501,7 +501,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   child: Text(
                                     '${snapshot.data}',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 )
                               ];
@@ -516,7 +516,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                   padding: const EdgeInsets.only(top: 16),
                                   child: Text('${snapshot.data.toString()}%',
                                     maxLines: 3,
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                     ),
                                 )
                               ];
@@ -567,7 +567,7 @@ class _InfoScreenState extends State<InfoScreen> {
                       onPressed: _launchURLHomePage,
                       child: new Text(
                         'Show HappyFeet homepage'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.bodySmall,
                       ),
                     ),
                   ),
@@ -585,7 +585,7 @@ class _InfoScreenState extends State<InfoScreen> {
                       onPressed: _launchURLPrivacyPage,
                       child: new Text(
                         'Show privacy policy'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.bodySmall,
                       ),
                     ),
                   ),
@@ -603,7 +603,7 @@ class _InfoScreenState extends State<InfoScreen> {
                       onPressed: _emailUs,
                       child: new Text(
                         'Contact us'.tr,
-                        style: AppTheme.appTheme.textTheme.caption,
+                        style: AppTheme.appTheme.textTheme.bodySmall,
                       ),
                     ),
                   ),
