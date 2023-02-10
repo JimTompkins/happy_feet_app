@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -774,6 +775,15 @@ class BluetoothBLEService {
           if (kDebugMode) {
             print('HF: reading model number...');
           }
+          // there is an Android-specific bug with BLE that gives an error
+          // message if a read is attempted before the previous one is finished.
+          // (This does not happen with iOS).  The error message is:
+          // PlatformException(read_characteristic_error, unknown reason, may occur if
+          // readCharacteristic was called before last read finished., null, null)
+          // See https://github.com/pauldemarco/flutter_blue/issues/432
+          if (Platform.isAndroid) {
+            Future.delayed(Duration(milliseconds: 500));
+          }
           List<int> value = await _modelNumber!.read();
           // convert list of character codes to string
           var valString = String.fromCharCodes(value);
@@ -809,6 +819,15 @@ class BluetoothBLEService {
         try {
           if (kDebugMode) {
             print('HF: reading firmware revision...');
+          }
+          // there is an Android-specific bug with BLE that gives an error
+          // message if a read is attempted before the previous one is finished.
+          // (This does not happen with iOS).  The error message is:
+          // PlatformException(read_characteristic_error, unknown reason, may occur if
+          // readCharacteristic was called before last read finished., null, null)
+          // See https://github.com/pauldemarco/flutter_blue/issues/432
+          if (Platform.isAndroid) {
+            await Future.delayed(Duration(milliseconds: 500));
           }
           List<int> value = await _firmwareRev!.read();
           // convert list of character codes to string
@@ -904,6 +923,18 @@ class BluetoothBLEService {
         return ('not connected');
       } else {
         try {
+          // there is an Android-specific bug with BLE that gives an error
+          // message if a read is attempted before the previous one is finished.
+          // (This does not happen with iOS).  The error message is:
+          // PlatformException(read_characteristic_error, unknown reason, may occur if
+          // readCharacteristic was called before last read finished., null, null)
+          // See https://github.com/pauldemarco/flutter_blue/issues/432
+          // Note that a delay is 1000ms is used here to prevent clash with
+          // readFirmwareRevision's 500ms delay.  Yikes!
+          // Note that inserting a delay is quite an inelegant solution.
+          if (Platform.isAndroid) {
+            await Future.delayed(Duration(milliseconds: 1000));
+          }
           List<int> value = await _char1!.read();
           if (kDebugMode) {
             print("HF: battery voltage .  Value = $value[0]");
