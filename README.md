@@ -7,13 +7,10 @@ See the [HappyFeet webpage](https://happyfeet-music.com) for more details.
 This page gives an overview of the construction of the app.
 
 ## Main Packages Used
-| Purpose  | Android package used | iOS package used |
-|----------|----------------------|------------------|
-| audio player  | flutter_ogg_piano | soundpool <sup>1</sup> |
 
 flutter_blue_plus is used for the BLE interface.
 
-The BASS audio library from un4seen Developments is used for audio.  It is wrapped in a Flutter package called flutter_bass.  Note that BASS is a commercial product with licensing requirements.  See un4seen's website for details.  Prior to using BASS, we tried several audio packages:
+The BASS audio library from [un4seen Developments](https://www.un4seen.com) is used for audio.  It is wrapped in an (unplublished) Flutter package called [flutter_bass](https://github.com/JimTompkins/flutter_bass).  Note that BASS is a commercial product with licensing requirements.  See un4seen's website for details.  Prior to using BASS, we tried several audio packages:
 
 - flutter_ogg_piano worked well for Android but does not have an implementation for iOS.  
 - audioplayers/audiocache worked for iOS but the latency was too long (>200ms)
