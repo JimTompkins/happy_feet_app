@@ -11,11 +11,13 @@ This page gives an overview of the construction of the app.
 |----------|----------------------|------------------|
 | audio player  | flutter_ogg_piano | soundpool <sup>1</sup> |
 
-The BLE interface is implemented using flutter_blue_plus.
+flutter_blue_plus is used for the BLE interface.
 
-### Notes
-1. flutter_ogg_piano did not work for iOS.  Also tried audioplayers/audiocache for iOS but the latency was too long.  Even with soundpool,
-   the latency is 70ms (on iPhone 6).
+The BASS audio library from un4seen Developments is used for audio.  It is wrapped in a Flutter package called flutter_bass.  Note that BASS is a commercial product with licensing requirements.  See un4seen's website for details.  Prior to using BASS, we tried several audio packages:
+
+- flutter_ogg_piano worked well for Android but does not have an implementation for iOS.  
+- audioplayers/audiocache worked for iOS but the latency was too long (>200ms)
+- soundpool had better latency (70ms on iPhone 6) but still not acceptable
 
 ## BLE Interface
 
