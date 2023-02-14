@@ -8,7 +8,7 @@ This page gives an overview of the construction of the app.
 
 ## Main Packages Used
 
-flutter_blue_plus is used for the BLE interface.
+[flutter_blue_plus](https://github.com/boskokg/flutter_blue_plus) is used for the BLE interface.
 
 The BASS audio library from [un4seen Developments](https://www.un4seen.com) is used for audio.  It is wrapped in an (unplublished) Flutter package called [flutter_bass](https://github.com/JimTompkins/flutter_bass).  Note that BASS is a commercial product with licensing requirements.  See un4seen's website for details.  Prior to using BASS, we tried several audio packages:
 
