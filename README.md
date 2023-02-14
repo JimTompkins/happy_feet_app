@@ -10,7 +10,7 @@ This page gives an overview of the construction of the app.
 
 [flutter_blue_plus](https://github.com/boskokg/flutter_blue_plus) is used for the BLE interface.
 
-The BASS audio library from [un4seen Developments](https://www.un4seen.com) is used for audio.  It is wrapped in an (unplublished) Flutter package called [flutter_bass](https://github.com/JimTompkins/flutter_bass).  Note that BASS is a commercial product with licensing requirements.  See un4seen's website for details.  Prior to using BASS, we tried several audio packages:
+The BASS audio library from [un4seen Developments](https://www.un4seen.com) is used for audio.  It is wrapped in an (unpublished) Flutter package called [flutter_bass](https://github.com/JimTompkins/flutter_bass).  Note that BASS is a commercial product with licensing requirements.  See un4seen's website for details.  Prior to using BASS, we tried several audio packages:
 
 - flutter_ogg_piano worked well for Android but does not have an implementation for iOS.  
 - audioplayers/audiocache worked for iOS but the latency was too long (>200ms)
@@ -65,6 +65,5 @@ A similar list is provided for the 2nd note voices:
 - cloud storage/sharing of grooves
 - lower latency audio on iOS.  This was improved greatly by changing the audio engine to the 
 BASS library from un4seen developments.
-- OAD: over-air-download for HappyFeet firmware updates.  HappyFeet uses the Texas Instruments CC26xx family of BLE microcontrollers which do have
-  software libraries to support OAD.  There is currently no Flutter package for TI OAD, although there are Android apps that do it. Also Nordic          Semiconductor has a Flutter package to update their micros.
+- OAD: over-air-download for HappyFeet firmware updates.  HappyFeet uses the Texas Instruments CC26xx family of BLE microcontrollers which do have software libraries to support OAD.  There is currently no Flutter package for TI OAD, although there are Android apps that do it. Also Nordic Semiconductor has a Flutter package to update their micros.
   
