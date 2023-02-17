@@ -287,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // initialize the saved preferences.  Note that this function call was added to prevent
     // an error message due to awaits inside initState().  This showed up for the first time
     // after upgrading to flutter 3.0.1
-    initPreferences();
+    //initPreferences();
 
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
@@ -298,13 +298,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       hfaudio.init();
     });
 
-    if (!sharedPrefs.audioTestMode) {
+    //if (!sharedPrefs.audioTestMode) {
       // request needed permissions
       _checkPermission();
 
       // initialize BLE
       _bluetoothBLEService.init();
-    }
+    //}
   }
 
   @override
