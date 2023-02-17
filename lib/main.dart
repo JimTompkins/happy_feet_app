@@ -22,10 +22,12 @@ import 'practice.dart';
 import 'localization.g.dart';
 import 'utils.dart';
 import 'appDesign.dart';
+import 'sharedPrefs.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  initPreferences();
+  sharedPrefs.init();
+  //initPreferences();
   runApp(MyApp());
 }
 
@@ -98,7 +100,7 @@ initPreferences() async {
 
   // load saved preferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  audioTestMode = prefs.getBool('audioTestMode') ?? false;
+  //audioTestMode = prefs.getBool('audioTestMode') ?? false;
   multiMode = prefs.getBool('multiMode') ?? false;
   footSwitch = prefs.getBool('footSwitch') ?? false;
   autoMode = prefs.getBool('autoMode') ?? false;
@@ -153,7 +155,7 @@ enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
 // flag used to enable a test mode where the play button is used to play sounds
 // rather than BLE notifies.  This is used to separate the testing of the
 // audio from the BLE interface.
-bool audioTestMode = false;
+//bool audioTestMode = false;
 
 // flag used to enable multi mode.  Use multi mode if you have more than one
 // HappyFeet.  In multi mode, it will show all of the HappyFeet discovered
@@ -171,9 +173,6 @@ bool heelTap = true;
 // saved preference for language
 String savedLanguage = '';
 String language = '';
-
-// threshold between 0 and 100 for beat detection sensitivity
-int beatThreshold = 50;
 
 // flag used to enable auto mode in 1-tap mode.  When auto mode is enabled,
 // 1-tap mode only needs you to do the 4 beat lead-in and then tap the first 1.
@@ -299,7 +298,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       hfaudio.init();
     });
 
-    if (!audioTestMode) {
+    if (!sharedPrefs.audioTestMode) {
       // request needed permissions
       _checkPermission();
 
@@ -337,7 +336,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
       final _prefs = await SharedPreferences.getInstance();
       _prefs.setString('language', language);
-      _prefs.setBool('audioTestMode', audioTestMode);
+//      _prefs.setBool('audioTestMode', audioTestMode);
       _prefs.setBool('multiMode', multiMode);
       _prefs.setBool('autoMode', autoMode);
       _prefs.setBool('footSwitch', footSwitch);
@@ -371,7 +370,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           //foregroundColor: AppColors.settingsIconColor,
           elevation: 25,
           onPressed: () {
-            if (audioTestMode) {
+            if (sharedPrefs.audioTestMode) {
               groove.play(_testModeData);
               _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {
@@ -515,7 +514,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headlineMedium,
+                                  style: AppTheme
+                                      .appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -692,7 +692,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               color: item.color,
                               child: Text(
                                 item.text,
-                                style: AppTheme.appTheme.textTheme.headlineMedium,
+                                style:
+                                    AppTheme.appTheme.textTheme.headlineMedium,
                               ),
                             ),
                           ))
@@ -781,7 +782,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                               color: item.color,
                               child: Text(
                                 item.text,
-                                style: AppTheme.appTheme.textTheme.headlineMedium,
+                                style:
+                                    AppTheme.appTheme.textTheme.headlineMedium,
                               ),
                             ),
                           ))

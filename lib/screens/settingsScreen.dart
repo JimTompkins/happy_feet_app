@@ -6,6 +6,7 @@ import '../main.dart';
 import '../ble2.dart';
 import '../utils.dart';
 import '../appDesign.dart';
+import '../sharedPrefs.dart';
 import 'infoScreen.dart';
 import 'walkthroughScreen.dart';
 
@@ -161,7 +162,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               Switch(
-                value: audioTestMode,
+                value: sharedPrefs.audioTestMode,
                 activeColor: Colors.deepOrange[400],
                 activeTrackColor: Colors.deepOrange[200],
                 inactiveThumbColor: Colors.grey[600],
@@ -174,8 +175,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           'You cannot use audio test mode if connected.'.tr,
                           snackPosition: SnackPosition.BOTTOM);
                     } else {
-                      audioTestMode = value;
-                      if (audioTestMode) {
+                      sharedPrefs.audioTestMode = value;
+                      if (sharedPrefs.audioTestMode) {
                         if (kDebugMode) {
                           print('HF: audio test mode enabled');
                         }

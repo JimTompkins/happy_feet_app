@@ -8,6 +8,7 @@ import '../audioBASS.dart';
 import '../groove.dart';
 import '../utils.dart';
 import '../appDesign.dart';
+import '../sharedPrefs.dart';
 import 'settingsScreen.dart';
 import 'saveGrooveScreen.dart';
 import 'loadGrooveScreen.dart';
@@ -168,7 +169,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: () {
-            if (audioTestMode) {
+            if (sharedPrefs.audioTestMode) {
               groove.play(_testModeData);
               _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {

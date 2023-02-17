@@ -9,6 +9,7 @@ import '../groove.dart';
 //import '../bass.dart';
 import '../utils.dart';
 import '../appDesign.dart';
+import '../sharedPrefs.dart';
 import 'settingsScreen.dart';
 import 'saveGrooveScreen.dart';
 import 'loadGrooveScreen.dart';
@@ -94,7 +95,8 @@ class _BassScreenState extends State<BassScreen> {
   @override
   initState() {
     super.initState();
-    if (groove.bpm > 6) {  // check for an out of range bpm i.e. > 6
+    if (groove.bpm > 6) {
+      // check for an out of range bpm i.e. > 6
       // this can happen if coming from oneTap to bass mode
       groove.bpm = 6;
     }
@@ -163,7 +165,7 @@ class _BassScreenState extends State<BassScreen> {
           foregroundColor: Theme.of(context).colorScheme.secondary,
           elevation: 25,
           onPressed: () {
-            if (audioTestMode) {
+            if (sharedPrefs.audioTestMode) {
               groove.play(_testModeData);
               _testModeData ^= 0x40; // toggle bit 6, the sequence bit
             } else {
@@ -235,7 +237,8 @@ class _BassScreenState extends State<BassScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headlineMedium,
+                                  style: AppTheme
+                                      .appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -306,7 +309,8 @@ class _BassScreenState extends State<BassScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headlineMedium,
+                                  style: AppTheme
+                                      .appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -449,8 +453,8 @@ class _BassScreenState extends State<BassScreen> {
                                         color: item.color,
                                         child: Text(
                                           item.text,
-                                          style: AppTheme
-                                              .appTheme.textTheme.headlineMedium,
+                                          style: AppTheme.appTheme.textTheme
+                                              .headlineMedium,
                                         ),
                                       ),
                                     ))

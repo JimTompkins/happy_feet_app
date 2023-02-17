@@ -8,6 +8,7 @@ import 'package:happy_feet_app/main.dart';
 //import 'audio.dart';
 import 'audioBASS.dart';
 import 'bass.dart';
+import 'sharedPrefs.dart';
 
 Note note = new Note(0, "Bass drum");
 Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
@@ -757,7 +758,7 @@ class Groove {
 
     // check for a sequence error
     sequenceBit = (data >> 6) & 0x01;
-    if (lastSequenceBit != -1 && !audioTestMode) {
+    if (lastSequenceBit != -1 && !sharedPrefs.audioTestMode) {
       // ignore the sequence bit on the first notify received is indicated by -1 or if we're in audio test mode
       if (sequenceBit == lastSequenceBit) {
         Get.snackbar('Sequence error:',
