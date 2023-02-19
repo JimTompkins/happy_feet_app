@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:circular_buffer/circular_buffer.dart';
 import 'package:get/get.dart';
-import 'package:happy_feet_app/main.dart';
+//import 'package:happy_feet_app/main.dart';
 
 //import 'audio.dart';
 import 'audioBASS.dart';
@@ -911,7 +911,7 @@ class Groove {
       } else {
         leadInDone.value = true;
         // lead-in is done, we're live!
-        if (!autoMode) {
+        if (!sharedPrefs.autoMode) {
           // if not in auto mode, call the beat1 function
           oneTapBeat1();
         } else {
@@ -994,7 +994,7 @@ class Groove {
       beatSubdivisionInMs = beatPeriod / (this.bpm / 4);
       firstBeat = false;
     } else {
-      if (!autoMode) {
+      if (!sharedPrefs.autoMode) {
         beatSubdivisionInMs = beatPeriod / this.bpm;
       }
     }

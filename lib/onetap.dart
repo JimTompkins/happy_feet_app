@@ -3,9 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'main.dart';
+//import 'main.dart';
 import 'utils.dart';
 import 'appDesign.dart';
+import 'sharedPrefs.dart';
 import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
 
@@ -417,7 +418,7 @@ class _OneTapPageState extends State<OneTapPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    autoMode
+                    sharedPrefs.autoMode
                         ? '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the first 1'
                             .tr
                         : '1-tap mode: choose a rhythm, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
@@ -441,97 +442,99 @@ class _OneTapPageState extends State<OneTapPage> {
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton2(
                     items: rhythmDropdownList
-                    .map((item) => DropdownMenuItem<String>(
-                          value: item.text,
-                          child: Container(
-                            alignment: AlignmentDirectional.centerStart,
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 5.0),
-                            color: item.color,
-                            child: Text(
-                              item.text,
-                              style: AppTheme.appTheme.textTheme.headlineMedium,
+                        .map((item) => DropdownMenuItem<String>(
+                              value: item.text,
+                              child: Container(
+                                alignment: AlignmentDirectional.centerStart,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                color: item.color,
+                                child: Text(
+                                  item.text,
+                                  style: AppTheme
+                                      .appTheme.textTheme.headlineMedium,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+                    selectedItemBuilder: (context) {
+                      return rhythmDropdownList
+                          .map(
+                            (item) => Container(
+                              alignment: Alignment.center,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: Text(
+                                item.text,
+                                style: AppTheme.appTheme.textTheme.labelMedium,
+                              ),
                             ),
-                          ),
-                        ))
-                    .toList(),
-                selectedItemBuilder: (context) {
-                  return rhythmDropdownList
-                      .map(
-                        (item) => Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Text(
-                            item.text,
-                            style: AppTheme.appTheme.textTheme.labelMedium,
-                          ),
-                        ),
-                      )
-                      .toList();
-                },
-                value: _rhythmName,
-                dropdownPadding: EdgeInsets.zero,
-                itemPadding: EdgeInsets.zero,
-                buttonHeight: 40,
-                buttonPadding: const EdgeInsets.only(left: 14, right: 14),
-                buttonDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(),
-                  color: AppColors.dropdownBackgroundColor,
-                ),
-                itemHeight: 40,
-                dropdownDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(),
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    switch (newValue) {
-                      case 'Rock 1':
-                        type = RhythmType.rock1;
-                        createGroove(type);
-                        break;
-                      case 'Rock 2':
-                        type = RhythmType.rock2;
-                        createGroove(type);
-                        break;
-                      case 'Jazz 1':
-                        type = RhythmType.jazz1;
-                        createGroove(type);
-                        break;
-                      case 'Bossa Nova':
-                        type = RhythmType.bossanova;
-                        createGroove(type);
-                        break;
-                      case 'Merengue':
-                        type = RhythmType.merengue;
-                        createGroove(type);
-                        break;
-                      case 'Afro-Cuban 6/8':
-                        type = RhythmType.afrocuban68;
-                        createGroove(type);
-                        break;
-                      case 'Samba':
-                        type = RhythmType.samba;
-                        createGroove(type);
-                        break;
-                      default:
-                        if (kDebugMode) {
-                          print('HF: unknown 1-tap rhythm type');
+                          )
+                          .toList();
+                    },
+                    value: _rhythmName,
+                    dropdownPadding: EdgeInsets.zero,
+                    itemPadding: EdgeInsets.zero,
+                    buttonHeight: 40,
+                    buttonPadding: const EdgeInsets.only(left: 14, right: 14),
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                      color: AppColors.dropdownBackgroundColor,
+                    ),
+                    itemHeight: 40,
+                    dropdownDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(),
+                    ),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        switch (newValue) {
+                          case 'Rock 1':
+                            type = RhythmType.rock1;
+                            createGroove(type);
+                            break;
+                          case 'Rock 2':
+                            type = RhythmType.rock2;
+                            createGroove(type);
+                            break;
+                          case 'Jazz 1':
+                            type = RhythmType.jazz1;
+                            createGroove(type);
+                            break;
+                          case 'Bossa Nova':
+                            type = RhythmType.bossanova;
+                            createGroove(type);
+                            break;
+                          case 'Merengue':
+                            type = RhythmType.merengue;
+                            createGroove(type);
+                            break;
+                          case 'Afro-Cuban 6/8':
+                            type = RhythmType.afrocuban68;
+                            createGroove(type);
+                            break;
+                          case 'Samba':
+                            type = RhythmType.samba;
+                            createGroove(type);
+                            break;
+                          default:
+                            if (kDebugMode) {
+                              print('HF: unknown 1-tap rhythm type');
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    groove.oneTapStarted = false;
-                    groove.cancelMeasureTimer();
-                    if (kDebugMode) {
-                      print("HF: 1-tap rhythm changed to $newValue");
-                    }
-                  });
-                  _rhythmName = newValue!;
-                },
+                        groove.oneTapStarted = false;
+                        groove.cancelMeasureTimer();
+                        if (kDebugMode) {
+                          print("HF: 1-tap rhythm changed to $newValue");
+                        }
+                      });
+                      _rhythmName = newValue!;
+                    },
+                  ),
+                ),
               ),
-            ),
-            ),
             ]),
             Row(children: <Widget>[
               Column(
@@ -571,7 +574,8 @@ class _OneTapPageState extends State<OneTapPage> {
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.courierPrime(
-                    textStyle: TextStyle(color: AppColors.h4Color, fontSize: 18),
+                    textStyle:
+                        TextStyle(color: AppColors.h4Color, fontSize: 18),
                   ),
                 ),
               ),
@@ -582,8 +586,9 @@ class _OneTapPageState extends State<OneTapPage> {
                 child: Obx(
                   () => Text('Lead-in count:'.tr,
                       style: TextStyle(
-                        color:
-                            groove.leadInDone.value ? Colors.grey : AppColors.h4Color,
+                        color: groove.leadInDone.value
+                            ? Colors.grey
+                            : AppColors.h4Color,
                         fontSize: 16,
                       )),
                 ),

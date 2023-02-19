@@ -4,11 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 //import 'package:get/get_connect/http/src/utils/utils.dart';
-import 'package:happy_feet_app/main.dart';
+//import 'package:happy_feet_app/main.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'groove.dart';
+import 'sharedPrefs.dart';
 import 'screens/multiConnectScreen.dart';
 
 class BluetoothBLEService {
@@ -195,7 +196,7 @@ class BluetoothBLEService {
                       }
                       // if not in multi mode, stop further scanning and
                       // connect to the first device found...
-                      if (!multiMode) {
+                      if (!sharedPrefs.multiMode) {
                         stopScan();
                         rssi = scanResult.rssi;
                         if (kDebugMode) {
@@ -255,7 +256,7 @@ class BluetoothBLEService {
 
   _onDoneScan() {
     stopScan();
-    if (!multiMode) {
+    if (!sharedPrefs.multiMode) {
       if (targetDevice == null) {
         Get.snackbar(
             'Bluetooth status'.tr,
@@ -548,13 +549,13 @@ class BluetoothBLEService {
       // error
     } else {
       if (kDebugMode) {
-        if (heelTap) {
+        if (sharedPrefs.heelTap) {
           print('HF: enabling beats with heel tapping');
         } else {
           print('HF: enabling beats with toe tapping');
         }
       }
-      if (heelTap) {
+      if (sharedPrefs.heelTap) {
         await _char6!.write([0x03]);
       } else {
         await _char6!.write([0x01]);
@@ -664,9 +665,9 @@ class BluetoothBLEService {
     );
     try {
       _beatSubscription = _char4!.value.listen((data) {
-        var time = DateTime.now(); // get system time
+        //var time = DateTime.now(); // get system time
         if (data.isNotEmpty) {
-          String notifyData = data[0].toRadixString(16).padLeft(2, '0');
+          //String notifyData = data[0].toRadixString(16).padLeft(2, '0');
           /*
           if (kDebugMode) {
             print('HF:   notify received,$time,$notifyData');
@@ -690,7 +691,7 @@ class BluetoothBLEService {
             }
           } else if ((data[0] & 0x20) == 0x20) {
             // foot-switch notify received
-            if (footSwitch) {
+            if (sharedPrefs.footSwitch) {
               // only take action if the foot-switch is enabled
               //  bit 5
               if (kDebugMode) {

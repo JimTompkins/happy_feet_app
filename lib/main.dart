@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Happy Feet',
       theme: AppTheme.appTheme,
-      home: showWalkthrough ? WalkthroughScreen() : MyHomePage(),
+      home: sharedPrefs.showWalkthrough ? WalkthroughScreen() : MyHomePage(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en', 'US'),
       translations: Localization(),
@@ -101,13 +101,13 @@ initPreferences() async {
   // load saved preferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //audioTestMode = prefs.getBool('audioTestMode') ?? false;
-  multiMode = prefs.getBool('multiMode') ?? false;
-  footSwitch = prefs.getBool('footSwitch') ?? false;
-  autoMode = prefs.getBool('autoMode') ?? false;
-  heelTap = prefs.getBool('heelTap') ?? false;
-  playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
-  showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
-  metronomeFlag = prefs.getBool('metronomeFlag') ?? false;
+  //multiMode = prefs.getBool('multiMode') ?? false;
+  //footSwitch = prefs.getBool('footSwitch') ?? false;
+  //autoMode = prefs.getBool('autoMode') ?? false;
+  //heelTap = prefs.getBool('heelTap') ?? false;
+  //playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
+  //showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
+  //metronomeFlag = prefs.getBool('metronomeFlag') ?? false;
   savedLanguage = prefs.getString('language') ?? '';
   if (savedLanguage != '') {
     if (kDebugMode) {
@@ -160,15 +160,15 @@ enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
 // flag used to enable multi mode.  Use multi mode if you have more than one
 // HappyFeet.  In multi mode, it will show all of the HappyFeet discovered
 // when connecting, and let you select which one you want to connect to.
-bool multiMode = false;
+//bool multiMode = false;
 
 // flag used to enable the foot switch.  When foot switch is enabled, you
 // can move your foot quickly to either side while it is flat on the floor
 // to enable or disable beats.
-bool footSwitch = false;
+//bool footSwitch = false;
 
 // flag used to enable toe or heel tapping.  The default setting is heel tapping
-bool heelTap = true;
+//bool heelTap = true;
 
 // saved preference for language
 String savedLanguage = '';
@@ -178,21 +178,21 @@ String language = '';
 // 1-tap mode only needs you to do the 4 beat lead-in and then tap the first 1.
 // It will play the selected groove automatically using the tempo set during
 // the lead-in.
-bool autoMode = false;
+//bool autoMode = false;
 
 // flag used to enable play-on-click mode.  When this is enabled, when you select
 // a sound, it will be played.  This is useful when you are learning how to
 // make grooves.
-bool playOnClickMode = false;
+//bool playOnClickMode = false;
 
 // flag indicating whether a metronome is used in Practice mode or not.
 // If set to true, a metronome tone (consisting of C4 and G4 on piano)
 // will be played at the selected tempo
-bool metronomeFlag = false;
+//bool metronomeFlag = false;
 
 // flag used to show the walkthrough.  It is initially set to true but can
 // be set to false by hitting the skip button on the walkthrough
-bool showWalkthrough = true;
+//bool showWalkthrough = true;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -337,13 +337,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       final _prefs = await SharedPreferences.getInstance();
       _prefs.setString('language', language);
 //      _prefs.setBool('audioTestMode', audioTestMode);
-      _prefs.setBool('multiMode', multiMode);
-      _prefs.setBool('autoMode', autoMode);
-      _prefs.setBool('footSwitch', footSwitch);
-      _prefs.setBool('heelTap', heelTap);
-      _prefs.setBool('playOnClickMode', playOnClickMode);
-      _prefs.setBool('metronomeFlag', metronomeFlag);
-      _prefs.setBool('showWalkthrough', showWalkthrough);
+//      _prefs.setBool('multiMode', multiMode);
+//      _prefs.setBool('autoMode', autoMode);
+//      _prefs.setBool('footSwitch', footSwitch);
+//      _prefs.setBool('heelTap', heelTap);
+//      _prefs.setBool('playOnClickMode', playOnClickMode);
+//      _prefs.setBool('metronomeFlag', metronomeFlag);
+//      _prefs.setBool('showWalkthrough', showWalkthrough);
     }
   }
 
@@ -448,7 +448,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         _bluetoothBLEService.startConnection();
                         Get.snackbar('Status'.tr, 'connecting to Bluetooth'.tr,
                             snackPosition: SnackPosition.BOTTOM);
-                        if (multiMode) {
+                        if (sharedPrefs.multiMode) {
                           // wait for the scan to complete
                           if (kDebugMode) {
                             print('HF: waiting for scan to complete...');
@@ -752,7 +752,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         print("HF: $text");
                       }
                     });
-                    if (playOnClickMode) {
+                    if (sharedPrefs.playOnClickMode) {
                       hfaudio.play(groove.notes[0].oggIndex, -1);
                     }
                   },
@@ -842,7 +842,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         print("HF: $text");
                       }
                     });
-                    if (playOnClickMode) {
+                    if (sharedPrefs.playOnClickMode) {
                       if (playMode == Mode.alternatingNotes) {
                         hfaudio.play(groove.notes[1].oggIndex, -1);
                       } else if (playMode == Mode.dualNotes) {

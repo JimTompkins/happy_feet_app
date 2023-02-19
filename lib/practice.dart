@@ -5,11 +5,12 @@ import 'package:get/get.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'ble2.dart'; // flutter_blue version
-import 'main.dart';
+//import 'main.dart';
 import 'utils.dart';
 import 'appDesign.dart';
 import 'audioBASS.dart';
 import 'groove.dart';
+import 'sharedPrefs.dart';
 
 // Practice page
 PracticePage practicePage = new PracticePage();
@@ -66,7 +67,7 @@ class _PracticePageState extends State<PracticePage> {
               _bluetoothBLEService.disableBeat();
               Get.snackbar('Status'.tr, 'beats disabled'.tr,
                   snackPosition: SnackPosition.BOTTOM);
-              if (metronomeFlag) {
+              if (sharedPrefs.metronomeFlag) {
                 // stop the metronome tone timer
                 if (_metronomeTimer != null) {
                   _metronomeTimer!.cancel();
@@ -77,7 +78,7 @@ class _PracticePageState extends State<PracticePage> {
                 // enable beats
                 groove.reset();
                 _bluetoothBLEService.enableBeat();
-                if (metronomeFlag) {
+                if (sharedPrefs.metronomeFlag) {
                   // start a timer to play the metronome tone at the
                   // chosen tempo
                   var periodInMs = 60000.0 / groove.targetTempo.value;
@@ -180,7 +181,7 @@ class _PracticePageState extends State<PracticePage> {
                     note = newValue!;
                     groove.initSingle(note);
                   });
-                  if (playOnClickMode) {
+                  if (sharedPrefs.playOnClickMode) {
                     hfaudio.play(groove.notes[0].oggIndex, -1);
                   }
                 },
@@ -198,15 +199,15 @@ class _PracticePageState extends State<PracticePage> {
               ),
             ),
             Switch(
-              value: metronomeFlag,
+              value: sharedPrefs.metronomeFlag,
               activeColor: Colors.deepOrange[400],
               activeTrackColor: Colors.deepOrange[200],
               inactiveThumbColor: Colors.grey[600],
               inactiveTrackColor: Colors.grey[400],
               onChanged: (value) {
                 setState(() {
-                  metronomeFlag = value;
-                  if (metronomeFlag) {
+                  sharedPrefs.metronomeFlag = value;
+                  if (sharedPrefs.metronomeFlag) {
                     if (kDebugMode) {
                       print('HF: metronome enabled');
                     }
@@ -290,9 +291,7 @@ class _PracticePageState extends State<PracticePage> {
               child: Obx(
                 () => Text(
                   groove.practiceBPM.value.toStringAsFixed(1),
-                  style: TextStyle(
-                      fontSize: 40,
-                      color: AppColors.captionColor),
+                  style: TextStyle(fontSize: 40, color: AppColors.captionColor),
                 ),
               ),
             ),

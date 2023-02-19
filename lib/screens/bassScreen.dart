@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import '../main.dart';
+//import '../main.dart';
 import '../ble2.dart';
 import '../audioBASS.dart';
 import '../groove.dart';
@@ -482,7 +482,7 @@ class _BassScreenState extends State<BassScreen> {
                                 dropdownValue[index] = newValue;
                                 groove.reset();
                               });
-                              if (playOnClickMode) {
+                              if (sharedPrefs.playOnClickMode) {
                                 hfaudio.play(groove.notes[index].oggIndex, -1);
                               }
                             },

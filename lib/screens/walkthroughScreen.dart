@@ -4,6 +4,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:get/get.dart';
 import '../main.dart';
 import '../appDesign.dart';
+import '../sharedPrefs.dart';
 
 WalkthroughScreen walkthroughScreen = new WalkthroughScreen();
 
@@ -34,7 +35,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
     if (kDebugMode) {
       print('HF: skipping the walkthrough');
     }
-    showWalkthrough = false;
+    sharedPrefs.showWalkthrough = false;
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => MyHomePage()),
     );

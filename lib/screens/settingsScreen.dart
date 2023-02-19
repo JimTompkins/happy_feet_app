@@ -223,15 +223,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               Switch(
-                value: multiMode,
+                value: sharedPrefs.multiMode,
                 activeColor: Colors.deepOrange[400],
                 activeTrackColor: Colors.deepOrange[200],
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
                   setState(() {
-                    multiMode = value;
-                    if (multiMode) {
+                    sharedPrefs.multiMode = value;
+                    if (sharedPrefs.multiMode) {
                       if (kDebugMode) {
                         print('HF: multi mode enabled');
                       }
@@ -276,15 +276,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               Switch(
-                value: footSwitch,
+                value: sharedPrefs.footSwitch,
                 activeColor: Colors.deepOrange[400],
                 activeTrackColor: Colors.deepOrange[200],
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
                   setState(() {
-                    footSwitch = value;
-                    if (footSwitch) {
+                    sharedPrefs.footSwitch = value;
+                    if (sharedPrefs.footSwitch) {
                       if (kDebugMode) {
                         print('HF: foot switch enabled');
                       }
@@ -329,15 +329,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               Switch(
-                value: autoMode,
+                value: sharedPrefs.autoMode,
                 activeColor: Colors.deepOrange[400],
                 activeTrackColor: Colors.deepOrange[200],
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
                   setState(() {
-                    autoMode = value;
-                    if (autoMode) {
+                    sharedPrefs.autoMode = value;
+                    if (sharedPrefs.autoMode) {
                       if (kDebugMode) {
                         print('HF: auto mode enabled');
                       }
@@ -392,15 +392,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               Switch(
-                value: heelTap,
+                value: sharedPrefs.heelTap,
                 activeColor: Colors.deepOrange[400],
                 activeTrackColor: Colors.deepOrange[200],
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
                   setState(() {
-                    heelTap = value;
-                    if (heelTap) {
+                    sharedPrefs.heelTap = value;
+                    if (sharedPrefs.heelTap) {
                       if (kDebugMode) {
                         print('HF: heel tap mode enabled');
                       }
@@ -461,15 +461,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Row(children: <Widget>[
               Spacer(flex: 10),
               Switch(
-                value: playOnClickMode,
+                value: sharedPrefs.playOnClickMode,
                 activeColor: Colors.deepOrange[400],
                 activeTrackColor: Colors.deepOrange[200],
                 inactiveThumbColor: Colors.grey[600],
                 inactiveTrackColor: Colors.grey[400],
                 onChanged: (value) {
                   setState(() {
-                    playOnClickMode = value;
-                    if (playOnClickMode) {
+                    sharedPrefs.playOnClickMode = value;
+                    if (sharedPrefs.playOnClickMode) {
                       if (kDebugMode) {
                         print('HF: play-on-click mode enabled');
                       }
