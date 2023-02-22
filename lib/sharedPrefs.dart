@@ -1,11 +1,63 @@
 // sharedPrefs.dart
-//import 'package:flutter/foundation.dart';
+import 'dart:ui';
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefs {
   static SharedPreferences? _sharedPrefs;
+  // saved preference for language
+  //String savedLanguage = '';
+  String language = '';
 
   init() async {
+    // get the current language
+    Locale _locale = Get.deviceLocale!;
+    var _langCode = _locale.languageCode;
+    // convert languageCode to text name of language
+    switch (_langCode) {
+      case 'en':
+        {
+          language = 'English';
+        }
+        break;
+      case 'fr':
+        {
+          language = 'Français';
+        }
+        break;
+      case 'de':
+        {
+          language = 'Deutsch';
+        }
+        break;
+      case 'es':
+        {
+          language = 'Español';
+        }
+        break;
+      case 'it':
+        {
+          language = 'Italiano';
+        }
+        break;
+      case 'pt':
+        {
+          language = 'Português';
+        }
+        break;
+      case 'nl':
+        {
+          language = 'Nederlands';
+        }
+        break;
+      case 'uk':
+        {
+          language = 'Українська';
+        }
+        break;
+    }
+
     if (_sharedPrefs == null) {
       _sharedPrefs = await SharedPreferences.getInstance();
     }
@@ -14,7 +66,7 @@ class SharedPrefs {
 // flag used to enable a test mode where the play button is used to play sounds
 // rather than BLE notifies.  This is used to separate the testing of the
 // audio from the BLE interface.
-bool get audioTestMode => _sharedPrefs?.getBool('audioTestMode') ?? false;
+  bool get audioTestMode => _sharedPrefs?.getBool('audioTestMode') ?? false;
 /*
   // this version of the audioTestMode getter was used to measure the time taken
   // to call the shared_preferences get.  Result = 3ms.  Seems a bit long.
@@ -104,15 +156,55 @@ bool get audioTestMode => _sharedPrefs?.getBool('audioTestMode') ?? false;
     _sharedPrefs?.setBool('metronomeFlag', value);
   }
 
+  String get savedLanguage {
+    var _savedLanguage = _sharedPrefs?.getString('savedLanguage') ?? '';
+    if (kDebugMode) {
+      print('HF: found saved language $_savedLanguage');
+    }    
+    var _locale;
+    if (_savedLanguage != '') {
+      switch (_savedLanguage) {
+        case 'English':
+          _locale = Locale('en', 'US');
+          break;
+        case 'Français':
+          _locale = Locale('fr', 'FR');
+          break;
+        case 'Deutsch':
+          _locale = Locale('de', 'DE');
+          break;
+        case 'Español':
+          _locale = Locale('es', 'ES');
+          break;
+        case 'Italiano':
+          _locale = Locale('it', 'IT');
+          break;
+        case 'Português':
+          _locale = Locale('pt', 'PT');
+          break;
+        case 'Nederlands':
+          _locale = Locale('nl', 'NL');
+          break;
+        case 'Українська':
+          _locale = Locale('uk', 'UK');
+          break;
+        default:
+          _locale = Locale('en', 'US');
+          break;
+      }
+      Get.updateLocale(_locale);
+      language = _savedLanguage;
+      if (kDebugMode) {
+        print('HF: updating language to $_savedLanguage');
+      }
+    }
+    return (_savedLanguage);
+  }
+
+  set savedLanguage(String value) {
+    _sharedPrefs?.setString('savedLanguage', value);
+  }
 }
 
 final sharedPrefs = SharedPrefs();
-
-/*
-  savedLanguage = prefs.getString('language') ?? '';
-*/
-
-// saved preference for language
-//String savedLanguage = '';
-//String language = '';
 

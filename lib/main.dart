@@ -6,7 +6,7 @@ import 'package:device_display_brightness/device_display_brightness.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'ble2.dart'; // flutter_blue_plus version
 //import 'audio.dart';
@@ -24,9 +24,10 @@ import 'utils.dart';
 import 'appDesign.dart';
 import 'sharedPrefs.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  sharedPrefs.init();
+  await sharedPrefs.init();
+//  sharedPrefs.savedLanguage ;  // get the saved language if there is one
   //initPreferences();
   runApp(MyApp());
 }
@@ -50,149 +51,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-initPreferences() async {
-  // get the current language
-  Locale _locale = Get.deviceLocale!;
-  var _langCode = _locale.languageCode;
-  // convert languageCode to text name of language
-  switch (_langCode) {
-    case 'en':
-      {
-        language = 'English';
-      }
-      break;
-    case 'fr':
-      {
-        language = 'Français';
-      }
-      break;
-    case 'de':
-      {
-        language = 'Deutsch';
-      }
-      break;
-    case 'es':
-      {
-        language = 'Español';
-      }
-      break;
-    case 'it':
-      {
-        language = 'Italiano';
-      }
-      break;
-    case 'pt':
-      {
-        language = 'Português';
-      }
-      break;
-    case 'nl':
-      {
-        language = 'Nederlands';
-      }
-      break;
-    case 'uk':
-      {
-        language = 'Українська';
-      }
-      break;
-  }
-
-  // load saved preferences
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  //audioTestMode = prefs.getBool('audioTestMode') ?? false;
-  //multiMode = prefs.getBool('multiMode') ?? false;
-  //footSwitch = prefs.getBool('footSwitch') ?? false;
-  //autoMode = prefs.getBool('autoMode') ?? false;
-  //heelTap = prefs.getBool('heelTap') ?? false;
-  //playOnClickMode = prefs.getBool('playOnClickMode') ?? false;
-  //showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
-  //metronomeFlag = prefs.getBool('metronomeFlag') ?? false;
-  savedLanguage = prefs.getString('language') ?? '';
-  if (savedLanguage != '') {
-    if (kDebugMode) {
-      print('HF: found saved language $savedLanguage');
-    }
-    switch (savedLanguage) {
-      case 'English':
-        _locale = Locale('en', 'US');
-        break;
-      case 'Français':
-        _locale = Locale('fr', 'FR');
-        break;
-      case 'Deutsch':
-        _locale = Locale('de', 'DE');
-        break;
-      case 'Español':
-        _locale = Locale('es', 'ES');
-        break;
-      case 'Italiano':
-        _locale = Locale('it', 'IT');
-        break;
-      case 'Português':
-        _locale = Locale('pt', 'PT');
-        break;
-      case 'Nederlands':
-        _locale = Locale('nl', 'NL');
-        break;
-      case 'Українська':
-        _locale = Locale('uk', 'UK');
-        break;
-      default:
-        _locale = Locale('en', 'US');
-        break;
-    }
-    Get.updateLocale(_locale);
-    language = savedLanguage;
-    if (kDebugMode) {
-      print('HF: updating language to $savedLanguage');
-    }
-  }
-}
-
 enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
-
-// flag used to enable a test mode where the play button is used to play sounds
-// rather than BLE notifies.  This is used to separate the testing of the
-// audio from the BLE interface.
-//bool audioTestMode = false;
-
-// flag used to enable multi mode.  Use multi mode if you have more than one
-// HappyFeet.  In multi mode, it will show all of the HappyFeet discovered
-// when connecting, and let you select which one you want to connect to.
-//bool multiMode = false;
-
-// flag used to enable the foot switch.  When foot switch is enabled, you
-// can move your foot quickly to either side while it is flat on the floor
-// to enable or disable beats.
-//bool footSwitch = false;
-
-// flag used to enable toe or heel tapping.  The default setting is heel tapping
-//bool heelTap = true;
-
-// saved preference for language
-String savedLanguage = '';
-String language = '';
-
-// flag used to enable auto mode in 1-tap mode.  When auto mode is enabled,
-// 1-tap mode only needs you to do the 4 beat lead-in and then tap the first 1.
-// It will play the selected groove automatically using the tempo set during
-// the lead-in.
-//bool autoMode = false;
-
-// flag used to enable play-on-click mode.  When this is enabled, when you select
-// a sound, it will be played.  This is useful when you are learning how to
-// make grooves.
-//bool playOnClickMode = false;
-
-// flag indicating whether a metronome is used in Practice mode or not.
-// If set to true, a metronome tone (consisting of C4 and G4 on piano)
-// will be played at the selected tempo
-//bool metronomeFlag = false;
-
-// flag used to show the walkthrough.  It is initially set to true but can
-// be set to false by hitting the skip button on the walkthrough
-//bool showWalkthrough = true;
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -284,10 +143,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     groove.initSingle(note1);
 
-    // initialize the saved preferences.  Note that this function call was added to prevent
-    // an error message due to awaits inside initState().  This showed up for the first time
-    // after upgrading to flutter 3.0.1
-    //initPreferences();
+    sharedPrefs.savedLanguage ;  // get the saved language if there is one
 
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
@@ -299,11 +155,11 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     });
 
     //if (!sharedPrefs.audioTestMode) {
-      // request needed permissions
-      _checkPermission();
+    // request needed permissions
+    _checkPermission();
 
-      // initialize BLE
-      _bluetoothBLEService.init();
+    // initialize BLE
+    _bluetoothBLEService.init();
     //}
   }
 
@@ -331,19 +187,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     if (isBackground) {
       // when the app moves to the background...
       if (kDebugMode) {
-        print('HF: saving preferences when app goes to background');
+        print('HF: app moving to background');
       }
-
-      final _prefs = await SharedPreferences.getInstance();
-      _prefs.setString('language', language);
-//      _prefs.setBool('audioTestMode', audioTestMode);
-//      _prefs.setBool('multiMode', multiMode);
-//      _prefs.setBool('autoMode', autoMode);
-//      _prefs.setBool('footSwitch', footSwitch);
-//      _prefs.setBool('heelTap', heelTap);
-//      _prefs.setBool('playOnClickMode', playOnClickMode);
-//      _prefs.setBool('metronomeFlag', metronomeFlag);
-//      _prefs.setBool('showWalkthrough', showWalkthrough);
     }
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import '../main.dart';
+//import '../main.dart';
 import '../ble2.dart';
 import '../utils.dart';
 import '../appDesign.dart';
@@ -21,7 +21,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   static BluetoothBLEService _bluetoothBLEService = Get.find();
-  String lang = language;
+  String lang = sharedPrefs.savedLanguage;
   RxBool _playState = Get.find();
   var locale = Get.deviceLocale!;
 
@@ -38,7 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   initState() {
-    lang = language;
+    lang = sharedPrefs.savedLanguage;
     super.initState();
   }
 
@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ]),
-            Row(children: <Widget> [
+            Row(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.fromLTRB(60, 8, 8, 8),
                 child: DropdownButtonHideUnderline(
@@ -73,8 +73,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16.0),
                                 color: item.color,
-                                child: Text(item.text,
-                                  style: AppTheme.appTheme.textTheme.headlineMedium,
+                                child: Text(
+                                  item.text,
+                                  style: AppTheme
+                                      .appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -103,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(),
                       color: AppColors.dropdownBackgroundColor,
-                    ),                    
+                    ),
                     itemHeight: 40,
                     dropdownDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
@@ -141,7 +143,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             break;
                         }
                         lang = newValue!;
-                        language = lang;
+                        //sharedPrefs.language = newValue;
+                        sharedPrefs.savedLanguage = newValue;
                         Get.updateLocale(locale);
                         if (kDebugMode) {
                           print("HF: saved language changed to $newValue");
@@ -540,6 +543,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         style: AppTheme.appTheme.textTheme.displaySmall,
                       ),
                       onPressed: () {
+                         // show the walkthrough again next time app is started
+                        sharedPrefs.showWalkthrough = true; 
                         Get.to(() => walkthroughScreen);
                       }),
                 ),

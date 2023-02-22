@@ -19,7 +19,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
   @override
   initState() {
     super.initState();
-    initPreferences();
+    sharedPrefs.savedLanguage ;  // get the saved language if there is one
   }
 
   void _onIntroEnd(context) {
