@@ -33,23 +33,23 @@ class AppTheme {
     textTheme: TextTheme(
       displayLarge: TextStyle(
           color: AppColors.h2Color,
-          fontSize: 24,
+          fontSize: 18,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
       displayMedium: TextStyle(
           color: AppColors.h2Color,
-          fontSize: 22,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
       displaySmall: TextStyle(
           color: AppColors.h3Color,
-          fontSize: 20,
+          fontSize: 14,
           fontWeight: FontWeight.w600,
           fontFamily: 'Inter'),
       headlineMedium: TextStyle(
           // used for list items after picked
           color: AppColors.dropdownChoiceColor,
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w500,
           fontFamily: 'Montserrat'),
       bodySmall: TextStyle(
@@ -60,7 +60,7 @@ class AppTheme {
       labelMedium: TextStyle(
           // used for list items before picked
           color: AppColors.dropdownListColor,
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w500,
           fontFamily: 'Montserrat'),
     ),

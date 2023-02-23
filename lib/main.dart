@@ -385,6 +385,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     dropdownPadding: EdgeInsets.zero,
                     itemPadding: EdgeInsets.zero,
                     buttonHeight: 40,
+                    //buttonWidth: 200,
                     buttonPadding: const EdgeInsets.only(left: 14, right: 14),
                     buttonDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),

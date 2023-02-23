@@ -160,7 +160,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Audio test mode'.tr,
+                  'Audio test'.tr,
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
