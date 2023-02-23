@@ -11,7 +11,7 @@ class SharedPrefs {
   String language = '';
 
   init() async {
-    // get the current language
+    // get the current device language
     Locale _locale = Get.deviceLocale!;
     var _langCode = _locale.languageCode;
     // convert languageCode to text name of language
@@ -197,6 +197,9 @@ class SharedPrefs {
       if (kDebugMode) {
         print('HF: updating language to $_savedLanguage');
       }
+    } else {  // if there is no language saved in sharedPrefs,
+      // then use English as a default
+      _savedLanguage = 'English';
     }
     return (_savedLanguage);
   }
