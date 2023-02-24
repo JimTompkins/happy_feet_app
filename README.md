@@ -66,5 +66,5 @@ A similar list is provided for the 2nd note voices:
 - cloud storage/sharing of grooves
 - lower latency audio on iOS.  This was improved greatly by changing the audio engine to the 
 BASS library from un4seen developments.
-- OAD: over-air-download for HappyFeet firmware updates.  HappyFeet uses the Texas Instruments CC26xx family of BLE microcontrollers which do have software libraries to support OAD.  There is currently no Flutter package for TI OAD, although there are Android apps that do it. Also Nordic Semiconductor has a Flutter package to update their micros.
+- OAD: over-air-download for HappyFeet firmware updates.  HappyFeet uses the Texas Instruments CC26xx family of BLE microcontrollers which do have software libraries to support OAD.  There is currently no Flutter package for TI OAD, although there are Android apps that do it (see [https://git.ti.com/cgit/simplelink-ble-oad-android/simplelink-ble-oad-android/refs/](https://git.ti.com/cgit/simplelink-ble-oad-android/simplelink-ble-oad-android/refs/)). Also Nordic Semiconductor has a Flutter package to update their micros.
   
