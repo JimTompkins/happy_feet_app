@@ -42,7 +42,7 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
   }
 
   Widget _buildImage(String assetName, [double width = 350]) {
-    return Image.asset('assets/images/$assetName', width: width);
+    return Center(child: Image.asset('assets/images/$assetName', width: width));
   }
 
   @override
