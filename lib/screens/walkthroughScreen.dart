@@ -42,7 +42,9 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
   }
 
   Widget _buildImage(String assetName, [double width = 350]) {
-    return Center(child: Image.asset('assets/images/$assetName', width: width));
+    return Center(child: Image.asset('assets/images/$assetName', 
+       width: width, 
+       fit: BoxFit.contain));
   }
 
   @override
@@ -52,7 +54,9 @@ class _WalkthroughScreenState extends State<WalkthroughScreen> {
       bodyTextStyle: AppTheme.walkthroughBodyText,
       bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: AppColors.scaffoldBackgroundColor,
-      imagePadding: EdgeInsets.zero,
+      imagePadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      imageAlignment: Alignment.center,
+      imageFlex: 1,
       fullScreen: false,
     );
 
