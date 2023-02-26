@@ -375,7 +375,7 @@ class _PracticePageState extends State<PracticePage> {
           ],
         ),
         shape: CircularNotchedRectangle(),
-        color: Colors.blue[400],
+        color: AppColors.bottomBarColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
