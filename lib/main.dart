@@ -205,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 onTap: () {
                   Get.to(() => settingsScreen);
                 },
-                child: Icon(Icons.settings, color: AppColors.settingsIconColor),
+                child: Icon(Icons.settings, color: Theme.of(context).colorScheme.secondary),
               )),
         ],
       ),
@@ -233,8 +233,22 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   Get.snackbar('Status'.tr, 'beats enabled'.tr,
                       snackPosition: SnackPosition.BOTTOM);
                 } else {
-                  Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
-                      snackPosition: SnackPosition.BOTTOM);
+//                  Get.snackbar('Error'.tr, 'connect to Bluetooth first'.tr,
+//                      snackPosition: SnackPosition.BOTTOM);
+                  Get.defaultDialog(
+                    title: 'Error'.tr,
+                    middleText:
+                        'connect to Bluetooth first'.tr,
+                    textConfirm: 'OK',
+                    titleStyle: AppTheme.walkthroughTitleText,
+                    middleTextStyle: AppTheme.walkthroughBodyText,
+                    confirmTextColor: AppColors.dropdownListColor,
+                    backgroundColor: AppColors.dropdownBackgroundColor,
+                    buttonColor: Theme.of(context).colorScheme.secondary,
+                    onConfirm: () {
+                      Get.back();
+                    },
+                  );
                 }
               }
             }
@@ -275,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   'Connect'.tr,
                   style: AppTheme.appTheme.textTheme.displaySmall,
                 )),
-            Icon(Icons.bluetooth, size: 30, color: AppColors.settingsIconColor),
+            Icon(Icons.bluetooth, size: 30, color: Theme.of(context).colorScheme.secondary),
             Obx(
               () => Switch(
                   value: _bluetoothBLEService.isConnected.value,

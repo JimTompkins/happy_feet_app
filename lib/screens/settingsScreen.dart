@@ -174,9 +174,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   setState(() {
                     if (_bluetoothBLEService.isConnected() && value) {
                       // can't turn on audio test mode if BLE is connected
-                      Get.snackbar('Error:'.tr,
-                          'You cannot use audio test mode if connected.'.tr,
-                          snackPosition: SnackPosition.BOTTOM);
+//                      Get.snackbar('Error:'.tr,
+//                          'You cannot use audio test mode if connected.'.tr,
+//                          snackPosition: SnackPosition.BOTTOM);
+                      Get.defaultDialog(
+                        title: 'Error'.tr,
+                        middleText:
+                          'You cannot use audio test mode if connected.',
+                        textConfirm: 'OK',
+                        titleStyle: AppTheme.walkthroughTitleText,
+                        middleTextStyle: AppTheme.walkthroughBodyText,
+                        confirmTextColor: AppColors.dropdownListColor,
+                        backgroundColor: AppColors.dropdownBackgroundColor,
+                        buttonColor: Theme.of(context).colorScheme.secondary,
+                        onConfirm: () {Get.back();},
+                      );
                     } else {
                       sharedPrefs.audioTestMode = value;
                       if (sharedPrefs.audioTestMode) {
