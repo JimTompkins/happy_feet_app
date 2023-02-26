@@ -27,7 +27,7 @@ class AppTheme {
       color: AppColors.bottomBarColor,
     ),
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.scaffoldBackgroundColor,
+    backgroundColor: AppColors.scaffoldBackgroundColor,
     //primaryColor: Colors.deepOrange[500],
     secondaryHeaderColor: AppColors.scaffoldBackgroundColor,
     textTheme: TextTheme(

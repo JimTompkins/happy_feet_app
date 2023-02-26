@@ -620,7 +620,7 @@ class _OneTapPageState extends State<OneTapPage> {
           ],
         ),
         shape: CircularNotchedRectangle(),
-        color: Colors.blue[400],
+        color: AppColors.bottomBarColor,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
