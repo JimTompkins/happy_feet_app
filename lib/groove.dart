@@ -13,7 +13,7 @@ import 'sharedPrefs.dart';
 Note note = new Note(0, "Bass drum");
 Groove groove = new Groove.empty(1, 1, GrooveType.percussion);
 
-enum GrooveType { percussion, bass, guitarChords, pianoChords }
+enum GrooveType { percussion, bass, blues, guitarChords, pianoChords }
 
 // 1-tap rhythm types from:
 //    https://www.midwestclinic.org/user_files_1/pdfs/clinicianmaterials/2005/victor_lopez.pdf
@@ -31,6 +31,9 @@ enum RhythmType {
   bolero,
   samba
 }
+
+// types of blues grooves
+enum BluesType { TwelveBar, TwelveBarShuffle, TwelveBarQuick4 }
 
 class Note {
   int? oggIndex; // the index of the ogg file sample
@@ -94,8 +97,6 @@ class Groove {
   // variables for practice mode: instantaneous BPM, current streaks
   // within +/- 5 and 10 BPM of target
   var practiceBPM = 0.0.obs;
-  //var practiceStreak1 = 0.obs;
-  //var practiceStreak3 = 0.obs;
   var practiceStreak5 = 0.obs;
   var practiceStreak10 = 0.obs;
   var targetTempo = 120.obs;
@@ -460,6 +461,35 @@ class Groove {
       assert(_temp >= E1mp3);
       assert(_temp <= (E1mp3 + 23));
       this.notes[index].oggIndex = _temp;
+      if (kDebugMode) {
+        print('HF: addBassNote2: number = $_temp');
+      }
+    }
+  }
+
+  // add a bass note to the groove on voice 2 using a number for the note.
+  // The number is 0 for E1, 1 for F1, ... up to 23 for D#3
+  addBassNote2(int index, int noteIndex) {
+    // if no note is to be played, as indicated by a num equal to -1,
+    // then set oggIndex to -1 and name and initial to -
+    if (noteIndex == -1) {
+      this.notes2[index].name = '-';
+      this.notes2[index].initial = '-';
+      this.notes2[index].oggIndex = -1;
+    } else {
+      // calculate the notes name from the noteIndex
+      String _noteName = allBassNotes[noteIndex];
+      this.notes2[index].name = _noteName;
+      this.notes2[index].initial = _noteName;
+
+      if (kDebugMode) {
+        print('HF: addBassNote2: note index = $noteIndex, note name = $_noteName');
+      }
+
+      int _temp = noteIndex + E1mp3;
+      assert(_temp >= E1mp3);
+      assert(_temp <= (E1mp3 + 23));
+      this.notes2[index].oggIndex = _temp;
       if (kDebugMode) {
         print('HF: addBassNote2: number = $_temp');
       }

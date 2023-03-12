@@ -3,12 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-//import 'main.dart';
 import 'utils.dart';
 import 'appDesign.dart';
 import 'sharedPrefs.dart';
 import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
+import 'screens/settingsScreen.dart';
 
 // 1-tap page
 OneTapPage oneTapPage = new OneTapPage();
@@ -372,6 +372,17 @@ class _OneTapPageState extends State<OneTapPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('1-tap Mode'.tr),
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => settingsScreen);
+                },
+                child: Icon(Icons.settings, color: AppColors.settingsIconColor),
+              )),
+        ],
+
       ),
       floatingActionButton: Obx(
         () => FloatingActionButton(

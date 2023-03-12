@@ -5,12 +5,12 @@ import 'package:get/get.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'ble2.dart'; // flutter_blue version
-//import 'main.dart';
 import 'utils.dart';
 import 'appDesign.dart';
 import 'audioBASS.dart';
 import 'groove.dart';
 import 'sharedPrefs.dart';
+import 'screens/settingsScreen.dart';
 
 // Practice page
 PracticePage practicePage = new PracticePage();
@@ -56,6 +56,17 @@ class _PracticePageState extends State<PracticePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Practice Mode'.tr),
+        actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => settingsScreen);
+                },
+                child: Icon(Icons.settings, color: AppColors.settingsIconColor),
+              )),
+        ],
+
       ),
       floatingActionButton: Obx(
         () => FloatingActionButton(

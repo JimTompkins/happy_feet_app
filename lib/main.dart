@@ -19,6 +19,7 @@ import 'screens/multiConnectScreen.dart';
 import 'screens/walkthroughScreen.dart';
 import 'onetap.dart';
 import 'practice.dart';
+import 'blues.dart';
 import 'localization.g.dart';
 import 'utils.dart';
 import 'appDesign.dart';
@@ -51,7 +52,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-enum Mode { singleNote, alternatingNotes, dualNotes, groove, bass, unknown }
+enum Mode {
+  singleNote,
+  alternatingNotes,
+  dualNotes,
+  groove,
+  bass,
+  blues,
+  unknown
+}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -79,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     HfMenuItem(text: 'Bass', color: Colors.grey[100]),
     HfMenuItem(text: '1-tap', color: Colors.grey[300]),
     HfMenuItem(text: 'Practice', color: Colors.grey[100]),
+    HfMenuItem(text: 'Blues', color: Colors.grey[100]),
   ];
 
   final List<HfMenuItem> firstNoteDropdownList = [
@@ -143,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     groove.initSingle(note1);
 
-    sharedPrefs.savedLanguage ;  // get the saved language if there is one
+    sharedPrefs.savedLanguage; // get the saved language if there is one
 
     // prevent from going into sleep mode
     DeviceDisplayBrightness.keepOn(enabled: true);
@@ -205,7 +215,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 onTap: () {
                   Get.to(() => settingsScreen);
                 },
-                child: Icon(Icons.settings, color: Theme.of(context).colorScheme.secondary),
+                child: Icon(Icons.settings,
+                    color: Theme.of(context).colorScheme.secondary),
               )),
         ],
       ),
@@ -237,8 +248,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 //                      snackPosition: SnackPosition.BOTTOM);
                   Get.defaultDialog(
                     title: 'Error'.tr,
-                    middleText:
-                        'connect to Bluetooth first'.tr,
+                    middleText: 'connect to Bluetooth first'.tr,
                     textConfirm: 'OK',
                     titleStyle: AppTheme.walkthroughTitleText,
                     middleTextStyle: AppTheme.walkthroughBodyText,
@@ -289,7 +299,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   'Connect'.tr,
                   style: AppTheme.appTheme.textTheme.displaySmall,
                 )),
-            Icon(Icons.bluetooth, size: 30, color: Theme.of(context).colorScheme.secondary),
+            Icon(Icons.bluetooth,
+                size: 30, color: Theme.of(context).colorScheme.secondary),
             Obx(
               () => Switch(
                   value: _bluetoothBLEService.isConnected.value,
@@ -495,6 +506,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           groove.practice = true;
                           _bluetoothBLEService.disableBeat();
                           Get.to(() => practicePage);
+                        } else if (newValue == 'Blues') {
+                          groove.type = GrooveType.blues;
+                          groove.voices = 2;
+                          groove.reset();
+                          if (playMode != Mode.blues) {
+                            groove.clearNotes();
+                          }
+                          playMode = Mode.blues;
+                          groove.oneTap = false;
+                          Get.to(() => bluesPage);
                         } else {
                           playMode = Mode.unknown;
                           if (kDebugMode) {
