@@ -1,17 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-//import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'utils.dart';
 import 'appDesign.dart';
 import 'sharedPrefs.dart';
 import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
+import 'bass.dart';
 import 'screens/settingsScreen.dart';
 
 // blues page
 BluesPage bluesPage = new BluesPage();
+
+class Tablature {
+  List<String> lines = ['', '', '', '', ''];
+
+  Tablature() {
+    lines = ['', '', '', '', '', ''];
+  }
+
+  void clear() {
+    lines = ['', '', '', '', '', ''];
+  }
+
+  void add(int i, String s) {
+    this.lines[i] = s;
+  }
+
+  // concatenate the list of tab lines into one string with newlines (\n)
+  String concat() {
+    String result = lines[0];
+    for (int i = 1; i < lines.length; i++) {
+      if (lines[i] != '') {
+        result = result + '\n' + lines[i];
+      }
+    }
+    return result;
+  }
+}
 
 // Stateful version of blues page
 class BluesPage extends StatefulWidget {
@@ -25,6 +53,8 @@ class _BluesPageState extends State<BluesPage> {
   BluesType type = BluesType.TwelveBar;
   String _typeName = '12 bar';
   String _keyName = 'E';
+  Tablature _tab = new Tablature();
+
 
   final List<HfMenuItem> keyDropdownList = [
     HfMenuItem(text: 'E', color: Colors.grey[100]),
@@ -59,6 +89,8 @@ class _BluesPageState extends State<BluesPage> {
   // create a blues groove with the specified type
   createGroove(BluesType type, String key) {
     int i = 0;
+    int keyNum = keys.indexWhere((element) => element == key);
+
     switch (type) {
       case BluesType.TwelveBar:
         if (kDebugMode) {
@@ -74,7 +106,70 @@ class _BluesPageState extends State<BluesPage> {
           groove.addInitialNote(i + 1, 'S');
         }
         // add the walking bass progression on voice 2
-        groove.addBassNote2(0, 0);
+        // bar 1
+        groove.addBassNote2(0, keyNum + 0);
+        groove.addBassNote2(1, keyNum + 4);
+        groove.addBassNote2(2, keyNum + 7);
+        groove.addBassNote2(3, keyNum + 9);
+        // bar 2
+        groove.addBassNote2(4, keyNum + 10);
+        groove.addBassNote2(5, keyNum + 9);
+        groove.addBassNote2(6, keyNum + 7);
+        groove.addBassNote2(7, keyNum + 4);
+        // bar 3
+        groove.addBassNote2(8, keyNum + 0);
+        groove.addBassNote2(9, keyNum + 4);
+        groove.addBassNote2(10, keyNum + 7);
+        groove.addBassNote2(11, keyNum + 9);
+        // bar 4
+        groove.addBassNote2(12, keyNum + 10);
+        groove.addBassNote2(13, keyNum + 9);
+        groove.addBassNote2(14, keyNum + 7);
+        groove.addBassNote2(15, keyNum + 4);
+        // bar 5
+        groove.addBassNote2(16, keyNum + 5);
+        groove.addBassNote2(17, keyNum + 9);
+        groove.addBassNote2(18, keyNum + 11);
+        groove.addBassNote2(19, keyNum + 9);
+        // bar 6
+        groove.addBassNote2(20, keyNum + 5);
+        groove.addBassNote2(21, keyNum + 5);
+        groove.addBassNote2(22, keyNum + 4);
+        groove.addBassNote2(23, keyNum + 2);
+        // bar 7
+        groove.addBassNote2(24, keyNum + 0);
+        groove.addBassNote2(25, keyNum + 4);
+        groove.addBassNote2(26, keyNum + 7);
+        groove.addBassNote2(27, keyNum + 9);
+        // bar 8
+        groove.addBassNote2(28, keyNum + 10);
+        groove.addBassNote2(29, keyNum + 9);
+        groove.addBassNote2(30, keyNum + 7);
+        groove.addBassNote2(31, keyNum + 4);
+        // bar 9
+        groove.addBassNote2(32, keyNum + 7);
+        groove.addBassNote2(33, keyNum + 9);
+        groove.addBassNote2(34, keyNum + 11);
+        groove.addBassNote2(35, keyNum + 9);
+        // bar 10
+        groove.addBassNote2(36, keyNum + 7);
+        groove.addBassNote2(37, keyNum + 5);
+        groove.addBassNote2(38, keyNum + 4);
+        groove.addBassNote2(39, keyNum + 2);
+        // bar 11
+        groove.addBassNote2(40, keyNum + 0);
+        groove.addBassNote2(41, keyNum + 0);
+        groove.addBassNote2(42, keyNum + 5);
+        groove.addBassNote2(43, keyNum + 5);
+        // bar 12
+        groove.addBassNote2(44, keyNum + 7);
+        groove.addBassNote2(45, keyNum + 5);
+        groove.addBassNote2(46, keyNum + 4);
+        groove.addBassNote2(47, keyNum + 2);
+        _tab.clear();
+        _tab.add(0, 'I  I  I I');
+        _tab.add(1, 'IV IV I I');
+        _tab.add(2, 'V  IV I V');
         break;
 
       default:
@@ -147,9 +242,9 @@ class _BluesPageState extends State<BluesPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     sharedPrefs.autoMode
-                        ? 'blues mode: choose a type and a key, enable beats, tap your foot 4 times as a count-in, and then only on the first 1'
+                        ? 'Blues mode: choose a type and a key, enable beats, tap your foot 4 times as a count-in, and then only on the first 1'
                             .tr
-                        : 'blues mode: choose a type and a key, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
+                        : 'Blues mode: choose a type and a key, enable beats, tap your foot 4 times as a count-in, and then only on the 1s'
                             .tr,
                     softWrap: true,
                     style: Theme.of(context).textTheme.bodySmall,
@@ -240,6 +335,53 @@ class _BluesPageState extends State<BluesPage> {
                 ),
               ),
             ]),
+
+            Row(children: <Widget>[
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Pattern:'.tr,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.help,
+                    ),
+                    iconSize: 30,
+                    color: AppColors.myButtonColor,
+                    onPressed: () {
+                      Get.defaultDialog(
+                        title: 'Blues Pattern'.tr,
+                        middleText:
+                            'This is the sequence of chords noted with Nashville numbers.'
+                                .tr,
+                        textConfirm: 'OK',
+                        onConfirm: () {
+                          Get.back();
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  _tab.concat(),
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.courierPrime(
+                    textStyle:
+                        TextStyle(color: AppColors.h4Color, fontSize: 18),
+                  ),
+                ),
+              ),
+            ]),
+
+
             Row(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -314,53 +456,7 @@ class _BluesPageState extends State<BluesPage> {
               ),
             ]),
 
-/*
-            Row(children: <Widget>[
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Tab:',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.help,
-                    ),
-                    iconSize: 30,
-                    color: AppColors.myButtonColor,
-                    onPressed: () {
-                      Get.defaultDialog(
-                        title: 'Tablature'.tr,
-                        middleText:
-                            "Tablature is a simplified form of music notation.  See www.drumtabs.org for more details."
-                                .tr,
-                        textConfirm: 'OK',
-                        onConfirm: () {
-                          Get.back();
-                        },
-                      );
-                    },
-                  ),
-                ],
-              ),
-              /*
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _tab.concat(),
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.courierPrime(
-                    textStyle:
-                        TextStyle(color: AppColors.h4Color, fontSize: 18),
-                  ),
-                ),
-              ), */
-            ]),
-*/
+
             Row(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
