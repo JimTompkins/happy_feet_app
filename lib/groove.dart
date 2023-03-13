@@ -93,6 +93,10 @@ class Groove {
   var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
   var leadInString = '0'.obs;
+  // info for blues mode screen
+  var bar = '-'.obs;
+  var nashville = '-'.obs;
+  var chord = '-'.obs;
   RxBool leadInDone = false.obs;
   // variables for practice mode: instantaneous BPM, current streaks
   // within +/- 5 and 10 BPM of target
@@ -322,7 +326,6 @@ class Groove {
       case 'S':
         {
           _oggIndex = 2;
-          //_oggNote = 0;
           _name = 'Snare drum';
         }
         break;
@@ -365,7 +368,6 @@ class Groove {
       case 'W':
         {
           _oggIndex = 10;
-          //_oggNote = 0;
           _name = 'Woodblock';
         }
         break;
@@ -384,7 +386,6 @@ class Groove {
       case 'U':
         {
           _oggIndex = 13;
-          //_oggNote = 0;
           _name = 'Brushes';
         }
         break;
@@ -437,6 +438,126 @@ class Groove {
     }
   }
 
+  // add a note to the groove using its initial only.  This
+  // method is used by blues mode.  
+  void addInitialNoteSequential(int index, String initial) {
+    int _oggIndex = -1;
+    String _name = '-';
+    int _voices = this.voices;
+
+    if (kDebugMode) {
+      print(
+          'HF: addInitialNoteSequential: index = $index, initial = $initial, _voices = $_voices');
+    }
+
+    switch (initial) {
+      case '-':
+        {
+          _oggIndex = -1;
+          _name = '-';
+        }
+        break;
+      case 'b':
+        {
+          _oggIndex = 0;
+          _name = 'Bass drum';
+        }
+        break;
+      case 'B':
+        {
+          _oggIndex = 1;
+          _name = 'Bass echo';
+        }
+        break;
+      case 'S':
+        {
+          _oggIndex = 2;
+          _name = 'Snare drum';
+        }
+        break;
+      case 'H':
+        {
+          _oggIndex = 3;
+          _name = 'High Hat Cymbal';
+        }
+        break;
+      case 'C':
+        {
+          _oggIndex = 4;
+          _name = 'Cowbell';
+        }
+        break;
+      case 'M':
+        {
+          _oggIndex = 5;
+          _name = 'Tambourine';
+        }
+        break;
+      case 'F':
+        {
+          _oggIndex = 7;
+          _name = 'Fingersnap';
+        }
+        break;
+      case 'R':
+        {
+          _oggIndex = 8;
+          _name = 'Rim shot';
+        }
+        break;
+      case 'A':
+        {
+          _oggIndex = 9;
+          _name = 'Shaker';
+        }
+        break;
+      case 'W':
+        {
+          _oggIndex = 10;
+          _name = 'Woodblock';
+        }
+        break;
+      case 't':
+        {
+          _oggIndex = 11;
+          _name = 'Lo tom';
+        }
+        break;
+      case 'T':
+        {
+          _oggIndex = 12;
+          _name = 'Hi tom';
+        }
+        break;
+      case 'U':
+        {
+          _oggIndex = 13;
+          _name = 'Brushes';
+        }
+        break;
+      case 'Q':
+        {
+          _oggIndex = 14;
+          _name = 'Quijada';
+        }
+        break;
+      default:
+        {
+          _oggIndex = -1;
+          _name = '-';
+        }
+    }
+
+    this.notes[index].oggIndex = _oggIndex;
+    this.notes[index].name = _name;
+    this.notes[index].initial = initial;
+    if (kDebugMode) {
+      print(
+        'HF: addInitialNoteSequential: index = $index, oggIndex = $_oggIndex, name = $_name');
+      }
+  }
+
+
   // add a bass note to the groove using the note's name.
   addBassNote(int index, String name) {
     // if no note is to be played, as indicated by -,
@@ -469,6 +590,7 @@ class Groove {
 
   // add a bass note to the groove on voice 2 using a number for the note.
   // The number is 0 for E1, 1 for F1, ... up to 23 for D#3
+  // This method is used by blues mode.
   addBassNote2(int index, int noteIndex) {
     // if no note is to be played, as indicated by a num equal to -1,
     // then set oggIndex to -1 and name and initial to -
@@ -483,7 +605,8 @@ class Groove {
       this.notes2[index].initial = _noteName;
 
       if (kDebugMode) {
-        print('HF: addBassNote2: note index = $noteIndex, note name = $_noteName');
+        print(
+            'HF: addBassNote2: note index = $noteIndex, note name = $_noteName');
       }
 
       int _temp = noteIndex + E1mp3;
@@ -558,7 +681,8 @@ class Groove {
       this.clearNotes();
       this.interpolate = false; // turn off backbeat mode when change to blues
       hfaudio.init();
-    }}
+    }
+  }
 
   // return a list of initials of the current groove notes
   // max number of beats in groove is:
@@ -745,6 +869,29 @@ class Groove {
       indexString.value = _meas.toString() + ":" + _beat.toString();
     }
     variationToColor();
+  }
+
+  // update the blues mode info
+  void updateBluesInfo() {
+    int _barNum = ((this.index ~/ 4) + 1);
+    bar.value = _barNum.toString();
+    /*
+    nashville.value = nashvilleList[_barNum];
+    int _keyNum = keys.indexWhere((element) => element == _keyName);
+    switch (nashville.value) {
+      case 'I':
+        groove.chord.value = keys[(_keyNum + 0) % 12];
+        break;
+      case 'IV':
+        groove.chord.value = keys[(_keyNum + 5) % 12];
+        break;
+      case 'V':
+        groove.chord.value = keys[(_keyNum + 7) % 12];
+        break;
+      default:
+        break;
+    }
+    */
   }
 
 // update the practice mode streak counts: the number of successive

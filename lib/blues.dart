@@ -54,9 +54,6 @@ class _BluesPageState extends State<BluesPage> {
   String _typeName = '12 bar';
   String _keyName = 'E';
   Tablature _tab = new Tablature();
-  String bar = '-';
-  String nashville = '-';
-  String chord = '-';
   List<String> nashvilleList = [];
 
   final List<HfMenuItem> keyDropdownList = [
@@ -92,7 +89,7 @@ class _BluesPageState extends State<BluesPage> {
   createGroove(BluesType type, String key) {
     int i = 0;
     int keyNum = keys.indexWhere((element) => element == key);
-
+  
     switch (type) {
       case BluesType.TwelveBar:
         if (kDebugMode) {
@@ -104,8 +101,8 @@ class _BluesPageState extends State<BluesPage> {
         groove.reset();
         // add bass and snare on alternating beats on voice 1
         for (i = 0; i < 48; i += 2) {
-          groove.addInitialNote(i, 'b');
-          groove.addInitialNote(i + 1, 'S');
+          groove.addInitialNoteSequential(i, 'b');
+          groove.addInitialNoteSequential(i + 1, 'S');
         }
         // add the walking bass progression on voice 2
         // bar 1
@@ -198,8 +195,8 @@ class _BluesPageState extends State<BluesPage> {
         groove.reset();
         // add bass and snare on alternating beats on voice 1
         for (i = 0; i < 48; i += 2) {
-          groove.addInitialNote(i, 'b');
-          groove.addInitialNote(i + 1, 'S');
+          groove.addInitialNoteSequential(i, 'b');
+          groove.addInitialNoteSequential(i + 1, 'S');
         }
         // add the walking bass progression on voice 2
         _tab.clear();
@@ -232,8 +229,8 @@ class _BluesPageState extends State<BluesPage> {
         groove.reset();
         // add bass and snare on alternating beats on voice 1
         for (i = 0; i < 48; i += 2) {
-          groove.addInitialNote(i, 'b');
-          groove.addInitialNote(i + 1, 'S');
+          groove.addInitialNoteSequential(i, 'b');
+          groove.addInitialNoteSequential(i + 1, 'S');
         }
         // add the walking bass progression on voice 2
         _tab.clear();
@@ -305,18 +302,18 @@ class _BluesPageState extends State<BluesPage> {
 
   void updateInfo() {
     int _barNum = ((groove.index ~/ 4) + 1);
-    bar = _barNum.toString();
-    nashville = nashvilleList[_barNum];
+    groove.bar.value = _barNum.toString();
+    groove.nashville.value = nashvilleList[_barNum];
     int _keyNum = keys.indexWhere((element) => element == _keyName);
-    switch (nashville) {
+    switch (groove.nashville.value) {
       case 'I':
-        chord = keys[(_keyNum + 0) % 12];
+        groove.chord.value = keys[(_keyNum + 0) % 12];
         break;
       case 'IV':
-        chord = keys[(_keyNum + 5) % 12];
+        groove.chord.value = keys[(_keyNum + 5) % 12];
         break;
       case 'V':
-        chord = keys[(_keyNum + 7) % 12];
+        groove.chord.value = keys[(_keyNum + 7) % 12];
         break;
       default:
         break;

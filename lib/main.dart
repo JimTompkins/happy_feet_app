@@ -731,7 +731,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       } else if (playMode == Mode.singleNote) {
                         if (kDebugMode) {
                           print(
-                              'HF: note two has not effect in single note mode.');
+                              'HF: note two has no effect in single note mode.');
                         }
                       }
                     }
