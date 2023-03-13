@@ -54,7 +54,10 @@ class _BluesPageState extends State<BluesPage> {
   String _typeName = '12 bar';
   String _keyName = 'E';
   Tablature _tab = new Tablature();
-
+  String bar = '-';
+  String nashville = '-';
+  String chord = '-';
+  List<String> nashvilleList = [];
 
   final List<HfMenuItem> keyDropdownList = [
     HfMenuItem(text: 'E', color: Colors.grey[100]),
@@ -73,16 +76,15 @@ class _BluesPageState extends State<BluesPage> {
 
   final List<HfMenuItem> bluesDropdownList = [
     HfMenuItem(text: '12 bar'.tr, color: Colors.grey[100]),
-    HfMenuItem(text: '12 bar shuffle'.tr, color: Colors.grey[300]),
-    HfMenuItem(text: '12 bar quick 4'.tr, color: Colors.grey[100]),
+    HfMenuItem(text: '12 bar quick change'.tr, color: Colors.grey[300]),
+    HfMenuItem(text: '12 bar slow change'.tr, color: Colors.grey[100]),
   ];
 
   @override
   initState() {
     super.initState();
 
-    groove.checkType('percussion');
-    groove.checkType('bass');
+    groove.checkType('blues');
     createGroove(BluesType.TwelveBar, 'E');
   }
 
@@ -170,12 +172,153 @@ class _BluesPageState extends State<BluesPage> {
         _tab.add(0, 'I  I  I I');
         _tab.add(1, 'IV IV I I');
         _tab.add(2, 'V  IV I V');
+        nashvilleList = [
+          'I',
+          'I',
+          'I',
+          'I',
+          'IV',
+          'IV',
+          'I',
+          'I',
+          'V',
+          'IV',
+          'I',
+          'V'
+        ];
+        break;
+
+      case BluesType.TwelveBarQuickChange:
+        if (kDebugMode) {
+          print('HF: blues: 12 bar quick change');
+        }
+
+        // TwelveBar: 4 per measure, 12 measures, 2 voices
+        groove.initialize(4, 12, 2);
+        groove.reset();
+        // add bass and snare on alternating beats on voice 1
+        for (i = 0; i < 48; i += 2) {
+          groove.addInitialNote(i, 'b');
+          groove.addInitialNote(i + 1, 'S');
+        }
+        // add the walking bass progression on voice 2
+        _tab.clear();
+        _tab.add(0, 'I  IV I I');
+        _tab.add(1, 'IV IV I I');
+        _tab.add(2, 'V  IV I V');
+        nashvilleList = [
+          'I',
+          'IV',
+          'I',
+          'I',
+          'IV',
+          'IV',
+          'I',
+          'I',
+          'V',
+          'IV',
+          'I',
+          'V'
+        ];
+        break;
+
+      case BluesType.TwelveBarSlowChange:
+        if (kDebugMode) {
+          print('HF: blues: 12 bar slow change');
+        }
+
+        // TwelveBar: 4 per measure, 12 measures, 2 voices
+        groove.initialize(4, 12, 2);
+        groove.reset();
+        // add bass and snare on alternating beats on voice 1
+        for (i = 0; i < 48; i += 2) {
+          groove.addInitialNote(i, 'b');
+          groove.addInitialNote(i + 1, 'S');
+        }
+        // add the walking bass progression on voice 2
+        _tab.clear();
+        _tab.add(0, 'I  I  I I');
+        _tab.add(1, 'IV IV I I');
+        _tab.add(2, 'V  V  I I');
+        nashvilleList = [
+          'I',
+          'I',
+          'I',
+          'I',
+          'IV',
+          'IV',
+          'I',
+          'I',
+          'V',
+          'V',
+          'I',
+          'V'
+        ];
         break;
 
       default:
         if (kDebugMode) {
           print('HF: error: undefined blues type');
         }
+        break;
+    }
+  }
+
+  // get the current bar (or measure) number
+  String getBar() {
+    return ((groove.index ~/ 4) + 1).toString();
+  }
+
+  // get the current bar's Nashville number by calculating the bar
+  // and then looking it up in the nashvilleList.
+  String getNashville() {
+    int _bar = (groove.index ~/ 4);
+    return nashvilleList[_bar];
+  }
+
+  // get the current bar's chord name by calculating the nashville
+  // number and then converting that to an actual chord name using
+  // the key.
+  // 12 is the number of notes in the keys array.
+  // 0, 5 and 7 are the offsets in semitones from the tonic for the
+  // I, IV and V chords.
+  String getChord() {
+    int _bar = (groove.index ~/ 4);
+    String _nashville = nashvilleList[_bar];
+    int _keyNum = keys.indexWhere((element) => element == _keyName);
+    String _chord = '-';
+    switch (_nashville) {
+      case 'I':
+        _chord = keys[(_keyNum + 0) % 12];
+        break;
+      case 'IV':
+        _chord = keys[(_keyNum + 5) % 12];
+        break;
+      case 'V':
+        _chord = keys[(_keyNum + 7) % 12];
+        break;
+      default:
+        break;
+    }
+    return _chord;
+  }
+
+  void updateInfo() {
+    int _barNum = ((groove.index ~/ 4) + 1);
+    bar = _barNum.toString();
+    nashville = nashvilleList[_barNum];
+    int _keyNum = keys.indexWhere((element) => element == _keyName);
+    switch (nashville) {
+      case 'I':
+        chord = keys[(_keyNum + 0) % 12];
+        break;
+      case 'IV':
+        chord = keys[(_keyNum + 5) % 12];
+        break;
+      case 'V':
+        chord = keys[(_keyNum + 7) % 12];
+        break;
+      default:
         break;
     }
   }
@@ -313,8 +456,16 @@ class _BluesPageState extends State<BluesPage> {
                     onChanged: (String? newValue) {
                       setState(() {
                         switch (newValue) {
-                          case '12 Bar':
+                          case '12 bar':
                             type = BluesType.TwelveBar;
+                            createGroove(type, _keyName);
+                            break;
+                          case '12 bar slow change':
+                            type = BluesType.TwelveBarSlowChange;
+                            createGroove(type, _keyName);
+                            break;
+                          case '12 bar quick change':
+                            type = BluesType.TwelveBarQuickChange;
                             createGroove(type, _keyName);
                             break;
                           default:
@@ -335,7 +486,6 @@ class _BluesPageState extends State<BluesPage> {
                 ),
               ),
             ]),
-
             Row(children: <Widget>[
               Column(
                 children: [
@@ -380,8 +530,6 @@ class _BluesPageState extends State<BluesPage> {
                 ),
               ),
             ]),
-
-
             Row(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -456,6 +604,51 @@ class _BluesPageState extends State<BluesPage> {
               ),
             ]),
 
+            // row of text elements showing the bar number, the nashville number
+            // and the actual chord name
+            Row(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
+                child: Column(children: <Widget>[
+                  Text(
+                    'Measure'.tr,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    getBar(),
+                    style: TextStyle(fontSize: 50),
+                  ),
+                ]),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
+                child: Column(children: <Widget>[
+                  Text(
+                    'Nashville',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    getNashville(),
+                    style: TextStyle(fontSize: 50),
+                  ),
+                ]),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
+                child: Column(children: <Widget>[
+                  Text(
+                    'Chord'.tr,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  Text(
+                    getChord(),
+                    style: TextStyle(
+                      fontSize: 50,
+                    ),
+                  ),
+                ]),
+              ),
+            ]),
 
             Row(children: <Widget>[
               Padding(

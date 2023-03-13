@@ -33,7 +33,7 @@ enum RhythmType {
 }
 
 // types of blues grooves
-enum BluesType { TwelveBar, TwelveBarShuffle, TwelveBarQuick4 }
+enum BluesType { TwelveBar, TwelveBarQuickChange, TwelveBarSlowChange }
 
 class Note {
   int? oggIndex; // the index of the ogg file sample
@@ -550,7 +550,15 @@ class Groove {
       this.interpolate = false; // turn off backbeat mode when change to bass
       hfaudio.init();
     }
-  }
+    if ((type == 'blues') && (this.type != GrooveType.blues)) {
+      this.type = GrooveType.blues;
+      if (kDebugMode) {
+        print('HF: checkType: changing type to blues');
+      }
+      this.clearNotes();
+      this.interpolate = false; // turn off backbeat mode when change to blues
+      hfaudio.init();
+    }}
 
   // return a list of initials of the current groove notes
   // max number of beats in groove is:
