@@ -964,7 +964,7 @@ class BluetoothBLEService {
 
   // read char2 which Y or N based on the result of reading the
   // accelerometer's whoAmi register.
-  Future<String>? readAccStatus() async {
+  Future<String>? readAccelStatus() async {
     if (_char2 == null) {
       if (kDebugMode) {
         print('HF: readAccStatus: _char2 is null');

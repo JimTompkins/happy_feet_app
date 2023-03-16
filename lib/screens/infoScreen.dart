@@ -53,6 +53,7 @@ class _InfoScreenState extends State<InfoScreen> {
   Future<String>? _rssi;
   Future<String>? _bleAddress;
   Future<String>? _batteryVoltage;
+  Future<String>? _accelStatus;
   static const double iconSize = 25;
   static const double spacerHeight = 15;
 
@@ -65,6 +66,7 @@ class _InfoScreenState extends State<InfoScreen> {
     _rssi = _bluetoothBLEService.readRSSI();
     _bleAddress = _bluetoothBLEService.readBleAddress();
     _batteryVoltage = _bluetoothBLEService.readBatteryVoltage();
+    _accelStatus = _bluetoothBLEService.readAccelStatus();
   }
 
   Future<void> _initPackageInfo() async {
@@ -555,6 +557,95 @@ class _InfoScreenState extends State<InfoScreen> {
                           );
                         })),
               ]),
+
+              Row(children: <Widget>[
+                Expanded(
+                  flex: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Accelerometer status:'.tr,
+                      maxLines: 3,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ),
+                Expanded(
+                    flex: 6,
+                    child: FutureBuilder<String>(
+                        future: _accelStatus,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String> snapshot) {
+                          List<Widget> children;
+                          if (snapshot.hasData) {
+                            if (snapshot.data == 'not connected'.tr) {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.question_mark,
+                                  color: Colors.grey,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    '${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                )
+                              ];
+                            } else {
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: iconSize,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text('${snapshot.data}',
+                                    maxLines: 3,
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                )
+                              ];
+                            }
+                          } else if (snapshot.hasError) {
+                            children = <Widget>[
+                              const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: iconSize,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: Text('Error: ${snapshot.error}'.tr),
+                              )
+                            ];
+                          } else {
+                            children = const <Widget>[
+                              SizedBox(
+                                child: CircularProgressIndicator(),
+                                width: iconSize,
+                                height: iconSize,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: Text('...'),
+                              )
+                            ];
+                          }
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: children,
+                            ),
+                          );
+                        })),
+              ]),
+
+
               Row(
                 children: <Widget>[
                   Padding(

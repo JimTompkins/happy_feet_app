@@ -608,12 +608,12 @@ class _BluesPageState extends State<BluesPage> {
                 padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
                 child: Column(children: <Widget>[
                   Text(
-                    'Measure'.tr,
+                    'Bar'.tr,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  Text(
-                    getBar(),
-                    style: TextStyle(fontSize: 50),
+                  Obx(() => Text(groove.bar.value,
+                      style: TextStyle(fontSize: 50),
+                    ),
                   ),
                 ]),
               ),

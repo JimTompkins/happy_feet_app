@@ -508,13 +508,15 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           Get.to(() => practicePage);
                         } else if (newValue == 'Blues') {
                           groove.type = GrooveType.blues;
+                          groove.clearNotes();
                           groove.voices = 2;
                           groove.reset();
                           if (playMode != Mode.blues) {
                             groove.clearNotes();
                           }
                           playMode = Mode.blues;
-                          groove.oneTap = false;
+                          groove.oneTap = true;
+                          groove.blues = true;
                           Get.to(() => bluesPage);
                         } else {
                           playMode = Mode.unknown;

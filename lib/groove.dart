@@ -67,6 +67,7 @@ class Groove {
   // the first 4 foot taps are used as a lead-in and then there is
   // only a foottap on the "1" beat.  All other beats are interpolated
   // from the last beat period and set as timers.
+  bool blues = false; // a flag to indicate blues mode, similar to 1-tap
   int index = 0; // pointer to next note to play
   int leadInCount =
       4; // number of beats to skip at the start in interpolate mode
@@ -202,6 +203,7 @@ class Groove {
     this.notes[0].name = trName;
     this.notes[0].initial = initialMap[trName];
     this.oneTap = false;
+    this.blues = false;
     this.reset();
   }
 
@@ -220,6 +222,7 @@ class Groove {
     this.notes[1].initial = initialMap[trName2];
 
     this.oneTap = false;
+    this.blues = false;
     this.reset();
   }
 
@@ -238,6 +241,7 @@ class Groove {
     this.notes2[0].initial = initialMap[trName2];
 
     this.oneTap = false;
+    this.blues = false;
     this.reset();
   }
 
@@ -439,7 +443,7 @@ class Groove {
   }
 
   // add a note to the groove using its initial only.  This
-  // method is used by blues mode.  
+  // method is used by blues mode.
   void addInitialNoteSequential(int index, String initial) {
     int _oggIndex = -1;
     String _name = '-';
@@ -553,10 +557,9 @@ class Groove {
     this.notes[index].initial = initial;
     if (kDebugMode) {
       print(
-        'HF: addInitialNoteSequential: index = $index, oggIndex = $_oggIndex, name = $_name');
-      }
+          'HF: addInitialNoteSequential: index = $index, oggIndex = $_oggIndex, name = $_name');
+    }
   }
-
 
   // add a bass note to the groove using the note's name.
   addBassNote(int index, String name) {
@@ -604,17 +607,12 @@ class Groove {
       this.notes2[index].name = _noteName;
       this.notes2[index].initial = _noteName;
 
-      if (kDebugMode) {
-        print(
-            'HF: addBassNote2: note index = $noteIndex, note name = $_noteName');
-      }
-
       int _temp = noteIndex + E1mp3;
       assert(_temp >= E1mp3);
       assert(_temp <= (E1mp3 + 23));
       this.notes2[index].oggIndex = _temp;
       if (kDebugMode) {
-        print('HF: addBassNote2: number = $_temp');
+        print('HF: addBassNote2: index = $index, note name = $_noteName, number = $_temp');
       }
     }
   }
@@ -641,6 +639,12 @@ class Groove {
           type = 'bass';
         }
         break;
+      case GrooveType.blues:
+        {
+          type = 'blues';
+        }
+        break;
+
       default:
         {
           type = 'percussion';
@@ -664,6 +668,7 @@ class Groove {
       this.clearNotes();
       hfaudio.init();
     }
+
     if ((type == 'bass') && (this.type != GrooveType.bass)) {
       this.type = GrooveType.bass;
       if (kDebugMode) {
@@ -673,6 +678,7 @@ class Groove {
       this.interpolate = false; // turn off backbeat mode when change to bass
       hfaudio.init();
     }
+
     if ((type == 'blues') && (this.type != GrooveType.blues)) {
       this.type = GrooveType.blues;
       if (kDebugMode) {
@@ -972,7 +978,7 @@ class Groove {
     // ii) in interpolate mode, and
     //     past the lead-in as indicated by leadInCount == 0
     //     index is even i.e. not an off beat
-    if ((!groove.interpolate && !groove.oneTap) ||
+    if ((!groove.interpolate && !groove.oneTap && !groove.blues) ||
         (groove.interpolate && (groove.leadInCount == 0)) &&
             (groove.index.isEven)) {
       // if this is a bass groove, then stop playing the previous note
@@ -1006,7 +1012,7 @@ class Groove {
     mean2 = sum2 / sysTimeBuffer.length; // calculate the mean delta time
     sysLatestBPM = (60000.0 / beatPeriod);
     sysFilteredBPM = (60000.0 / mean2);
-    if (this.oneTap && !this.firstBeat) {
+    if ((this.oneTap || this.blues) && !this.firstBeat) {
       sysFilteredBPM = sysFilteredBPM * this.bpm;
       sysLatestBPM = sysLatestBPM * this.bpm;
     }
@@ -1078,7 +1084,7 @@ class Groove {
 
     // 1-tap mode: in 1-tap mode, there is a 4 beat lead-in and then the user
     // only taps their foot on the 1s
-    if (this.oneTap) {
+    if (this.oneTap || this.blues) {
       // check if we're in the count-in as indicated by leadInCount > 0.
       if (this.leadInCount != 0) {
         // update the lead-in count displayed on the screen
@@ -1119,7 +1125,7 @@ class Groove {
       }
     }
 
-    if (!oneTap) {
+    if (!oneTap && !blues) {
       updateBABInfo();
     }
   }

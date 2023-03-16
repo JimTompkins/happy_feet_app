@@ -219,8 +219,7 @@ class HfAudio {
       print('Error code = $errorCode');
     }
 
-    if (groove.type == GrooveType.percussion || 
-        groove.type == GrooveType.blues) {
+    if (groove.type == GrooveType.percussion) {
       if (!this.percussionLoaded) {
         Get.snackbar('Status'.tr, 'Loading percussion sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
@@ -229,8 +228,16 @@ class HfAudio {
         initPercussion();
         this.percussionLoaded = true;
       }
-    } else if (groove.type == GrooveType.bass ||
-               groove.type == GrooveType.blues) {
+    } else if (groove.type == GrooveType.bass) {
+      if (!this.bassLoaded) {
+        Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 10),
+            showProgressIndicator: true);
+        initBass();
+        this.bassLoaded = true;
+      }
+    } else if (groove.type == GrooveType.blues) {
       if (!this.bassLoaded) {
         Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
