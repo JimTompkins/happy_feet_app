@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 //import 'audio.dart';
 import 'audioBASS.dart';
 import 'bass.dart';
+import 'blues.dart';
 import 'sharedPrefs.dart';
 
 Note note = new Note(0, "Bass drum");
@@ -95,9 +96,9 @@ class Groove {
   var indexString = 'beat 1'.obs;
   var leadInString = '0'.obs;
   // info for blues mode screen
-  var bar = '-'.obs;
-  var nashville = '-'.obs;
-  var chord = '-'.obs;
+  var barString = '-'.obs;
+  var nashvilleString = '-'.obs;
+  var chordString = '-'.obs;
   RxBool leadInDone = false.obs;
   // variables for practice mode: instantaneous BPM, current streaks
   // within +/- 5 and 10 BPM of target
@@ -612,7 +613,8 @@ class Groove {
       assert(_temp <= (E1mp3 + 23));
       this.notes2[index].oggIndex = _temp;
       if (kDebugMode) {
-        print('HF: addBassNote2: index = $index, note name = $_noteName, number = $_temp');
+        print(
+            'HF: addBassNote2: index = $index, note name = $_noteName, number = $_temp');
       }
     }
   }
@@ -679,7 +681,7 @@ class Groove {
       hfaudio.init();
     }
 
-    if ((type == 'blues') && (this.type != GrooveType.blues)) {
+    if (type == 'blues') {
       this.type = GrooveType.blues;
       if (kDebugMode) {
         print('HF: checkType: changing type to blues');
@@ -880,10 +882,11 @@ class Groove {
   // update the blues mode info
   void updateBluesInfo() {
     int _barNum = ((this.index ~/ 4) + 1);
-    bar.value = _barNum.toString();
+    barString.value = _barNum.toString();
+    String myString = nashville.numbers[_barNum];
+    nashvilleString.value = myString;
+    //int _keyNum = keys.indexWhere((element) => element == _keyName);
     /*
-    nashville.value = nashvilleList[_barNum];
-    int _keyNum = keys.indexWhere((element) => element == _keyName);
     switch (nashville.value) {
       case 'I':
         groove.chord.value = keys[(_keyNum + 0) % 12];
@@ -1082,7 +1085,7 @@ class Groove {
       });
     }
 
-    // 1-tap mode: in 1-tap mode, there is a 4 beat lead-in and then the user
+    // 1-tap or blues mode: in 1-tap mode, there is a 4 beat lead-in and then the user
     // only taps their foot on the 1s
     if (this.oneTap || this.blues) {
       // check if we're in the count-in as indicated by leadInCount > 0.
@@ -1125,8 +1128,11 @@ class Groove {
       }
     }
 
-    if (!oneTap && !blues) {
+    if (!oneTap) {
       updateBABInfo();
+    }
+    if (blues) {
+      updateBluesInfo();
     }
   }
 
@@ -1174,6 +1180,10 @@ class Groove {
       this.notes2[this.index].oggIndex,
     );
     updateBABInfo();
+    if (blues) {
+      updateBluesInfo();
+    }
+
     // increment pointer to the next note
     this.incrementIndex();
 
@@ -1201,6 +1211,9 @@ class Groove {
           this.notes2[this.index].oggIndex,
         );
         updateBABInfo();
+        if (blues) {
+          updateBluesInfo();
+        }
         _now = DateTime.now().toString();
         if (kDebugMode) {
           print('HF: $_now 1-tap: playing beat ${i + 1}, index=${this.index}');

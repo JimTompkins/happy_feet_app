@@ -223,7 +223,7 @@ class HfAudio {
       if (!this.percussionLoaded) {
         Get.snackbar('Status'.tr, 'Loading percussion sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 5),
+            duration: const Duration(seconds: 2),
             showProgressIndicator: true);
         initPercussion();
         this.percussionLoaded = true;
@@ -232,19 +232,22 @@ class HfAudio {
       if (!this.bassLoaded) {
         Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 10),
+            duration: const Duration(seconds: 4),
             showProgressIndicator: true);
         initBass();
         this.bassLoaded = true;
       }
     } else if (groove.type == GrooveType.blues) {
       if (!this.bassLoaded) {
+        print('Hf: loading bass sounds');
         Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 10),
+            duration: const Duration(seconds: 4),
             showProgressIndicator: true);
         initBass();
         this.bassLoaded = true;
+      } else {
+        print('HF: bass sounds already loaded');
       }
     } else {
       initPercussion();
@@ -369,6 +372,16 @@ class HfAudio {
     if (kDebugMode) {
       print('HF: initBass: time = $_loadTimeMs ms');
     }
+  }
+
+  // set the channel volume
+  //  See http://www.un4seen.com/doc/#bass/BASS_ATTRIB_MUSIC_VOL_CHAN.html
+  setVolume(int note, double volume) {
+    // look up the channel number
+    int channel = 0;
+
+    // set the channel's volume
+    bass.BASS_ChannelSetAttribute(channel, BASS_ATTRIB_MUSIC_VOL_CHAN, volume);
   }
 
   play(int note1, int note2) {

@@ -10,9 +10,16 @@ import 'ble2.dart'; // flutter_blue version
 import 'groove.dart';
 import 'bass.dart';
 import 'screens/settingsScreen.dart';
+import 'screens/equalizerScreen.dart';
 
 // blues page
 BluesPage bluesPage = new BluesPage();
+
+class Nashville {
+  List<String> numbers = [];
+}
+
+Nashville nashville = new Nashville();
 
 class Tablature {
   List<String> lines = ['', '', '', '', ''];
@@ -89,7 +96,7 @@ class _BluesPageState extends State<BluesPage> {
   createGroove(BluesType type, String key) {
     int i = 0;
     int keyNum = keys.indexWhere((element) => element == key);
-  
+
     switch (type) {
       case BluesType.TwelveBar:
         if (kDebugMode) {
@@ -169,7 +176,7 @@ class _BluesPageState extends State<BluesPage> {
         _tab.add(0, 'I  I  I I');
         _tab.add(1, 'IV IV I I');
         _tab.add(2, 'V  IV I V');
-        nashvilleList = [
+        nashville.numbers = [
           'I',
           'I',
           'I',
@@ -203,7 +210,7 @@ class _BluesPageState extends State<BluesPage> {
         _tab.add(0, 'I  IV I I');
         _tab.add(1, 'IV IV I I');
         _tab.add(2, 'V  IV I V');
-        nashvilleList = [
+        nashville.numbers = [
           'I',
           'IV',
           'I',
@@ -237,7 +244,7 @@ class _BluesPageState extends State<BluesPage> {
         _tab.add(0, 'I  I  I I');
         _tab.add(1, 'IV IV I I');
         _tab.add(2, 'V  V  I I');
-        nashvilleList = [
+        nashville.numbers = [
           'I',
           'I',
           'I',
@@ -270,7 +277,7 @@ class _BluesPageState extends State<BluesPage> {
   // and then looking it up in the nashvilleList.
   String getNashville() {
     int _bar = (groove.index ~/ 4);
-    return nashvilleList[_bar];
+    return nashville.numbers[_bar];
   }
 
   // get the current bar's chord name by calculating the nashville
@@ -281,7 +288,7 @@ class _BluesPageState extends State<BluesPage> {
   // I, IV and V chords.
   String getChord() {
     int _bar = (groove.index ~/ 4);
-    String _nashville = nashvilleList[_bar];
+    String _nashville = nashville.numbers[_bar];
     int _keyNum = keys.indexWhere((element) => element == _keyName);
     String _chord = '-';
     switch (_nashville) {
@@ -302,18 +309,18 @@ class _BluesPageState extends State<BluesPage> {
 
   void updateInfo() {
     int _barNum = ((groove.index ~/ 4) + 1);
-    groove.bar.value = _barNum.toString();
-    groove.nashville.value = nashvilleList[_barNum];
+    groove.barString.value = _barNum.toString();
+    groove.nashvilleString.value = nashvilleList[_barNum];
     int _keyNum = keys.indexWhere((element) => element == _keyName);
-    switch (groove.nashville.value) {
+    switch (groove.nashvilleString.value) {
       case 'I':
-        groove.chord.value = keys[(_keyNum + 0) % 12];
+        groove.chordString.value = keys[(_keyNum + 0) % 12];
         break;
       case 'IV':
-        groove.chord.value = keys[(_keyNum + 5) % 12];
+        groove.chordString.value = keys[(_keyNum + 5) % 12];
         break;
       case 'V':
-        groove.chord.value = keys[(_keyNum + 7) % 12];
+        groove.chordString.value = keys[(_keyNum + 7) % 12];
         break;
       default:
         break;
@@ -526,6 +533,17 @@ class _BluesPageState extends State<BluesPage> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(30.0, 8.0, 30.0, 8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Get.to(() => equalizerScreen);
+                  },
+                  child: Icon(Icons.equalizer_outlined,
+                      color: AppColors.settingsIconColor,
+                      size: 40.0),
+                ),
+              ),
             ]),
             Row(children: <Widget>[
               Padding(
@@ -611,7 +629,9 @@ class _BluesPageState extends State<BluesPage> {
                     'Bar'.tr,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  Obx(() => Text(groove.bar.value,
+                  Obx(
+                    () => Text(
+                      groove.barString.value,
                       style: TextStyle(fontSize: 50),
                     ),
                   ),
@@ -624,9 +644,11 @@ class _BluesPageState extends State<BluesPage> {
                     'Nashville',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  Text(
-                    getNashville(),
-                    style: TextStyle(fontSize: 50),
+                  Obx(
+                    () => Text(
+                      groove.nashvilleString.value,
+                      style: TextStyle(fontSize: 50),
+                    ),
                   ),
                 ]),
               ),
@@ -637,10 +659,12 @@ class _BluesPageState extends State<BluesPage> {
                     'Chord'.tr,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  Text(
-                    getChord(),
-                    style: TextStyle(
-                      fontSize: 50,
+                  Obx(
+                    () => Text(
+                      groove.chordString.value,
+                      style: TextStyle(
+                        fontSize: 50,
+                      ),
                     ),
                   ),
                 ]),
