@@ -22,6 +22,38 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
     super.initState();
   }
 
+  Widget equalizerRow(String noteName, int index) {
+    return Row(children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          noteName.tr,
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Slider(
+          min: 0.0,
+          max: 1.0,
+          activeColor: AppColors.settingsIconColor,
+          divisions: 10,
+          value: bassDrumVolume,
+          onChanged: (val) {
+            setState(() {
+              bassDrumVolume = val;
+            });
+            // adjust the volume
+            hfaudio.setVolume(index, val);
+
+            // play the sound
+            hfaudio.play(index, -1);
+          },
+        ),
+      ),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,15 +74,20 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
               ),
             ),
           ]),
+        
           Row(children: <Widget>[
-            Padding(
+            Expanded(
+              flex: 4,
+              child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Bass drum'.tr,
-                style: Theme.of(context).textTheme.displayMedium,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-            ),
-            Padding(
+            )),
+            Expanded(
+              flex: 6,
+              child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Slider(
                 min: 0.0,
@@ -63,22 +100,29 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                     bassDrumVolume = val;
                   });
                   // adjust the volume
+                  hfaudio.setVolume(groove.notes[0].oggIndex, val);
 
                   // play the sound
                   hfaudio.play(groove.notes[0].oggIndex, -1);
                 },
               ),
-            ),
+            )),
           ]),
+
+          //equalizerRow('Bass drum', 0),
           Row(children: <Widget>[
-            Padding(
+            Expanded(
+              flex: 4,
+              child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Snare drum'.tr,
-                style: Theme.of(context).textTheme.displayMedium,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-            ),
-            Padding(
+            )),
+            Expanded(
+              flex: 6,
+              child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Slider(
                 min: 0.0,
@@ -91,22 +135,29 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                     snareDrumVolume = val;
                   });
                   // adjust the volume
-                  
+                  hfaudio.setVolume(groove.notes[1].oggIndex, val);
+
                   // play the sound
                   hfaudio.play(groove.notes[1].oggIndex, -1);
                 },
               ),
-            ),
+            )),
           ]),
+          
+          //equalizerRow('Snare drum', 2),
+          
           Row(children: <Widget>[
-            Padding(
+            Expanded(flex: 4, 
+              child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 'Bass'.tr,
-                style: Theme.of(context).textTheme.displayMedium,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
-            ),
-            Padding(
+            )),
+            Expanded(
+              flex: 6, 
+              child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Slider(
                 min: 0.0,
@@ -118,14 +169,17 @@ class _EqualizerScreenState extends State<EqualizerScreen> {
                   setState(() {
                     bassVolume = val;
                   });
-                  // adjust the volume
-                  
+                  // adjust the volume of all bass notes
+                  hfaudio.setVolumeRange(40, 63, val);
+
                   // play the sound
                   hfaudio.play(groove.notes2[0].oggIndex, -1);
                 },
               ),
-            ),
+            )),
           ]),
+          
+          //equalizerRow('Bass', 40),
         ]),
       ),
     );

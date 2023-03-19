@@ -363,6 +363,7 @@ class HfAudio {
     await samples[60].load();
     await samples[61].load();
     await samples[62].load();
+    await samples[63].load();
 
     var _finishTime = DateTime.now(); // get system time
     Duration _loadTime = _finishTime.difference(_startTime);
@@ -374,14 +375,38 @@ class HfAudio {
     }
   }
 
-  // set the channel volume
+  // set the channel volume of a note
   //  See http://www.un4seen.com/doc/#bass/BASS_ATTRIB_MUSIC_VOL_CHAN.html
   setVolume(int note, double volume) {
     // look up the channel number
-    int channel = 0;
+    int channel = samples[note].channelNumber;
+    assert(channel != 0, 'Error: channel number is 0');
 
     // set the channel's volume
-    bass.BASS_ChannelSetAttribute(channel, BASS_ATTRIB_MUSIC_VOL_CHAN, volume);
+    int _result =
+        bass.BASS_ChannelSetAttribute(channel, BASS_ATTRIB_VOL, volume);
+    assert(_result == 1, 'Error: set channel volume result is $_result');
+    this.errorCode = bass.BASS_ErrorGetCode();
+    assert(this.errorCode == 0, 'Error: error code is ${this.errorCode}');
+  }
+
+  // set the channel volume of a range of notes e.g. all bass notes
+  //  See http://www.un4seen.com/doc/#bass/BASS_ATTRIB_MUSIC_VOL_CHAN.html
+  setVolumeRange(int startNote, int stopNote, double volume) {
+    int _channel = 0;
+    int _result = 0;
+    for (int i = startNote; i <= stopNote; i++) {
+      // look up the channel number
+      _channel = samples[i].channelNumber;
+      assert(_channel != 0, 'Error: channel number is 0');
+
+      // set the channel's volume
+      _result =
+          bass.BASS_ChannelSetAttribute(_channel, BASS_ATTRIB_VOL, volume);
+      assert(_result == 1, 'Error: set channel volume result is $_result');
+      this.errorCode = bass.BASS_ErrorGetCode();
+      assert(this.errorCode == 0, 'Error: error code is ${this.errorCode}');
+    }
   }
 
   play(int note1, int note2) {
