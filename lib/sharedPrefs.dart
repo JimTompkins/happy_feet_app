@@ -160,7 +160,7 @@ class SharedPrefs {
     var _savedLanguage = _sharedPrefs?.getString('savedLanguage') ?? '';
     if (kDebugMode) {
       print('HF: found saved language $_savedLanguage');
-    }    
+    }
     var _locale;
     if (_savedLanguage != '') {
       switch (_savedLanguage) {
@@ -197,7 +197,8 @@ class SharedPrefs {
       if (kDebugMode) {
         print('HF: updating language to $_savedLanguage');
       }
-    } else {  // if there is no language saved in sharedPrefs,
+    } else {
+      // if there is no language saved in sharedPrefs,
       // then use English as a default
       _savedLanguage = 'English';
     }
@@ -207,7 +208,13 @@ class SharedPrefs {
   set savedLanguage(String value) {
     _sharedPrefs?.setString('savedLanguage', value);
   }
+
+  String get bluesVolume => _sharedPrefs?.getString('bluesVolume') ?? 'AAA';
+
+  set bluesVolume(String value) {
+    _sharedPrefs?.setString('bluesVolume', value);
+  }
+
 }
 
 final sharedPrefs = SharedPrefs();
-

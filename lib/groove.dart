@@ -95,6 +95,7 @@ class Groove {
   var bpmColor = Colors.white;
   var indexString = 'beat 1'.obs;
   var leadInString = '0'.obs;
+  String keyName = 'E';
   // info for blues mode screen
   var barString = '-'.obs;
   var nashvilleString = '-'.obs;
@@ -883,24 +884,22 @@ class Groove {
   void updateBluesInfo() {
     int _barNum = ((this.index ~/ 4) + 1);
     barString.value = _barNum.toString();
-    String myString = nashville.numbers[_barNum];
+    String myString = nashville.numbers[_barNum - 1];
     nashvilleString.value = myString;
-    //int _keyNum = keys.indexWhere((element) => element == _keyName);
-    /*
-    switch (nashville.value) {
+    int _keyNum = keys.indexWhere((element) => element == keyName);
+    switch (nashvilleString.value) {
       case 'I':
-        groove.chord.value = keys[(_keyNum + 0) % 12];
+        groove.chordString.value = keys[(_keyNum + 0) % 12];
         break;
       case 'IV':
-        groove.chord.value = keys[(_keyNum + 5) % 12];
+        groove.chordString.value = keys[(_keyNum + 5) % 12];
         break;
       case 'V':
-        groove.chord.value = keys[(_keyNum + 7) % 12];
+        groove.chordString.value = keys[(_keyNum + 7) % 12];
         break;
       default:
         break;
     }
-    */
   }
 
 // update the practice mode streak counts: the number of successive
@@ -1175,6 +1174,10 @@ class Groove {
       print(
           'HF: $_now 1-tap: playing beat 1, notes.length = ${this.notes.length}, index now = ${this.index}');
     }
+    if (this.type == GrooveType.blues) {
+      int _last = this.lastIndex();
+      hfaudio.stop(_last);
+    }
     hfaudio.play(
       this.notes[this.index].oggIndex,
       this.notes2[this.index].oggIndex,
@@ -1206,6 +1209,10 @@ class Groove {
     // schedule the remaining notes to be played using timers
     for (int i = 1; i < this.bpm; i++) {
       Timer(Duration(milliseconds: (beatSubdivisionInMs * i).toInt()), () {
+        if (this.type == GrooveType.blues) {
+          int _last = this.lastIndex();
+          hfaudio.stop(_last);
+        } 
         hfaudio.play(
           this.notes[this.index].oggIndex,
           this.notes2[this.index].oggIndex,
@@ -1214,8 +1221,8 @@ class Groove {
         if (blues) {
           updateBluesInfo();
         }
-        _now = DateTime.now().toString();
         if (kDebugMode) {
+          _now = DateTime.now().toString();
           print('HF: $_now 1-tap: playing beat ${i + 1}, index=${this.index}');
         }
         // increment pointer to the next note

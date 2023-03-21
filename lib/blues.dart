@@ -59,7 +59,7 @@ class _BluesPageState extends State<BluesPage> {
   RxBool _playState = Get.find();
   BluesType type = BluesType.TwelveBar;
   String _typeName = '12 bar';
-  String _keyName = 'E';
+  //String _keyName = 'E';
   Tablature _tab = new Tablature();
   List<String> nashvilleList = [];
 
@@ -289,7 +289,7 @@ class _BluesPageState extends State<BluesPage> {
   String getChord() {
     int _bar = (groove.index ~/ 4);
     String _nashville = nashville.numbers[_bar];
-    int _keyNum = keys.indexWhere((element) => element == _keyName);
+    int _keyNum = keys.indexWhere((element) => element == groove.keyName);
     String _chord = '-';
     switch (_nashville) {
       case 'I':
@@ -311,7 +311,7 @@ class _BluesPageState extends State<BluesPage> {
     int _barNum = ((groove.index ~/ 4) + 1);
     groove.barString.value = _barNum.toString();
     groove.nashvilleString.value = nashvilleList[_barNum];
-    int _keyNum = keys.indexWhere((element) => element == _keyName);
+    int _keyNum = keys.indexWhere((element) => element == groove.keyName);
     switch (groove.nashvilleString.value) {
       case 'I':
         groove.chordString.value = keys[(_keyNum + 0) % 12];
@@ -462,15 +462,15 @@ class _BluesPageState extends State<BluesPage> {
                         switch (newValue) {
                           case '12 bar':
                             type = BluesType.TwelveBar;
-                            createGroove(type, _keyName);
+                            createGroove(type, groove.keyName);
                             break;
                           case '12 bar slow change':
                             type = BluesType.TwelveBarSlowChange;
-                            createGroove(type, _keyName);
+                            createGroove(type, groove.keyName);
                             break;
                           case '12 bar quick change':
                             type = BluesType.TwelveBarQuickChange;
-                            createGroove(type, _keyName);
+                            createGroove(type, groove.keyName);
                             break;
                           default:
                             if (kDebugMode) {
@@ -588,7 +588,7 @@ class _BluesPageState extends State<BluesPage> {
                           )
                           .toList();
                     },
-                    value: _keyName,
+                    value: groove.keyName,
                     dropdownPadding: EdgeInsets.zero,
                     itemPadding: EdgeInsets.zero,
                     buttonHeight: 40,
@@ -605,8 +605,8 @@ class _BluesPageState extends State<BluesPage> {
                     ),
                     onChanged: (String? newValue) {
                       setState(() {
-                        _keyName = newValue!;
-                        createGroove(type, _keyName);
+                        groove.keyName = newValue!;
+                        createGroove(type, groove.keyName);
                         groove.oneTapStarted = false;
                         groove.cancelMeasureTimer();
                         if (kDebugMode) {

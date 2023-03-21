@@ -239,7 +239,7 @@ class HfAudio {
       }
     } else if (groove.type == GrooveType.blues) {
       if (!this.bassLoaded) {
-        print('Hf: loading bass sounds');
+        //print('Hf: loading bass sounds');
         Get.snackbar('Status'.tr, 'Loading bass sounds.'.tr,
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 4),
