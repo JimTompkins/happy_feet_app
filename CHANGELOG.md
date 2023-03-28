@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added blues play mode with equalizer.  In blues mode, you choose a pattern,
 like 12 bar blues and a key and then then it works like 1-tap mode.  It will play
 a percussion groove with a walking bass line.
+- Added an equalizer to the Groove screen.  It lets you adjust the voume level
+for all 14 percussion sounds
 - Added settings icon to app bar on 1-tap and Practice screens
 - Added “Accelerometer status” to the Info screen
 
