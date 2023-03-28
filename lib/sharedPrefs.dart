@@ -215,6 +215,12 @@ class SharedPrefs {
     _sharedPrefs?.setString('bluesVolume', value);
   }
 
+  String get percussionVolume => _sharedPrefs?.getString('percussionVolume') ?? 'AAAAAAAAAAAAAA';
+
+  set percussionVolume(String value) {
+    _sharedPrefs?.setString('percussionVolume', value);
+  }
+
 }
 
 final sharedPrefs = SharedPrefs();

@@ -90,6 +90,7 @@ class _BluesPageState extends State<BluesPage> {
 
     groove.checkType('blues');
     createGroove(BluesType.TwelveBar, 'E');
+    bluesEqualizer.loadVolumeLevel();
   }
 
   // create a blues groove with the specified type
@@ -537,11 +538,10 @@ class _BluesPageState extends State<BluesPage> {
                 padding: const EdgeInsets.fromLTRB(30.0, 8.0, 30.0, 8.0),
                 child: GestureDetector(
                   onTap: () {
-                    Get.to(() => equalizerScreen);
+                    Get.to(() => bluesEqualizerScreen);
                   },
                   child: Icon(Icons.equalizer_outlined,
-                      color: AppColors.settingsIconColor,
-                      size: 40.0),
+                      color: AppColors.settingsIconColor, size: 40.0),
                 ),
               ),
             ]),

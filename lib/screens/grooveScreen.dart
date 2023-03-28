@@ -10,6 +10,7 @@ import '../utils.dart';
 import '../appDesign.dart';
 import '../sharedPrefs.dart';
 import 'settingsScreen.dart';
+import 'equalizerScreen.dart';
 import 'saveGrooveScreen.dart';
 import 'loadGrooveScreen.dart';
 
@@ -82,7 +83,8 @@ class _GrooveScreenState extends State<GrooveScreen> {
   ];
 
   void loadGroove() {
-    if (groove.bpm > 6) {  // check for an out of range bpm i.e. > 6
+    if (groove.bpm > 6) {
+      // check for an out of range bpm i.e. > 6
       // this can happen if coming from oneTap to groove mode
       groove.bpm = 6;
     }
@@ -110,6 +112,7 @@ class _GrooveScreenState extends State<GrooveScreen> {
   initState() {
     super.initState();
     loadGroove();
+    percussionEqualizer.loadVolumeLevel();
   }
 
   // return a colour to use for each gridview element based on its index
@@ -242,7 +245,8 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headlineMedium,
+                                  style: AppTheme
+                                      .appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -315,7 +319,8 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                 color: item.color,
                                 child: Text(
                                   item.text,
-                                  style: AppTheme.appTheme.textTheme.headlineMedium,
+                                  style: AppTheme
+                                      .appTheme.textTheme.headlineMedium,
                                 ),
                               ),
                             ))
@@ -464,6 +469,17 @@ class _GrooveScreenState extends State<GrooveScreen> {
                     );
                   },
                 ),
+                Padding(
+                padding: const EdgeInsets.fromLTRB(30.0, 8.0, 30.0, 8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Get.to(() => percussionEqualizerScreen);
+                  },
+                  child: Icon(Icons.equalizer_outlined,
+                      color: AppColors.settingsIconColor, size: 40.0),
+                ),
+              ),
+
               ]),
             ]), // Column
 
@@ -507,8 +523,8 @@ class _GrooveScreenState extends State<GrooveScreen> {
                                         color: item.color,
                                         child: Text(
                                           item.text,
-                                          style: AppTheme
-                                              .appTheme.textTheme.headlineMedium,
+                                          style: AppTheme.appTheme.textTheme
+                                              .headlineMedium,
                                         ),
                                       ),
                                     ))
