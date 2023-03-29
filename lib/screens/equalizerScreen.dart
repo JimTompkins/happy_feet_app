@@ -80,6 +80,10 @@ class BluesEqualizer {
   // load the three volume levels from a text string in shared preferences
   void loadVolumeLevel() {
     String volumeString = sharedPrefs.bluesVolume;
+    if (volumeString.length != 3) {
+      volumeString = 'AAA';
+    }
+    //print('Hf: loadVolumeLevel: volumeString = $volumeString');
     bassDrum.volume = stringToDouble(volumeString[0]);
     snareDrum.volume = stringToDouble(volumeString[1]);
     bass.volume = stringToDouble(volumeString[2]);
@@ -324,40 +328,28 @@ class BluesEqualizerScreenState extends State<BluesEqualizerScreen> {
       ),
     );
   } // Widget
-
 }
 
 PercussionEqualizer percussionEqualizer = new PercussionEqualizer();
 
 class PercussionEqualizer {
-  EqualizerEntry bassDrum = 
-    EqualizerEntry.withoutSavedValue('Bass drum', 1.0);
-  EqualizerEntry bassEcho =
-    EqualizerEntry.withoutSavedValue('Bass echo', 1.0);
+  EqualizerEntry bassDrum = EqualizerEntry.withoutSavedValue('Bass drum', 1.0);
+  EqualizerEntry bassEcho = EqualizerEntry.withoutSavedValue('Bass echo', 1.0);
   EqualizerEntry snareDrum =
-    EqualizerEntry.withoutSavedValue('Snare drum', 1.0);
-  EqualizerEntry hiHat =
-    EqualizerEntry.withoutSavedValue('Hi-hat cymbal', 1.0);
-  EqualizerEntry cowbell =
-    EqualizerEntry.withoutSavedValue('Cowbell', 1.0);
+      EqualizerEntry.withoutSavedValue('Snare drum', 1.0);
+  EqualizerEntry hiHat = EqualizerEntry.withoutSavedValue('Hi-hat cymbal', 1.0);
+  EqualizerEntry cowbell = EqualizerEntry.withoutSavedValue('Cowbell', 1.0);
   EqualizerEntry tambourine =
-    EqualizerEntry.withoutSavedValue('Tambourine', 1.0);
+      EqualizerEntry.withoutSavedValue('Tambourine', 1.0);
   EqualizerEntry fingersnap =
-    EqualizerEntry.withoutSavedValue('Fingersnap', 1.0);
-  EqualizerEntry rimshot =
-    EqualizerEntry.withoutSavedValue('Rim shot', 1.0);
-  EqualizerEntry shaker =
-    EqualizerEntry.withoutSavedValue('Shaker', 1.0);
-  EqualizerEntry woodblock =
-    EqualizerEntry.withoutSavedValue('Woodblock', 1.0);
-  EqualizerEntry loTom =
-    EqualizerEntry.withoutSavedValue('Lo tom', 1.0);
-  EqualizerEntry hiTom =
-    EqualizerEntry.withoutSavedValue('Hi tom', 1.0);
-  EqualizerEntry brushes =
-    EqualizerEntry.withoutSavedValue('Brushes', 1.0);
-  EqualizerEntry quijada =
-    EqualizerEntry.withoutSavedValue('Quijada', 1.0);
+      EqualizerEntry.withoutSavedValue('Fingersnap', 1.0);
+  EqualizerEntry rimshot = EqualizerEntry.withoutSavedValue('Rim shot', 1.0);
+  EqualizerEntry shaker = EqualizerEntry.withoutSavedValue('Shaker', 1.0);
+  EqualizerEntry woodblock = EqualizerEntry.withoutSavedValue('Woodblock', 1.0);
+  EqualizerEntry loTom = EqualizerEntry.withoutSavedValue('Lo tom', 1.0);
+  EqualizerEntry hiTom = EqualizerEntry.withoutSavedValue('Hi tom', 1.0);
+  EqualizerEntry brushes = EqualizerEntry.withoutSavedValue('Brushes', 1.0);
+  EqualizerEntry quijada = EqualizerEntry.withoutSavedValue('Quijada', 1.0);
 
   // convert a double on the range 0:1 to a single character string
   // as follows: 0:0.1 = '0', 0.1:0.2 = '1', ..., 1.0 = 'A'
@@ -386,22 +378,21 @@ class PercussionEqualizer {
 
   // save the 14 volume levels to a text string in shared preferences
   void saveVolumeLevel() {
-    String volumeString =
-      doubleToString(bassDrum.volume) + 
-      doubleToString(bassEcho.volume) +
-      doubleToString(loTom.volume) +
-      doubleToString(hiTom.volume) +
-      doubleToString(snareDrum.volume) +
-      doubleToString(hiHat.volume) +
-      doubleToString(cowbell.volume) +
-      doubleToString(tambourine.volume) +
-      doubleToString(fingersnap.volume) +
-      doubleToString(rimshot.volume) +
-      doubleToString(shaker.volume) +
-      doubleToString(woodblock.volume) +
-      doubleToString(brushes.volume) +
-      doubleToString(quijada.volume);
-    
+    String volumeString = doubleToString(bassDrum.volume) +
+        doubleToString(bassEcho.volume) +
+        doubleToString(loTom.volume) +
+        doubleToString(hiTom.volume) +
+        doubleToString(snareDrum.volume) +
+        doubleToString(hiHat.volume) +
+        doubleToString(cowbell.volume) +
+        doubleToString(tambourine.volume) +
+        doubleToString(fingersnap.volume) +
+        doubleToString(rimshot.volume) +
+        doubleToString(shaker.volume) +
+        doubleToString(woodblock.volume) +
+        doubleToString(brushes.volume) +
+        doubleToString(quijada.volume);
+
     if (kDebugMode) {
       print('Hf: saveVolumeLevel: string = $volumeString');
     }
@@ -411,6 +402,9 @@ class PercussionEqualizer {
   // load the 14 volume levels from a text string in shared preferences
   void loadVolumeLevel() {
     String volumeString = sharedPrefs.percussionVolume;
+    if (volumeString.length != 14) {
+      volumeString = 'AAAAAAAAAAAAAA';
+    }
     bassDrum.volume = stringToDouble(volumeString[0]);
     bassEcho.volume = stringToDouble(volumeString[1]);
     loTom.volume = stringToDouble(volumeString[2]);
@@ -445,7 +439,6 @@ class PercussionEqualizerScreen extends StatefulWidget {
 }
 
 class PercussionEqualizerScreenState extends State<PercussionEqualizerScreen> {
-  
   // a function to add a row with a text widget with a note name
   // and a slider for the volume for that note.  When the slider is
   // pressed, that note's volume is adjusted.
@@ -531,10 +524,8 @@ class PercussionEqualizerScreenState extends State<PercussionEqualizerScreen> {
           equalizerRow('Woodblock', 10, percussionEqualizer.woodblock),
           equalizerRow('Brushes', 13, percussionEqualizer.brushes),
           equalizerRow('Quijada', 14, percussionEqualizer.quijada),
-
         ]),
       ),
     );
   } // Widget
-
 }
